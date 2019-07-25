@@ -1,0 +1,24 @@
+(setq settings_path "Z:/Dropbox/")
+
+(setq user-emacs-directory (file-truename (concat settings_path ".emacs.d/")))
+
+(package-initialize)
+
+(add-to-list 'exec-path "C:/Program Files/Git/cmd/")
+
+(load-file (concat settings_path "emacs_config/main.el"))
+
+;; PT Mono
+(custom-set-faces
+ '(default ((t (:family "DejaVu Sans Mono" :foundry "PfEd" :slant normal :weight normal :height 86 :width normal)))))
+
+(global-set-key (kbd "<C-up>") 'next-buffer)
+(global-set-key (kbd "<C-down>") 'previous-buffer)
+
+(global-set-key (kbd "C-<tab>") 'tabbar-forward)
+(global-set-key (kbd "C-S-<tab>") 'tabbar-backward)
+
+(global-set-key (kbd "C-`") (lambda () (interactive) (other-window 1)))
+(global-set-key (kbd "C-~") (lambda () (interactive) (other-window -1)))
+(global-set-key (kbd "C-¸") (lambda () (interactive) (other-window 1)))
+(global-set-key (kbd "C-¨") (lambda () (interactive) (other-window -1)))
