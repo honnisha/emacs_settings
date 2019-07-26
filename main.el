@@ -1,4 +1,4 @@
-load-file (concat settings_path "emacs_config/functions.el"))
+(load-file (concat settings_path "functions.el"))
 (message settings_path)
 
 ;; sudo apt-get install pylint
@@ -81,6 +81,15 @@ load-file (concat settings_path "emacs_config/functions.el"))
 
 (global-set-key (kbd "C-x w") (lambda() (interactive)(eww "google.com")))
 
+(global-set-key (kbd "<C-M-tab>") 'next-buffer)
+(global-set-key (kbd "<C-M-iso-lefttab>") 'previous-buffer)
+
+;; (global-set-key (kbd "C-<tab>") 'tabbar-forward)
+;; (global-set-key (kbd "C-S-<tab>") 'tabbar-backward)
+
+(global-set-key (kbd "<C-tab>") (lambda () (interactive) (other-window 1)))
+(global-set-key (kbd "<C-iso-lefttab>") (lambda () (interactive) (other-window -1)))
+
 ;; Hide/Show
 ;; package-list-packages
 (global-unset-key (kbd "C-x l"))
@@ -92,8 +101,7 @@ load-file (concat settings_path "emacs_config/functions.el"))
 (global-set-key "\C-x\C-b" 'buffer-menu)
 (global-set-key (kbd "C-x y") `repeat-complex-command)
 
-(global-set-key (kbd "C-x C-d") (lambda() (interactive)(find-file (concat settings_path "emacs_config/main.el"))))
-(global-set-key (kbd "C-x C-n") (lambda() (interactive)(find-file (concat settings_path "Новый текстовый документ.txt"))))
+(global-set-key (kbd "C-x C-d") (lambda() (interactive)(find-file (concat settings_path "main.el"))))
 (global-set-key (kbd "C-x n !") (lambda() (interactive)(find-file (concat settings_path "org_files/main.org"))))
 (global-set-key (kbd "C-x n @") (lambda() (interactive)(find-file (concat settings_path "org_files/rmbo.org"))))
 
@@ -152,37 +160,38 @@ load-file (concat settings_path "emacs_config/functions.el"))
 ;; Emacs help/dev
 (global-set-key (kbd "C-c C-f") 'find-function)
 
-(add-to-list 'load-path (concat settings_path "emacsd/plugins/"))
-(load "centered-cursor-mode.el")
-(load "tsv-mode.el")
-;; (load "lui.el")
-(add-to-list 'load-path (concat settings_path "emacsd/plugins/slime-master/"))
-(add-to-list 'load-path (concat settings_path "emacsd/plugins/python-mode-master/"))
-(load "python-mode.el")
-(add-to-list 'load-path (concat settings_path "emacsd/plugins/vlfi/"))
-(load "vlf.el")
-(add-to-list 'load-path (concat settings_path "emacsd/plugins/window-number/"))
-(load "window-number.el")
-(add-to-list 'load-path (concat settings_path "emacsd/plugins/monky/"))
-(load "monky.el")
-;; (add-to-list 'load-path (concat settings_path "emacsd/plugins/spaceline/"))
-;; (load "spaceline-config.el")
+;; (add-to-list 'load-path (concat settings_path "emacsd/plugins/vlfi/"))
+;; (load "vlf.el")
+
+;; (add-to-list 'load-path (concat settings_path "emacsd/plugins/monky/"))
+;; (load "monky.el")
 ;; (add-to-list 'load-path (concat settings_path "emacsd/plugins/all-the-icons.el/"))
 ;; (load "all-the-icons.el")
-(add-to-list 'load-path (concat settings_path "emacsd/plugins/switch-buffer-functions-el/"))
-(load "switch-buffer-functions.el")
+;; (add-to-list 'load-path (concat settings_path "emacsd/plugins/switch-buffer-functions-el/"))
+;; (load "switch-buffer-functions.el")
 ;; (add-to-list 'load-path (concat settings_path "emacsd/plugins/auto-dim-other-buffers.el/"))
 ;; (load "auto-dim-other-buffers.el")
 
-(load "tabbar.el")
-(add-to-list 'load-path (concat settings_path "emacsd/plugins/tabbar-ruler.el"))
-(load "tabbar-ruler.el")
 
-;; tabbar-mode
-(tabbar-mode)
-;; (tabbar-ruler)
+(use-package quelpa-use-package
+  :ensure t
+  :init (setq quelpa-update-melpa-p nil)
+  :config (quelpa-use-package-activate-advice)
+  )
+
+(use-package window-number
+  :ensure t
+  :quelpa (window-number :fetcher github :repo "nikolas/window-number")
+  )
+
+(use-package tabbar
+  :ensure t
+  :config (tabbar-mode)
+  )
 
 (use-package tabbar-ruler
+  :ensure t
+  :quelpa (tabbar-ruler :fetcher github :repo "mattfidler/tabbar-ruler.el")
   :config
   (setq tabbar-ruler-global-tabbar t) ; If you want tabbar
   ;;   (setq tabbar-ruler-global-ruler t) ; if you want a global ruler
@@ -192,15 +201,6 @@ load-file (concat settings_path "emacs_config/functions.el"))
   (tabbar-ruler-group-by-projectile-project)
   (tabbar-ruler-group-buffer-groups)
   )
-
-;; (load-file (concat settings_path "emacs_config/tabbar-setting.el"))
-
-;; the exact path may differ -- check it
-;; sudo apt-get install texinfo
-;; http://www.djcbsoftware.nl/code/mu/mu4e/Installation.html#Installation
-;; (add-to-list 'load-path "/usr/local/share/emacs/site-lisp/mu4e")
-;; (load "mu4e.el")
-;; (load-file (concat settings_path "emacs_config/mu4e-settings.el"))
 
 (window-number-meta-mode)
 (window-number-mode 1)
@@ -524,6 +524,9 @@ load-file (concat settings_path "emacs_config/functions.el"))
 (use-package csv-mode
   :ensure t)
 
+(use-package python-mode
+  :ensure t)
+
 (use-package auto-complete
   :ensure t
   :config
@@ -554,38 +557,38 @@ load-file (concat settings_path "emacs_config/functions.el"))
 	))
   )
 
-(use-package omnisharp
-  :ensure t
-  :config
-  (add-hook 'csharp-mode-hook 'omnisharp-mode)
-  (eval-after-load
-    'company
-    '(add-to-list 'company-backends #'company-omnisharp))
-
-  (defun my-csharp-mode-setup ()
-    (omnisharp-mode)
-    (company-mode)
-    (flycheck-mode)
-
-    (setq indent-tabs-mode nil)
-    (setq c-syntactic-indentation t)
-    (c-set-style "ellemtel")
-    (setq c-basic-offset 4)
-    (setq truncate-lines t)
-    (setq tab-width 4)
-    (setq evil-shift-width 4)
-
-    ;csharp-mode README.md recommends this too
-    ;(electric-pair-mode 1)       ;; Emacs 24
-    ;(electric-pair-local-mode 1) ;; Emacs 25
-
-    (define-key omnisharp-mode-map (kbd "C-c r r") 'omnisharp-run-code-action-refactoring)
-    (define-key omnisharp-mode-map (kbd "C-c s") 'omnisharp-start-omnisharp-server)
-    (define-key omnisharp-mode-map (kbd "C-c C-c") 'recompile))
-    (define-key omnisharp-mode-map (kbd "C-o") 'omnisharp-go-to-definition)
-    (define-key omnisharp-mode-map (kbd "C-i") 'omnisharp-current-type-documentation)
-    ;; (define-key omnisharp-mode-map (kbd "<tab>") 'omnisharp-auto-complete)
-    )
+;; (use-package omnisharp
+;;   :ensure t
+;;   :config
+;;   (add-hook 'csharp-mode-hook 'omnisharp-mode)
+;;   (eval-after-load
+;;     'company
+;;     '(add-to-list 'company-backends #'company-omnisharp))
+;; 
+;;   (defun my-csharp-mode-setup ()
+;;     (omnisharp-mode)
+;;     (company-mode)
+;;     (flycheck-mode)
+;; 
+;;     (setq indent-tabs-mode nil)
+;;     (setq c-syntactic-indentation t)
+;;     (c-set-style "ellemtel")
+;;     (setq c-basic-offset 4)
+;;     (setq truncate-lines t)
+;;     (setq tab-width 4)
+;;     (setq evil-shift-width 4)
+;; 
+;;     ;csharp-mode README.md recommends this too
+;;     ;(electric-pair-mode 1)       ;; Emacs 24
+;;     ;(electric-pair-local-mode 1) ;; Emacs 25
+;; 
+;;     (define-key omnisharp-mode-map (kbd "C-c r r") 'omnisharp-run-code-action-refactoring)
+;;     (define-key omnisharp-mode-map (kbd "C-c s") 'omnisharp-start-omnisharp-server)
+;;     (define-key omnisharp-mode-map (kbd "C-c C-c") 'recompile))
+;;     (define-key omnisharp-mode-map (kbd "C-o") 'omnisharp-go-to-definition)
+;;     (define-key omnisharp-mode-map (kbd "C-i") 'omnisharp-current-type-documentation)
+;;     ;; (define-key omnisharp-mode-map (kbd "<tab>") 'omnisharp-auto-complete)
+;;     )
 
 (use-package js-auto-beautify
   :ensure t
