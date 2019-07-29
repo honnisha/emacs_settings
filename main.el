@@ -81,11 +81,11 @@
 
 (global-set-key (kbd "C-x w") (lambda() (interactive)(eww "google.com")))
 
-(global-set-key (kbd "<C-M-tab>") 'next-buffer)
-(global-set-key (kbd "<C-M-iso-lefttab>") 'previous-buffer)
+;; (global-set-key (kbd "<C-M-tab>") 'next-buffer)
+;; (global-set-key (kbd "<C-M-iso-lefttab>") 'previous-buffer)
 
-;; (global-set-key (kbd "C-<tab>") 'tabbar-forward)
-;; (global-set-key (kbd "C-S-<tab>") 'tabbar-backward)
+(global-set-key (kbd "<C-M-tab>") 'tabbar-forward)
+(global-set-key (kbd "<C-M-iso-lefttab>") 'tabbar-backward)
 
 (global-set-key (kbd "<C-tab>") (lambda () (interactive) (other-window 1)))
 (global-set-key (kbd "<C-iso-lefttab>") (lambda () (interactive) (other-window -1)))
@@ -165,8 +165,6 @@
 
 ;; (add-to-list 'load-path (concat settings_path "emacsd/plugins/monky/"))
 ;; (load "monky.el")
-;; (add-to-list 'load-path (concat settings_path "emacsd/plugins/all-the-icons.el/"))
-;; (load "all-the-icons.el")
 ;; (add-to-list 'load-path (concat settings_path "emacsd/plugins/switch-buffer-functions-el/"))
 ;; (load "switch-buffer-functions.el")
 ;; (add-to-list 'load-path (concat settings_path "emacsd/plugins/auto-dim-other-buffers.el/"))
@@ -425,6 +423,7 @@
   (global-set-key (kbd "C-x b") 'helm-buffers-list)
   (global-unset-key (kbd "C-x C-f"))
   (global-set-key (kbd "C-x C-f") 'helm-find-files)
+  (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action)
   )
 
 (use-package helm-projectile
@@ -551,9 +550,7 @@
     '(define-key python-mode-map (kbd "TAB") 'jedi:complete))
   
   (setq jedi:server-args
-      '("--virtual-env" "~/.virtualenvs/rmbo"
-        "--virtual-env" "~/.virtualenvs/preimport"
-        "--virtual-env" "~/.virtualenvs/recognition_digit"
+      '("--virtual-env" "~/.virtualenvs/gc"
 	))
   )
 
