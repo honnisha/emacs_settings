@@ -90,6 +90,8 @@
 (global-set-key (kbd "<C-tab>") (lambda () (interactive) (other-window 1)))
 (global-set-key (kbd "<C-iso-lefttab>") (lambda () (interactive) (other-window -1)))
 
+(global-set-key (kbd "<f10>") 'toggle-frame-fullscreen)
+
 ;; Hide/Show
 ;; package-list-packages
 (global-unset-key (kbd "C-x l"))
@@ -146,29 +148,18 @@
              (define-key org-mode-map (kbd "C-c a") 'org-agenda)
 	     ))
 
-
 ;; Windows/frames
-(global-set-key (kbd "C-S-6") 'shrink-window-horizontally)
-(global-set-key (kbd "C-S-4") 'enlarge-window-horizontally)
-(global-set-key (kbd "C-S-2") 'shrink-window)
-(global-set-key (kbd "C-S-8") 'enlarge-window)
+(global-set-key (kbd "<C-S-right>") 'shrink-window-horizontally)
+(global-set-key (kbd "<C-S-left>") 'enlarge-window-horizontally)
+(global-set-key (kbd "<C-S-up>") 'shrink-window)
+(global-set-key (kbd "<C-S-down>") 'enlarge-window)
 
 (global-set-key (kbd "<C-S-kp-right>") 'shrink-window-horizontally)
 (global-set-key (kbd "<C-S-kp-left>") 'enlarge-window-horizontally)
-(global-set-key (kbd "<C-S-kp-up>") 'shrink-window)
-(global-set-key (kbd "<C-S-kp-down>") 'enlarge-window)
+(global-set-key (kbd "<C-S-kp-down>") 'shrink-window)
+(global-set-key (kbd "<C-S-kp-up>") 'enlarge-window)
 ;; Emacs help/dev
 (global-set-key (kbd "C-c C-f") 'find-function)
-
-;; (add-to-list 'load-path (concat settings_path "emacsd/plugins/vlfi/"))
-;; (load "vlf.el")
-
-;; (add-to-list 'load-path (concat settings_path "emacsd/plugins/monky/"))
-;; (load "monky.el")
-;; (add-to-list 'load-path (concat settings_path "emacsd/plugins/switch-buffer-functions-el/"))
-;; (load "switch-buffer-functions.el")
-;; (add-to-list 'load-path (concat settings_path "emacsd/plugins/auto-dim-other-buffers.el/"))
-;; (load "auto-dim-other-buffers.el")
 
 
 (use-package quelpa-use-package
@@ -236,7 +227,7 @@
 ;; Hideshow
 (global-set-key (kbd "C-c C-g") 'hs-show-all)
 (global-set-key (kbd "C-c C-h") 'hs-hide-all)
-(add-hook 'python-mode-hook     'hs-minor-mode)
+(add-hook 'ropemacs-mode-hook     'hs-minor-mode)
 (add-hook 'c-mode-common-hook   'hs-minor-mode)
 (add-hook 'emacs-lisp-mode-hook 'hs-minor-mode)
 (add-hook 'java-mode-hook       'hs-minor-mode)
@@ -263,35 +254,8 @@
   (setq jiralib-url "https://recallmasters.atlassian.net")
   )
 
-;; (use-package writeroom-mode
-;;   :ensure t
-;;   :config
-;;   (global-set-key (kbd "<f10>") 'writeroom-mode)
-;;   )
-(global-set-key (kbd "<f10>") 'toggle-frame-fullscreen)
-
 ;; (use-package request
 ;;   :ensure t)
-
-;; (use-package slack
-;;   :commands (slack-start)
-;;   :init
-;;   ;; (setq slack-buffer-emojify t)
-;;   (setq slack-prefer-current-team t)
-;;   :config
-;;   (slack-register-team
-;;    :default t
-;;    :name "criterion"
-;;    :client-id "8287880646.324151797988"
-;;    :client-secret "1c6fe8789c45fa7b6e22df3b1320dc1c"
-;;    :token "xoxp-8287880646-115567906883-324302797173-94dab5218b629aa2f8289ca6dad02d60"
-;;    ;; A9J4FPFV2
-;;    ;; :subscribed-channels '(hoge fuga)
-;;    :full-and-display-names t
-;;    )
-;;   ;; slack-channel-select
-;;   ;; slack-im-select
-;;   )
 
 ;; (use-package alert
 ;;   :commands (alert)
@@ -299,21 +263,21 @@
 ;;   (setq alert-default-style 'notifier))
 
 (use-package multiple-cursors
-   :ensure t
-   :config
-   ;; Multicursors
-   (global-set-key (kbd "C->") 'mc/mark-next-like-this)
-   (global-set-key (kbd "C-с C->") 'mc/skip-to-next-like-this)
-   (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
-   (global-set-key (kbd "C-с C-<") 'mc/skip-to-previous-like-this)
-   (global-set-key (kbd "<C-C-down-mouse-1>") 'mc/add-cursor-on-click)
-   (global-set-key (kbd "C-c <mouse-1>") 'mc/add-cursor-on-click)
-   (global-set-key (kbd "C-c n") 'mc/insert-numbers)
-   ;; (global-set-key (kbd "C-c l") 'mc/insert-letters)
-   (global-set-key (kbd "C-c c") 'mc/edit-lines)
-   (global-set-key (kbd "C-c C-n") 'mc/mark-next-like-this-word) ; choose same word next
-   (global-set-key (kbd "C-c C-p") 'mc/mark-previous-word-like-this) ; choose same word previous
-)
+  :ensure t
+  :config
+  ;; Multicursors
+  (global-set-key (kbd "C->") 'mc/mark-next-like-this)
+  (global-set-key (kbd "C-с C->") 'mc/skip-to-next-like-this)
+  (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+  (global-set-key (kbd "C-с C-<") 'mc/skip-to-previous-like-this)
+  (global-set-key (kbd "<C-C-down-mouse-1>") 'mc/add-cursor-on-click)
+  (global-set-key (kbd "C-c <mouse-1>") 'mc/add-cursor-on-click)
+  (global-set-key (kbd "C-c n") 'mc/insert-numbers)
+  ;; (global-set-key (kbd "C-c l") 'mc/insert-letters)
+  (global-set-key (kbd "C-c c") 'mc/edit-lines)
+  (global-set-key (kbd "C-c C-n") 'mc/mark-next-like-this-word) ; choose same word next
+  (global-set-key (kbd "C-c C-p") 'mc/mark-previous-word-like-this) ; choose same word previous
+  )
 
 (use-package back-button
   :ensure t
@@ -332,7 +296,7 @@
 ;;   :config
 ;;   (setq-default fill-column 80)
 ;;   ;; (global-set-key (kbd "C-c s") 'fci-mode)
-;;   (add-hook 'python-mode-hook 'fci-mode))
+;;   (add-hook 'ropemacs-mode-hook 'fci-mode))
 
 ;; Rust
 ;; rustup component add rust-src
@@ -352,7 +316,7 @@
   (define-key rust-mode-map (kbd "TAB") #'company-indent-or-complete-common)
   (setq company-tooltip-align-annotations t)
   (define-key rust-mode-map (kbd "C-o") #'racer-find-definition)
-)
+  )
 
 ;; (use-package rainbow-delimiters
 ;;   :ensure t
@@ -433,7 +397,7 @@
   (global-unset-key (kbd "C-M-j"))
   (global-set-key (kbd "C-M-j") 'helm-projectile-switch-project)
   (global-set-key (kbd "C-c b") 'helm-projectile-switch-to-buffer)
-   (define-key helm-map (kbd "C-h") nil)
+  (define-key helm-map (kbd "C-h") nil)
   )
 
 ;;(use-package elpy
@@ -450,6 +414,7 @@
   :ensure t
   :config
   ;; (counsel-projectile-mode)
+  (global-set-key (kbd "C-x p f") 'counsel-projectile-find-file)
   )
 
 (use-package company
@@ -481,12 +446,9 @@
   )
 
 (use-package expand-region
- :ensure t
+  :ensure t
   :config
   (global-set-key (kbd "C-=") 'er/expand-region))
-  
-(use-package flycheck-julia
-  :ensure t)
 
 (use-package flycheck
   :ensure t
@@ -495,6 +457,9 @@
   (flycheck-julia-setup)
   (setq flycheck-disabled-checkers nil)
   )
+
+(use-package flycheck-julia
+  :ensure t)
 
 (use-package emmet-mode
   :ensure t
@@ -523,35 +488,67 @@
 (use-package csv-mode
   :ensure t)
 
-(use-package python-mode
-  :ensure t)
-
 (use-package auto-complete
   :ensure t
   :config
   (ac-config-default)
   (global-auto-complete-mode t))
 
-(use-package jedi
+;; Python
+
+;; ITS BAD
+;; (use-package python-mode
+;;   :ensure t
+;;   :config
+;;   (add-hook 'python-mode-hook (lambda () (auto-complete-mode -1)))
+;;   )
+
+;; (use-package company-jedi
+;;   :ensure t
+;;   :config
+;;   (defun my/ropemacs-mode-hook ()
+;;     (add-to-list 'company-backends 'company-jedi))
+;; 
+;;   (add-hook 'ropemacs-mode-hook 'my/ropemacs-mode-hook)
+;;   
+;;   ;; (add-hook 'ropemacs-mode-hook 'jedi:setup)
+;;   (setq jedi:complete-on-dot t)
+;;   
+;;   (define-key jedi-mode-map (kbd "C-o") 'jedi:goto-definition)
+;;   ;; (define-key jedi-mode-map (kbd "<tab>") 'jedi:complete)
+;;   (define-key jedi-mode-map (kbd "C-i") 'jedi:show-doc-in-tip)
+;; 
+;;   (add-hook 'jedi-mode-hook 'jedi-direx:setup)
+;;   (add-hook 'ropemacs-mode-hook 'auto-complete-mode)
+;;   (add-hook 'ropemacs-mode-hook 'jedi:ac-setup)
+;;   (setq elpy-rpc-backend "jedi")
+;;   (eval-after-load 'ropemacs-mode-hook
+;;     '(define-key jedi-mode-map (kbd "TAB") 'jedi:complete))
+;;   
+;;   (setq jedi:server-args
+;;       '("--virtual-env" "~/.virtualenvs/gc"
+;; 	))
+;;   )
+
+(use-package anaconda-mode
+  :ensure t
+  (define-key python-mode-map (kbd "C-o") 'anaconda-mode-find-definitions)
+  (define-key python-mode-map (kbd "C-i") 'anaconda-mode-show-doc)
+  (define-key python-mode-map (kbd "C-c a") 'pythonic-activate)
+
+  ;; (add-to-list 'python-shell-extra-pythonpaths "/path/to/the/project")
+  )
+
+(use-package jedi-direx
+  :ensure t
+  )
+
+;; This requires pyflakes to be on PATH. Alternatively, set pyimport-pyflakes-path.
+(use-package pyimport
   :ensure t
   :config
-  (add-hook 'python-mode-hook 'jedi:setup)
-  (setq jedi:complete-on-dot t)
-  
-  (define-key python-mode-map (kbd "C-o") 'jedi:goto-definition)
-  ;; (define-key python-mode-map (kbd "<tab>") 'jedi:complete)
-  (define-key python-mode-map (kbd "C-i") 'jedi:show-doc-in-tip)
-
-  (add-hook 'jedi-mode-hook 'jedi-direx:setup)
-  (add-hook 'python-mode-hook 'auto-complete-mode)
-  (add-hook 'python-mode-hook 'jedi:ac-setup)
-  (setq elpy-rpc-backend "jedi")
-  (eval-after-load 'python-mode-hook
-    '(define-key python-mode-map (kbd "TAB") 'jedi:complete))
-  
-  (setq jedi:server-args
-      '("--virtual-env" "~/.virtualenvs/gc"
-	))
+  (define-key jedi-mode-map (kbd "C-c C-o") 'pyimport-remove-unused)
+  (define-key jedi-mode-map (kbd "C-c C-i") #'pyimport-insert-missing)
   )
 
 ;; (use-package omnisharp
@@ -596,12 +593,13 @@
 ;; (use-package anaconda-mode
 ;;   :ensure t
 ;;   :config
-;;   (add-hook 'python-mode-hook 'anaconda-mode))
+;;   (add-hook 'ropemacs-mode-hook 'anaconda-mode))
 
+;; pip install flake8
 (use-package flymake-python-pyflakes
   :ensure t
   :config
-  (add-hook 'python-mode-hook 'flymake-python-pyflakes-load)
+  (add-hook 'ropemacs-mode-hook 'flymake-python-pyflakes-load)
   (setq flymake-python-pyflakes-executable "flake8")
   (setq flymake-python-pyflakes-extra-arguments '("--ignore=C0111")))
 
