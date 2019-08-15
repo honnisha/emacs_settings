@@ -385,6 +385,7 @@
   :config
   (setq helm-split-window-in-side-p t)
   (global-set-key (kbd "C-x b") 'helm-buffers-list)
+  (global-set-key (kbd "C-SPC") 'helm-buffers-list)
   (global-unset-key (kbd "C-x C-f"))
   (global-set-key (kbd "C-x C-f") 'helm-find-files)
   (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action)
@@ -448,7 +449,9 @@
 (use-package expand-region
   :ensure t
   :config
-  (global-set-key (kbd "C-=") 'er/expand-region))
+  (global-set-key (kbd "C-j") 'er/expand-region)
+  (global-set-key (kbd "C-S-J") (lambda () (interactive) (er/expand-region -1)))
+  )
 
 (use-package flycheck
   :ensure t
@@ -532,9 +535,13 @@
 
 (use-package anaconda-mode
   :ensure t
+  :config
   (define-key python-mode-map (kbd "C-o") 'anaconda-mode-find-definitions)
   (define-key python-mode-map (kbd "C-i") 'anaconda-mode-show-doc)
   (define-key python-mode-map (kbd "C-c a") 'pythonic-activate)
+
+  (define-key python-mode-map (kbd "<tab>") 'python-indent-shift-right)
+  (define-key python-mode-map (kbd "<backtab>") 'python-indent-shift-left)
 
   ;; (add-to-list 'python-shell-extra-pythonpaths "/path/to/the/project")
   )
@@ -635,10 +642,10 @@
 (use-package swiper
   :ensure t)
 
-;; (use-package atomic-chrome
-;;   :ensure t
-;;   :config
-;;   (atomic-chrome-start-server))
+(use-package atomic-chrome
+  :ensure t
+  :config
+  (atomic-chrome-start-server))
 
 (use-package mode-icons
   :ensure t
