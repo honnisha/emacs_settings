@@ -100,7 +100,7 @@
 (global-set-key (kbd "C-x l a") `show-all)
 
 ;; Open buffers list in the same frame
-(global-set-key "\C-x\C-b" 'buffer-menu)
+;; (global-set-key "\C-x\C-b" 'buffer-menu)
 (global-set-key (kbd "C-x y") `repeat-complex-command)
 
 (global-set-key (kbd "C-x C-d") (lambda() (interactive)(find-file (concat settings_path "main.el"))))
@@ -385,7 +385,7 @@
   :config
   (setq helm-split-window-in-side-p t)
   (global-set-key (kbd "C-x b") 'helm-buffers-list)
-  (global-set-key (kbd "C-SPC") 'helm-buffers-list)
+  (global-set-key (kbd "C-SPC") 'helm-projectile-switch-to-buffer)
   (global-unset-key (kbd "C-x C-f"))
   (global-set-key (kbd "C-x C-f") 'helm-find-files)
   (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action)
@@ -394,7 +394,7 @@
 (use-package helm-projectile
   :ensure t
   :config
-  (global-set-key (kbd "C-M-s") 'helm-projectile-grep)
+  ;; (global-set-key (kbd "C-M-s") 'helm-projectile-grep)
   (global-unset-key (kbd "C-M-j"))
   (global-set-key (kbd "C-M-j") 'helm-projectile-switch-project)
   (global-set-key (kbd "C-c b") 'helm-projectile-switch-to-buffer)
@@ -416,6 +416,7 @@
   :config
   ;; (counsel-projectile-mode)
   (global-set-key (kbd "C-x p f") 'counsel-projectile-find-file)
+  (global-set-key (kbd "C-M-s") 'counsel-projectile-git-grep)
   )
 
 (use-package company
