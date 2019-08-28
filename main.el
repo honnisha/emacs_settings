@@ -178,6 +178,12 @@
   :config (tabbar-mode)
   )
 
+(use-package yasnippet
+  ;; template system for Emacs
+  :ensure t
+  :config
+  )
+
 (use-package tabbar-ruler
   :ensure t
   :quelpa (tabbar-ruler :fetcher github :repo "mattfidler/tabbar-ruler.el")
@@ -221,8 +227,6 @@
 (global-set-key (kbd "C-t") 'neotree-project-dir)
 
 (add-to-list 'custom-theme-load-path (concat settings_path "emacsd/themes/"))
-
-(global-set-key (kbd "M-RET") 'helm-imenu)
 
 ;; Hideshow
 (global-set-key (kbd "C-c C-g") 'hs-show-all)
@@ -385,20 +389,25 @@
   :config
   (setq helm-split-window-in-side-p t)
   (global-set-key (kbd "C-x b") 'helm-buffers-list)
-  (global-set-key (kbd "C-SPC") 'helm-projectile-switch-to-buffer)
   (global-unset-key (kbd "C-x C-f"))
   (global-set-key (kbd "C-x C-f") 'helm-find-files)
   (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action)
+  (global-set-key (kbd "M-RET") 'helm-imenu)
+  (define-key helm-map (kbd "C-h") nil)
+
+  (defun helm-buffers-sort-transformer@donot-sort (_ candidates _)
+    candidates)
+
+  (advice-add 'helm-buffers-sort-transformer :around 'helm-buffers-sort-transformer@donot-sort)
   )
 
 (use-package helm-projectile
   :ensure t
   :config
-  ;; (global-set-key (kbd "C-M-s") 'helm-projectile-grep)
+  (global-set-key (kbd "C-x s") 'helm-projectile-grep)
   (global-unset-key (kbd "C-M-j"))
   (global-set-key (kbd "C-M-j") 'helm-projectile-switch-project)
-  (global-set-key (kbd "C-c b") 'helm-projectile-switch-to-buffer)
-  (define-key helm-map (kbd "C-h") nil)
+  (global-set-key (kbd "C-SPC") 'helm-projectile-switch-to-buffer)
   )
 
 ;;(use-package elpy
@@ -500,7 +509,7 @@
 
 ;; Python
 
-;; ITS BAD
+;; ITS BAD (if you as me)
 ;; (use-package python-mode
 ;;   :ensure t
 ;;   :config
@@ -653,10 +662,12 @@
   :config
   (mode-icons-mode))
 
-;; (use-package which-key
-;;   :ensure t
-;;   :config
-;;   (which-key-mode))
+(use-package which-key
+  ;; displays available keybindings in popup
+  :ensure t
+  :config
+  (which-key-mode)
+  )
 
 ;; (use-package evil
 ;;   :ensure t
