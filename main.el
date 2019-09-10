@@ -1,5 +1,4 @@
 (load-file (concat settings_path "functions.el"))
-(message settings_path)
 
 ;; sudo apt-get install pylint
 ;; sudo pip install flake8
@@ -101,11 +100,12 @@
 
 ;; Open buffers list in the same frame
 ;; (global-set-key "\C-x\C-b" 'buffer-menu)
+(global-unset-key "\C-x\C-b")
 (global-set-key (kbd "C-x y") `repeat-complex-command)
 
 (global-set-key (kbd "C-x C-d") (lambda() (interactive)(find-file (concat settings_path "main.el"))))
-(global-set-key (kbd "C-x n !") (lambda() (interactive)(find-file (concat settings_path "org_files/main.org"))))
-(global-set-key (kbd "C-x n @") (lambda() (interactive)(find-file (concat settings_path "org_files/rmbo.org"))))
+(global-set-key (kbd "C-x n !") (lambda() (interactive)(find-file (concat dropbox_path "org_files/main.org"))))
+(global-set-key (kbd "C-x n @") (lambda() (interactive)(find-file (concat dropbox_path "org_files/work.org"))))
 
 (global-set-key (kbd "C-c h") `whitespace-mode)
 
@@ -116,9 +116,11 @@
 (global-set-key (kbd "C-c r") `revert-buffer)
 (global-set-key (kbd "C-r") `replace-string)
 
-(global-set-key (kbd "C-x r r") `bookmark-jump)
+;; (global-set-key (kbd "C-x r r") `bookmark-jump)
 (global-set-key (kbd "C-x r s") `bookmark-set)
 (global-set-key (kbd "C-x r d") `bookmark-delete)
+
+(global-set-key (kbd "C-c b") 'ibuffer-list-buffers)
 
 (global-unset-key (kbd "C-o"))
 
@@ -173,6 +175,19 @@
   :quelpa (window-number :fetcher github :repo "nikolas/window-number")
   )
 
+(use-package smartparens
+  :ensure t
+  :config
+  (add-hook 'python-mode-hook #'smartparens-mode)
+  (add-hook 'shell-mode-hook #'smartparens-mode)
+  )
+
+(use-package dumb-jump
+  :ensure t
+  :config
+  (global-set-key (kbd "C-x o") 'dumb-jump-go)
+  )
+
 (use-package tabbar
   :ensure t
   :config (tabbar-mode)
@@ -189,12 +204,16 @@
   :quelpa (tabbar-ruler :fetcher github :repo "mattfidler/tabbar-ruler.el")
   :config
   (setq tabbar-ruler-global-tabbar t) ; If you want tabbar
-  ;;   (setq tabbar-ruler-global-ruler t) ; if you want a global ruler
-  ;;   (setq tabbar-ruler-popup-menu t) ; If you want a popup menu.
-  ;;   (setq tabbar-ruler-popup-toolbar t) ; If you want a popup toolbar
-  ;;   (setq tabbar-ruler-popup-scrollbar t) ; If you want to only show the
+  (setq tabbar-ruler-global-ruler nil) ; if you want a global ruler
+  ;; (setq tabbar-ruler-popup-menu t) ; If you want a popup menu.
+  ;; (setq tabbar-ruler-popup-toolbar t) ; If you want a popup toolbar
+  ;; (setq tabbar-ruler-popup-scrollbar t) ; If you want to only show the
   (tabbar-ruler-group-by-projectile-project)
   (tabbar-ruler-group-buffer-groups)
+
+  '(tabbar-ruler-excluded-buffers
+   (quote
+    ("*Messages*" "*Completions*" "*ESS*" "*Packages*" "*log-edit-files*" "*helm-mini*" "*helm-mode-describe-variable*" "*anaconda-mode*" "*Anaconda*" "*Compile-Log*")))
   )
 
 (window-number-meta-mode)
@@ -391,9 +410,11 @@
   (global-set-key (kbd "C-x b") 'helm-buffers-list)
   (global-unset-key (kbd "C-x C-f"))
   (global-set-key (kbd "C-x C-f") 'helm-find-files)
+  ;; (global-set-key (kbd "M-x") 'helm-M-x)
   (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action)
   (global-set-key (kbd "M-RET") 'helm-imenu)
   (define-key helm-map (kbd "C-h") nil)
+  (global-set-key (kbd "C-x r r") #'helm-filtered-bookmarks)
 
   (defun helm-buffers-sort-transformer@donot-sort (_ candidates _)
     candidates)
@@ -553,7 +574,15 @@
   (define-key python-mode-map (kbd "<tab>") 'python-indent-shift-right)
   (define-key python-mode-map (kbd "<backtab>") 'python-indent-shift-left)
 
-  ;; (add-to-list 'python-shell-extra-pythonpaths "/path/to/the/project")
+  (add-to-list 'python-shell-extra-pythonpaths "~/.virtualenvs/gc")
+  (add-hook 'python-mode-hook 'anaconda-mode)
+  )
+
+(use-package company-anaconda
+  :ensure t
+  :config
+  (eval-after-load "company"
+    '(add-to-list 'company-backends 'company-anaconda))
   )
 
 (use-package jedi-direx
