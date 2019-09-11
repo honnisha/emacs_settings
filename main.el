@@ -143,13 +143,6 @@
 (global-set-key (kbd "C-M-p")
 		(lambda () (interactive) (previous-with-center 5)))
 
-;; Org mode
-(add-hook 'org-mode-hook
-          '(lambda ()
-             (define-key org-mode-map (kbd "C-c l") 'org-store-link)
-             (define-key org-mode-map (kbd "C-c a") 'org-agenda)
-	     ))
-
 ;; Windows/frames
 (global-set-key (kbd "<C-S-right>") 'shrink-window-horizontally)
 (global-set-key (kbd "<C-S-left>") 'enlarge-window-horizontally)
@@ -269,12 +262,6 @@
   :config
   (global-set-key (kbd "C-c m") 'magit-status)
   (global-set-key (kbd "C-c C-m") 'magit-dispatch-popup)
-  )
-
-(use-package org-jira
-  :ensure t
-  :config
-  (setq jiralib-url "https://recallmasters.atlassian.net")
   )
 
 ;; (use-package request
@@ -420,6 +407,11 @@
     candidates)
 
   (advice-add 'helm-buffers-sort-transformer :around 'helm-buffers-sort-transformer@donot-sort)
+  )
+
+(use-package restclient
+  :ensure t
+  (define-key restclient-mode-map (kbd "M-RET") 'helm-restclient)
   )
 
 (use-package helm-projectile
@@ -775,7 +767,27 @@
   )
 
 (use-package org
-  :ensure t)
+  :ensure t
+  :config
+  (define-key org-mode-map (kbd "C-c l") 'org-store-link)
+  (define-key org-mode-map (kbd "C-c a") 'org-agenda)
+  (define-key org-mode-map (kbd "C-h") 'delete-backward-char)
+  (define-key org-mode-map (kbd "M-h") 'backward-delete-word)
+
+  (define-key org-mode-map (kbd "C-i") 'org-shiftright)
+  (define-key org-mode-map (kbd "C-S-i") 'org-shiftleft)
+
+  (define-key org-mode-map (kbd "C-o") 'org-metaright)
+  (define-key org-mode-map (kbd "C-S-o") 'org-metaleft)
+
+  (setq org-todo-keywords
+	'((sequence "TODO" "IN" "|" "DONE")))
+  (setq org-todo-keyword-faces
+	'(("TODO" . (:foreground "dodger blue" :weight bold))
+	  ("IN" . (:foreground "lawn green" :weight bold))
+	  ("DONE" . (:foreground "dim gray" :weight bold))
+	  ))
+  )
 
 ;;(use-package workgroups2
 ;;  :ensure t
