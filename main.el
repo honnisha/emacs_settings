@@ -80,6 +80,8 @@
 
 (global-set-key (kbd "C-x w") (lambda() (interactive)(eww "google.com")))
 
+(global-set-key (kbd "C-x s") 'rgrep)
+
 ;; (global-set-key (kbd "<C-M-tab>") 'next-buffer)
 ;; (global-set-key (kbd "<C-M-iso-lefttab>") 'previous-buffer)
 
@@ -104,8 +106,6 @@
 (global-set-key (kbd "C-x y") `repeat-complex-command)
 
 (global-set-key (kbd "C-x C-d") (lambda() (interactive)(find-file (concat settings_path "main.el"))))
-(global-set-key (kbd "C-x n !") (lambda() (interactive)(find-file (concat dropbox_path "org_files/main.org"))))
-(global-set-key (kbd "C-x n @") (lambda() (interactive)(find-file (concat dropbox_path "org_files/work.org"))))
 
 (global-set-key (kbd "C-c h") `whitespace-mode)
 
@@ -417,7 +417,7 @@
 (use-package helm-projectile
   :ensure t
   :config
-  (global-set-key (kbd "C-x s") 'helm-projectile-grep)
+  ; (global-set-key (kbd "C-x s") 'helm-projectile-grep)
   (global-unset-key (kbd "C-M-j"))
   (global-set-key (kbd "C-M-j") 'helm-projectile-switch-project)
   (global-set-key (kbd "C-SPC") 'helm-projectile-switch-to-buffer)
@@ -496,6 +496,7 @@
 
 ;; pip install isort
 ;; https://github.com/timothycrosley/isort
+;; ~/.isort.cfg multi_line_output=4 - Hanging Grid
 (use-package py-isort
   :ensure t
   :config
@@ -721,6 +722,11 @@
 ;; $ install -m 0644 -D all-the-icons.el/fonts/*.ttf -t ~/.local/share/fonts/
 (use-package all-the-icons
   :ensure t
+  :init 
+  (unless (member "all-the-icons" (font-family-list))
+    (all-the-icons-install-fonts t))
+  :config
+  (all-the-icons-octicon "file-binary")
   )
 
 ;;(use-package solaire-mode
@@ -787,6 +793,17 @@
 	  ("IN" . (:foreground "lawn green" :weight bold))
 	  ("DONE" . (:foreground "dim gray" :weight bold))
 	  ))
+
+  (setq org-agenda-files (list (concat dropbox_path "org_files")))
+  (global-set-key (kbd "C-x n !") (lambda() (interactive)(find-file (concat dropbox_path "org_files/main.org"))))
+  (global-set-key (kbd "C-x n @") (lambda() (interactive)(find-file (concat dropbox_path "org_files/work.org"))))
+  )
+
+(use-package org-super-agenda
+  :ensure t
+  :quelpa (org-super-agenda :fetcher github :repo "alphapapa/org-super-agenda")
+  :config
+  (org-super-agenda-mode)
   )
 
 ;;(use-package workgroups2
