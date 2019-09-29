@@ -3,6 +3,8 @@
 ;; sudo apt-get install pylint
 ;; sudo pip install flake8
 
+(setq package-check-signature nil)
+
 (savehist-mode 1)
 (setq savehist-additional-variables '(kill-ring search-ring regexp-search-ring))
 
@@ -28,6 +30,8 @@
 (display-time-mode 1)
 
 ;; Automatically save and restore sessions
+(setq desktop-path (list "~/emacs.d"))
+(desktop-change-dir "~/emacs.d")
 (desktop-save-mode 1)
 
 ;; Finally you can toggle the display of scroll bars on all frames
@@ -38,6 +42,9 @@
 
 ;; backup in one place. flat, no tree structure
 (setq backup-directory-alist '(("" . "~/.emacs.d/emacs-backup")))
+
+(setq mouse-wheel-scroll-amount '(1 ((shift) . 1) ((control) . nil)))
+(setq mouse-wheel-progressive-speed nil)
 
 ;; (global-visual-line-mode -1)
 
@@ -156,6 +163,19 @@
 ;; Emacs help/dev
 (global-set-key (kbd "C-c C-f") 'find-function)
 
+(use-package realgud
+  :ensure t
+  )
+
+(use-package evil
+  :ensure t
+  )
+
+(use-package perspective
+  :ensure t
+  :config
+  (persp-mode)
+  )
 
 (use-package quelpa-use-package
   :ensure t
@@ -168,17 +188,16 @@
   :quelpa (window-number :fetcher github :repo "nikolas/window-number")
   )
 
-(use-package smartparens
-  :ensure t
-  :config
-  (add-hook 'python-mode-hook #'smartparens-mode)
-  (add-hook 'shell-mode-hook #'smartparens-mode)
-  )
+;; (use-package dumb-jump
+;;   :ensure t
+;;   :config
+;;   (global-set-key (kbd "C-x o") 'dumb-jump-go)
+;;   )
 
-(use-package dumb-jump
+(use-package smart-jump
   :ensure t
   :config
-  (global-set-key (kbd "C-x o") 'dumb-jump-go)
+  (global-set-key (kbd "C-x o") 'smart-jump-go)
   )
 
 (use-package tabbar
@@ -206,7 +225,7 @@
 
   '(tabbar-ruler-excluded-buffers
    (quote
-    ("*Messages*" "*Completions*" "*ESS*" "*Packages*" "*log-edit-files*" "*helm-mini*" "*helm-mode-describe-variable*" "*anaconda-mode*" "*Anaconda*" "*Compile-Log*")))
+    ("*Messages*" "*Completions*" "*ESS*" "*Packages*" "*log-edit-files*" "*helm-mini*" "*helm-mode-describe-variable*" "*anaconda-mode*" "*Anaconda*" "*Compile-Log*" "*grep*")))
   )
 
 (window-number-meta-mode)
@@ -361,9 +380,6 @@
 (use-package racer
   :ensure t)
 
-;; (use-package restclient
-;;   :ensure t)
-
 ;; https://github.com/emacs-pe/company-racer
 (use-package company-racer
   :ensure t
@@ -395,6 +411,7 @@
   :config
   (setq helm-split-window-in-side-p t)
   (global-set-key (kbd "C-x b") 'helm-buffers-list)
+  (global-set-key (kbd "C-S-SPC") 'helm-buffers-list)
   (global-unset-key (kbd "C-x C-f"))
   (global-set-key (kbd "C-x C-f") 'helm-find-files)
   ;; (global-set-key (kbd "M-x") 'helm-M-x)
@@ -411,6 +428,7 @@
 
 (use-package restclient
   :ensure t
+  :config
   (define-key restclient-mode-map (kbd "M-RET") 'helm-restclient)
   )
 
@@ -691,11 +709,6 @@
   (which-key-mode)
   )
 
-;; (use-package evil
-;;   :ensure t
-;;   :config
-;;   (evil-mode 1))
-
 ;; Let Emacs move the cursor off-screen
 (use-package scroll-restore
   :ensure t
@@ -775,6 +788,8 @@
 (use-package org
   :ensure t
   :config
+  ;; (setq org-log-done 'time)
+
   (define-key org-mode-map (kbd "C-c l") 'org-store-link)
   (define-key org-mode-map (kbd "C-c a") 'org-agenda)
   (define-key org-mode-map (kbd "C-h") 'delete-backward-char)
@@ -797,6 +812,7 @@
   (setq org-agenda-files (list (concat dropbox_path "org_files")))
   (global-set-key (kbd "C-x n !") (lambda() (interactive)(find-file (concat dropbox_path "org_files/main.org"))))
   (global-set-key (kbd "C-x n @") (lambda() (interactive)(find-file (concat dropbox_path "org_files/work.org"))))
+  (custom-set-faces '(org-link ((t (:underline "dodger blue" :foreground "dodger blue")))))
   )
 
 (use-package org-super-agenda
