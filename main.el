@@ -1,4 +1,19 @@
+;;; Settings --- symmary:
+;;; Commentary:
+;;; Code:
 (load-file (concat settings_path "functions.el"))
+
+;; Automatically save and restore sessions
+(setq desktop-dirname             "~/.emacs.d/"
+      desktop-base-file-name      "emacs.desktop"
+      desktop-base-lock-name      "lock"
+      desktop-path                (list desktop-dirname)
+      desktop-save                t
+      desktop-files-not-to-save   "^$" ;reload tramp paths
+      desktop-load-locked-desktop nil
+      desktop-auto-save-timeout   30)
+(setq desktop-path (list "~/.emacs.d/"))
+(desktop-save-mode 1)
 
 ;; sudo apt-get install pylint
 ;; sudo pip install flake8
@@ -28,11 +43,6 @@
 (setq ring-bell-function 'ignore)
 
 (display-time-mode 1)
-
-;; Automatically save and restore sessions
-(setq desktop-path (list "~/emacs.d"))
-(desktop-change-dir "~/emacs.d")
-(desktop-save-mode 1)
 
 ;; Finally you can toggle the display of scroll bars on all frames
 (scroll-bar-mode -1)
@@ -84,8 +94,6 @@
 
 (custom-set-faces
  '(default ((t (:family "DejaVu Sans Mono" :foundry "PfEd" :slant normal :weight normal :height 85 :width normal)))))
-
-(global-set-key (kbd "C-x w") (lambda() (interactive)(eww "google.com")))
 
 (global-set-key (kbd "C-x s") 'rgrep)
 
@@ -158,8 +166,8 @@
 
 (global-set-key (kbd "<C-S-kp-right>") 'shrink-window-horizontally)
 (global-set-key (kbd "<C-S-kp-left>") 'enlarge-window-horizontally)
-(global-set-key (kbd "<C-S-kp-down>") 'shrink-window)
-(global-set-key (kbd "<C-S-kp-up>") 'enlarge-window)
+(global-set-key (kbd "<C-S-kp-down>") 'enlarge-window)
+(global-set-key (kbd "<C-S-kp-up>") 'shrink-window)
 ;; Emacs help/dev
 (global-set-key (kbd "C-c C-f") 'find-function)
 
@@ -167,15 +175,90 @@
   :ensure t
   )
 
+;; w3m
+(use-package w3m
+  :ensure t
+  :config
+  (setq w3m-user-agent "Mozilla/5.0 (Linux; U; Android 2.3.3; zh-tw; HTC_Pyramid Build/GRI40) AppleWebKit/533.1 (KHTML, like Gecko) Version/4.0 Mobile Safari/533.")
+  (global-set-key (kbd "C-x w") (lambda() (interactive)(w3m-browse-url "google.com")))
+  )
+
+;; w3m
+(pretty-hydra-define hydra-w3m
+  (:color blue)
+  ("Navigation"
+   (("B" w3m-view-previous-page)
+    ("N" w3m-view-next-page)
+    ("[" w3m-previous-form)
+    ("]" w3m-next-form)
+    ("M" w3m-view-url-with-browse-url)
+    ("\\" w3m-view-source)
+    )
+   "Bookmarks"
+   (("a" w3m-bookmark-add-current-url)
+    ("M-a" w3m-bookmark-add-this-url)
+    ("v" w3m-bookmark-view)
+    ))
+  )
+
+;; smerge
+(setq smerge-command-prefix "\C-cv")
+(pretty-hydra-define hydra-smerge
+  (:color blue)
+  ("smerge-command-prefix +"
+   (("n" smerge-next)
+    ("p" smerge-previous)
+    ("RET" smerge-keep-current)
+    ("m" smerge-keep-mine)
+    ("o" smerge-keep-other)
+    ("E" smerge-ediff)
+    )
+   "Bookmarks"
+   (("a" w3m-bookmark-add-current-url)
+    ("M-a" w3m-bookmark-add-this-url)
+    ("v" w3m-bookmark-view)
+    ))
+  )
+
+(define-key smerge-mode-map (kbd "C-x b") #'hydra-smerge/body)
+
+(use-package hydra
+  :ensure t
+  )
+
+(use-package pretty-hydra
+  :ensure t
+  )
+
+(use-package eww
+  :ensure t
+  )
+;; (global-set-key (kbd "C-x w") (lambda() (interactive)(eww "google.com")))
+(define-key eww-mode-map (kbd "e") #'eww-browse-with-external-browser)
+
+(pretty-hydra-define hydra-eww
+  (:color blue)
+  ("Navigation"
+   (("p" eww-previous-url)
+    ("r" eww-forward-url)
+    ("e" eww-browse-with-external-browser)
+    ("g" eww-reload)
+    ("w" eww-copy-page-url)
+    ("v" eww-view-source)
+    ))
+  )
+
+(define-key eww-mode-map (kbd "C-x b") #'hydra-eww/body)
+
 (use-package evil
   :ensure t
   )
 
-(use-package perspective
-  :ensure t
-  :config
-  (persp-mode)
-  )
+;; (use-package perspective
+;;   :ensure t
+;;   :config
+;;   (persp-mode)
+;;   )
 
 (use-package quelpa-use-package
   :ensure t
@@ -410,8 +493,8 @@
   (setq helm-mode t)
   :config
   (setq helm-split-window-in-side-p t)
-  (global-set-key (kbd "C-x b") 'helm-buffers-list)
-  (global-set-key (kbd "C-S-SPC") 'helm-buffers-list)
+  ;; (global-set-key (kbd "C-x b") 'helm-buffers-list)
+  (global-set-key (kbd "C-SPC") 'helm-buffers-list)
   (global-unset-key (kbd "C-x C-f"))
   (global-set-key (kbd "C-x C-f") 'helm-find-files)
   ;; (global-set-key (kbd "M-x") 'helm-M-x)
@@ -438,7 +521,7 @@
   ; (global-set-key (kbd "C-x s") 'helm-projectile-grep)
   (global-unset-key (kbd "C-M-j"))
   (global-set-key (kbd "C-M-j") 'helm-projectile-switch-project)
-  (global-set-key (kbd "C-SPC") 'helm-projectile-switch-to-buffer)
+  (global-set-key (kbd "C-S-SPC") 'helm-projectile-switch-to-buffer)
   )
 
 ;;(use-package elpy
@@ -765,10 +848,10 @@
 ;;  (solaire-mode-swap-bg)
 ;;  )
 
-(use-package linum-relative
-  :ensure t
-  :config
-  (global-set-key (kbd "C-x i") 'linum-relative-toggle))
+;; (use-package linum-relative
+;;   :ensure t
+;;   :config
+;;   (global-set-key (kbd "C-x i") 'linum-relative-toggle))
 
 
 ;; automatic and manual symbol highlighting for Emacs
@@ -880,3 +963,6 @@
 (autoload 'python-mode "python-mode" "Python Mode." t)
 (add-to-list 'auto-mode-alist '("\\.py\\'" . python-mode))
 (add-to-list 'interpreter-mode-alist '("python" . python-mode))
+
+ (setq desktop-load-locked-desktop t)
+ (call-interactively 'desktop-read t (vector "~/.emacs.d/" t))
