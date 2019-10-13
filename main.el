@@ -1,7 +1,9 @@
 ;;; Settings --- symmary:
 ;;; Commentary:
 ;;; Code:
-(load-file (concat settings_path "functions.el"))
+
+;; This tells Emacs not to warn you about anything except problems
+(setq warning-minimum-level :emergency)
 
 ;; Automatically save and restore sessions
 (setq desktop-dirname             "~/.emacs.d/"
@@ -14,9 +16,6 @@
       desktop-auto-save-timeout   30)
 (setq desktop-path (list "~/.emacs.d/"))
 (desktop-save-mode 1)
-
-;; sudo apt-get install pylint
-;; sudo pip install flake8
 
 (setq package-check-signature nil)
 
@@ -74,7 +73,17 @@
 (tool-bar-mode -1)
 
 ;; Note that this will affect all histories, not just the shell.
+;; Save sessions history
+(setq savehist-save-minibuffer-history 1)
+(setq savehist-additional-variables
+      '(kill-ring search-ring regexp-search-ring compile-history log-edit-comment-ring)
+      savehist-file "~/.emacs.d/savehist")
+(savehist-mode t)
 (setq history-delete-duplicates t)
+(setq comint-input-ignoredups t)
+
+;; (define-key shell-mode-map (kbd "<up>") 'comint-previous-input)
+;; (define-key shell-mode-map (kbd "<down>") 'comint-next-input)
 
 (set-variable 'dov-view-continues t)
 
@@ -129,7 +138,7 @@
 (global-set-key (kbd "M-h") 'backward-delete-word)
 (global-set-key (kbd "M-d") 'delete-word)
 (global-set-key (kbd "C-c r") `revert-buffer)
-(global-set-key (kbd "C-r") `replace-string)
+;; (global-set-key (kbd "C-r") `replace-string)
 
 ;; (global-set-key (kbd "C-x r r") `bookmark-jump)
 (global-set-key (kbd "C-x r s") `bookmark-set)
@@ -159,19 +168,16 @@
 		(lambda () (interactive) (previous-with-center 5)))
 
 ;; Windows/frames
-(global-set-key (kbd "<C-S-right>") 'shrink-window-horizontally)
-(global-set-key (kbd "<C-S-left>") 'enlarge-window-horizontally)
-(global-set-key (kbd "<C-S-up>") 'shrink-window)
-(global-set-key (kbd "<C-S-down>") 'enlarge-window)
-
-(global-set-key (kbd "<C-S-kp-right>") 'shrink-window-horizontally)
-(global-set-key (kbd "<C-S-kp-left>") 'enlarge-window-horizontally)
-(global-set-key (kbd "<C-S-kp-down>") 'enlarge-window)
-(global-set-key (kbd "<C-S-kp-up>") 'shrink-window)
-;; Emacs help/dev
-(global-set-key (kbd "C-c C-f") 'find-function)
+(global-set-key (kbd "<C-S-right>") ' enlarge-window-horizontally)
+(global-set-key (kbd "<C-S-left>") 'shrink-window-horizontally)
+(global-set-key (kbd "<C-S-up>") 'enlarge-window)
+(global-set-key (kbd "<C-S-down>") 'shrink-window)
 
 (use-package realgud
+  :ensure t
+  )
+
+(use-package bui
   :ensure t
   )
 
@@ -179,8 +185,8 @@
 (use-package w3m
   :ensure t
   :config
-  (setq w3m-user-agent "Mozilla/5.0 (Linux; U; Android 2.3.3; zh-tw; HTC_Pyramid Build/GRI40) AppleWebKit/533.1 (KHTML, like Gecko) Version/4.0 Mobile Safari/533.")
-  (global-set-key (kbd "C-x w") (lambda() (interactive)(w3m-browse-url "google.com")))
+  (setq w3m-user-agent "Mozilla/5.0 (Linux; U; zh-tw; HTC_Pyramid Build/GRI40) AppleWebKit/533.1 (KHTML, like Gecko) Version/4.0 Mobile Safari/533.")
+  (global-set-key (kbd "C-x w") (lambda() (interactive)(w3m-browse-url "https://www.google.com/webhp?nomo=1&hl=ru")))
   )
 
 ;; w3m
@@ -192,6 +198,7 @@
     ("[" w3m-previous-form)
     ("]" w3m-next-form)
     ("M" w3m-view-url-with-browse-url)
+    ("R" w3m-reload-this-page)
     ("\\" w3m-view-source)
     )
    "Bookmarks"
@@ -199,6 +206,12 @@
     ("M-a" w3m-bookmark-add-this-url)
     ("v" w3m-bookmark-view)
     ))
+  )
+
+(define-key w3m-mode-map (kbd "C-x b") #'hydra-w3m/body)
+
+(use-package smerge-mode
+  :ensure t
   )
 
 ;; smerge
@@ -280,7 +293,7 @@
 (use-package smart-jump
   :ensure t
   :config
-  (global-set-key (kbd "C-x o") 'smart-jump-go)
+  ;; (global-set-key (kbd "C-x o") 'smart-jump-go)
   )
 
 (use-package tabbar
@@ -306,9 +319,9 @@
   (tabbar-ruler-group-by-projectile-project)
   (tabbar-ruler-group-buffer-groups)
 
-  '(tabbar-ruler-excluded-buffers
-   (quote
-    ("*Messages*" "*Completions*" "*ESS*" "*Packages*" "*log-edit-files*" "*helm-mini*" "*helm-mode-describe-variable*" "*anaconda-mode*" "*Anaconda*" "*Compile-Log*" "*grep*")))
+  (setq tabbar-ruler-excluded-buffers
+    (quote
+     ("*Messages*" "*Completions*" "*ESS*" "*Packages*" "*log-edit-files*" "*helm-mini*" "*helm-mode-describe-variable*" "*anaconda-mode*" "*Anaconda*" "*Compile-Log*" "*grep*" "*pyls*" "*pyls::stderr*" "*rls*" "*rls::stderr*")))
   )
 
 (window-number-meta-mode)
@@ -366,6 +379,23 @@
   (global-set-key (kbd "C-c C-m") 'magit-dispatch-popup)
   )
 
+(use-package dap-mode
+  :ensure t
+  :config
+  (dap-mode 1)
+  (dap-ui-mode 1)
+  ;; enables mouse hover support
+  (dap-tooltip-mode 1)
+  ;; use tooltips for mouse hover
+  ;; if it is not enabled `dap-mode' will use the minibuffer.
+  (tooltip-mode 1)
+
+  (require 'dap-lldb)
+
+  ;; pip install "ptvsd>=4.2"
+  (require 'dap-python)
+  )
+
 ;; (use-package request
 ;;   :ensure t)
 
@@ -410,15 +440,55 @@
 ;;   ;; (global-set-key (kbd "C-c s") 'fci-mode)
 ;;   (add-hook 'ropemacs-mode-hook 'fci-mode))
 
+(setq python-python-command "/usr/bin/python3")
+(use-package lsp-mode
+  :quelpa (lsp-mode :fetcher github :repo "emacs-lsp/lsp-mode")
+  :ensure t
+  :config
+  (add-hook 'rust-mode-hook #'lsp)
+
+  ;; sudo pip install 'python-language-server[all]'
+  (add-hook 'python-mode-hook #'lsp)
+  )
+
+(use-package lsp-ui
+  :ensure t
+  :config
+  (add-hook 'lsp-mode-hook 'lsp-ui-mode)
+
+  (setq lsp-ui-doc-enable nil)
+  
+  (setq lsp-ui-doc-alignment (quote frame))
+  (setq lsp-ui-doc-delay 0.2)
+  (setq lsp-ui-doc-max-height 30)
+  (setq lsp-ui-doc-max-width 100)
+  (setq lsp-ui-doc-use-webkit nil)
+  )
+
+(use-package company-lsp
+  :ensure t
+  :config
+  (push 'company-lsp company-backends)
+  )
+
+(use-package lsp-treemacs
+  :commands lsp-treemacs-errors-list
+  )
+
 ;; Rust
 ;; rustup component add rust-src
+;; cargo +nightly install racer
+;; rustup toolchain add nightly
+;; rustup component add rls rust-analysis rust-src
 (use-package rust-mode
   :ensure t
   :config
   ;; cargo install racer
   (setq racer-cmd "~/.cargo/bin/racer")
-  ;;rustc --print sysroot /lib/rustlib/src/rust/src
-  (setq racer-rust-src-path "/home/gangashman/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/src")
+
+  ;; rustup component add rust-src
+  ;; rustc --print sysroot /lib/rustlib/src/rust/src
+  (setq racer-rust-src-path "~/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/src")
 
   ;; Configure Emacs to activate racer when rust-mode starts
   (add-hook 'rust-mode-hook #'racer-mode)
@@ -427,7 +497,22 @@
   (add-hook 'racer-mode-hook #'company-mode)
   (define-key rust-mode-map (kbd "TAB") #'company-indent-or-complete-common)
   (setq company-tooltip-align-annotations t)
-  (define-key rust-mode-map (kbd "C-o") #'racer-find-definition)
+  
+  ;; (define-key rust-mode-map (kbd "C-i") #'racer-describe-tooltip)
+  (define-key rust-mode-map (kbd "C-i") #'lsp-describe-thing-at-point)
+  
+  ;; (define-key rust-mode-map (kbd "C-o") #'racer-find-definition)
+  (define-key rust-mode-map (kbd "C-o") #'lsp-find-definition)
+
+  (define-key rust-mode-map (kbd "C-r r") 'lsp-ui-peek-find-references)
+  (define-key rust-mode-map (kbd "C-r i") 'lsp-ui-peek-find-implementation)
+  )
+
+(use-package ron-mode
+  :quelpa (ron-mode :fetcher github :repo "rhololkeolke/ron-mode")
+  :ensure t
+  :config
+  (add-to-list 'auto-mode-alist '("\\.ron\\'" . ron-mode))
   )
 
 ;; (use-package rainbow-delimiters
@@ -479,10 +564,12 @@
 (use-package cargo
   :ensure t)
 
-;;(use-package flycheck-rust
-;;  :ensure t
-;;  :config
-;;  (add-hook 'flycheck-mode-hook #'flycheck-rust-metup))
+(use-package flycheck-rust
+  :ensure t
+  :config
+  (with-eval-after-load 'rust-mode
+    (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
+  )
 
 ;; (use-package ess
 ;;   :ensure t)
@@ -624,6 +711,37 @@
 
 ;; Python
 
+;; pip install virtualenvwrapper
+;; export WORKON_HOME=~/Envs
+;; mkdir -p $WORKON_HOME
+;; source /usr/local/bin/virtualenvwrapper.sh
+;; mkvirtualenv env1
+;; mkvirtualenv --python=python3.7 test3
+;; pip install 'python-language-server[all]'
+
+(pretty-hydra-define hydra-python
+  (:color blue)
+  ("IDE"
+   (("C-x o" pyimport-insert-missing)
+   ("C-x i" pyimport-remove-unused)
+    ))
+  )
+
+(define-key python-mode-map (kbd "C-x b") #'hydra-python/body)
+
+(use-package virtualenvwrapper
+  :ensure t
+  :config
+  (venv-initialize-interactive-shells) ;; if you want interactive shell support
+  (venv-initialize-eshell) ;; if you want eshell support
+  ;; note that setting `venv-location` is not necessary if you
+  ;; use the default location (`~/.virtualenvs`), or if the
+  ;; the environment variable `WORKON_HOME` points to the right place
+  (setq venv-location "~/Envs/")
+  (global-set-key (kbd "C-c w") 'venv-workon)
+  (venv-workon "test3")
+  )
+
 ;; ITS BAD (if you as me)
 ;; (use-package python-mode
 ;;   :ensure t
@@ -658,18 +776,34 @@
 ;; 	))
 ;;   )
 
-(use-package anaconda-mode
+;; (use-package anaconda-mode
+;;   :ensure t
+;;   :config
+;;   ;; (define-key python-mode-map (kbd "C-o") 'anaconda-mode-find-definitions)
+;;   (define-key python-mode-map (kbd "C-o") #'lsp-find-definition)
+;;   
+;;   ;; (define-key python-mode-map (kbd "C-i") 'anaconda-mode-show-doc)
+;;   (define-key python-mode-map (kbd "C-i") 'lsp-describe-thing-at-point)
+;;   
+;;   (define-key python-mode-map (kbd "C-r r") 'lsp-ui-peek-find-references)
+;;   (define-key python-mode-map (kbd "C-r i") 'lsp-ui-peek-find-implementation)
+;;   
+;;   (define-key python-mode-map (kbd "C-c a") 'pythonic-activate)
+;; 
+;;   (define-key python-mode-map (kbd "<tab>") 'python-indent-shift-right)
+;;   (define-key python-mode-map (kbd "<backtab>") 'python-indent-shift-left)
+;; 
+;;   (add-to-list 'python-shell-extra-pythonpaths "~/.virtualenvs/gc")
+;;   (add-hook 'python-mode-hook 'anaconda-mode)
+;;   )
+
+;; Requires pyflakes to be installed.
+;; This requires pyflakes to be on PATH. Alternatively, set pyimport-pyflakes-path.
+(use-package pyimport
   :ensure t
   :config
-  (define-key python-mode-map (kbd "C-o") 'anaconda-mode-find-definitions)
-  (define-key python-mode-map (kbd "C-i") 'anaconda-mode-show-doc)
-  (define-key python-mode-map (kbd "C-c a") 'pythonic-activate)
-
-  (define-key python-mode-map (kbd "<tab>") 'python-indent-shift-right)
-  (define-key python-mode-map (kbd "<backtab>") 'python-indent-shift-left)
-
-  (add-to-list 'python-shell-extra-pythonpaths "~/.virtualenvs/gc")
-  (add-hook 'python-mode-hook 'anaconda-mode)
+  (define-key python-mode-map (kbd "C-x o") 'pyimport-insert-missing)
+  (define-key python-mode-map (kbd "C-x i") 'pyimport-remove-unused)
   )
 
 (use-package company-anaconda
@@ -681,14 +815,6 @@
 
 (use-package jedi-direx
   :ensure t
-  )
-
-;; This requires pyflakes to be on PATH. Alternatively, set pyimport-pyflakes-path.
-(use-package pyimport
-  :ensure t
-  :config
-  (define-key jedi-mode-map (kbd "C-c C-o") 'pyimport-remove-unused)
-  (define-key jedi-mode-map (kbd "C-c C-i") #'pyimport-insert-missing)
   )
 
 ;; (use-package omnisharp
@@ -729,11 +855,6 @@
   :config
   (add-hook 'js2-mode-hook 'js-auto-beautify-mode)
   )
-
-;; (use-package anaconda-mode
-;;   :ensure t
-;;   :config
-;;   (add-hook 'ropemacs-mode-hook 'anaconda-mode))
 
 ;; pip install flake8
 (use-package flymake-python-pyflakes
@@ -807,6 +928,12 @@
   ;; (doom-themes-org-config)
   )
 
+(use-package doom-modeline
+  :ensure t
+  :config
+  (doom-modeline-mode 1)
+  )
+
 ;; M-x customize-face RET auto-dim-other-buffers-face RET #333843
 ;;(use-package auto-dim-other-buffers
   ;; :config
@@ -868,12 +995,19 @@
   (global-set-key [(meta f3)] 'highlight-symbol-query-replace)
   )
 
+(use-package right-click-context
+  :ensure t
+  :quelpa (right-click-context :fetcher github :repo "zonuexe/right-click-context")
+  :config
+  (right-click-context-mode 1)
+  )
+
 (use-package org
   :ensure t
   :config
   ;; (setq org-log-done 'time)
 
-  (define-key org-mode-map (kbd "C-c l") 'org-store-link)
+  (define-key org-mode-map (kbd "C-c l") 'org-scontexttore-link)
   (define-key org-mode-map (kbd "C-c a") 'org-agenda)
   (define-key org-mode-map (kbd "C-h") 'delete-backward-char)
   (define-key org-mode-map (kbd "M-h") 'backward-delete-word)
@@ -966,3 +1100,8 @@
 
  (setq desktop-load-locked-desktop t)
  (call-interactively 'desktop-read t (vector "~/.emacs.d/" t))
+
+(load-file (concat settings_path "functions.el"))
+(load-file (concat settings_path "menu.el"))
+
+(define-key lisp-mode-map (kbd "C-i") 'describe-function-in-popup)

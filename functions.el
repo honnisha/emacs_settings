@@ -334,37 +334,33 @@ Otherwise, one argument `-i' is passed to the shell.
       (shell-mode)))
   buffer)
 
-(defun jedi:show-doc-in-tip ()
-  "Show the documentation of the object at point."
+
+(defun lsp-describe-thing-at-point ()
+  "Display the full documentation of the thing at point."
   (interactive)
-  (deferred:nextc (jedi:call-deferred 'get_definition)
-    (lambda (reply)
-      (with-current-buffer (get-buffer-create jedi:doc-buffer-name)
-        (cl-loop with has-doc = nil
-                 with first = t
-                 with inhibit-read-only = t
-                 initially (erase-buffer)
-                 for def in reply
-                 do (cl-destructuring-bind
-                        (&key doc desc_with_module &allow-other-keys)
-                        def
-                      (unless (or (null doc) (equal doc ""))
-                        (if first
-                            (setq first nil)
-                          (insert "\n\n---\n\n"))
-                        (insert "Docstring for " desc_with_module "\n" doc)
-			; (pos-tip-show doc)(mouse-pixel-position)
-			(pos-tip-show doc)
-			(pos-tip-cancel-timer)
-                        (setq has-doc t)))
-                 finally do
-                 (if (not has-doc)
-		     (pos-tip-show "Document not found.")
-		   (progn
-		     ;;(goto-char (point-min))
-		     ;;(when (fboundp jedi:doc-mode)
-		     ;;  (funcall jedi:doc-mode))
-		     ;;(run-hooks 'jedi:doc-hook)
-		     ;;(funcall jedi:doc-display-buffer (current-buffer))
-		     )
-		   ))))))
+  (let ((contents (-some->> (lsp--text-document-position-params)
+                            (lsp--make-request "textDocument/hover")
+                            (lsp--send-request)
+                            (gethash "contents"))))
+
+    (if (and contents (not (equal contents "")) )
+        (pos-tip-show (lsp--render-on-hover-content contents t))
+      (lsp--info "No content at point."))))
+
+
+(defun describe-function-in-popup ()
+  (interactive)
+  (let* ((thing (symbol-at-point))
+         (description (save-window-excursion
+                        (describe-function thing)
+                        (switch-to-buffer "*Help*")
+                        (buffer-string))))
+    (kill-buffer "*Help*")
+    (pos-tip-show description)))
+
+;;     (pos-tip-show description
+;;                :point (point)
+;;                :around t
+;;                :height 30
+;;                :scroll-bar t
+;;                :margin t)))
