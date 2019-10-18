@@ -445,10 +445,38 @@
   :quelpa (lsp-mode :fetcher github :repo "emacs-lsp/lsp-mode")
   :ensure t
   :config
-  (add-hook 'rust-mode-hook #'lsp)
+  (setq lsp-auto-guess-root t)
+  ;; (add-hook 'rust-mode-hook #'lsp)
 
   ;; sudo pip install 'python-language-server[all]'
-  (add-hook 'python-mode-hook #'lsp)
+  ;; (add-hook 'python-mode-hook #'lsp)
+  (setq lsp-pyls-plugins-jedi-references-enabled nil)
+  (setq lsp-pyls-server-command (quote ("pyls")))
+  )
+
+(use-package eglot
+  :quelpa (eglot :fetcher github :repo "joaotavora/eglot")
+  :ensure t
+  :config
+  (add-hook 'python-mode-hook 'eglot-ensure)
+  (add-to-list 'eglot-server-programs
+             `(python-mode . ("pyls" "-v" "--tcp" "--host"
+                              "localhost" "--port" :autoport)))
+  )
+
+(use-package auto-virtualenv
+  :ensure t
+  :config
+  (add-hook 'python-mode-hook 'auto-virtualenv-set-virtualenv)
+  (add-hook 'projectile-after-switch-project-hook 'auto-virtualenv-set-virtualenv)
+  (add-hook 'pyvenv-post-activate-hooks 'wcx-restart-python)
+  )
+
+(use-package dockerfile-mode
+  :quelpa (dockerfile-mode :fetcher github :repo "spotify/dockerfile-mode")
+  :ensure t
+  :config
+  (add-to-list 'auto-mode-alist '("Dockerfile\\'" . dockerfile-mode))
   )
 
 (use-package lsp-ui
@@ -457,6 +485,8 @@
   (add-hook 'lsp-mode-hook 'lsp-ui-mode)
 
   (setq lsp-ui-doc-enable nil)
+  (setq lsp-ui-flycheck-enable t)
+  (setq lsp-ui-peek-enable nil)
   
   (setq lsp-ui-doc-alignment (quote frame))
   (setq lsp-ui-doc-delay 0.2)
@@ -472,6 +502,7 @@
   )
 
 (use-package lsp-treemacs
+  :ensure t
   :commands lsp-treemacs-errors-list
   )
 
@@ -670,16 +701,26 @@
   (global-flycheck-mode)
   (flycheck-julia-setup)
   (setq flycheck-disabled-checkers nil)
+
+  (global-set-key (kbd "M-z") 'flycheck-previous-error)
+  (global-set-key (kbd "C-z") 'flycheck-next-error)
+  (global-set-key (kbd "C-M-z") 'flycheck-copy-errors-as-kill)
   )
 
 (use-package flycheck-julia
-  :ensure t)
+  :ensure t
+  )
+
+(use-package flycheck-mypy
+  :ensure t
+  )
 
 (use-package emmet-mode
   :ensure t
   :config
   (add-hook 'sgml-mode-hook 'emmet-mode) ;; Auto-start on any markup modes
   (add-hook 'css-mode-hook  'emmet-mode) ;; enable Emmet's css abbreviation.
+  (define-key web-mode-map (kbd "C-j") 'emmet-expand-line)
   )
 
 ;; pip install isort
@@ -719,6 +760,14 @@
 ;; mkvirtualenv --python=python3.7 test3
 ;; pip install 'python-language-server[all]'
 
+;; pylint --generate-rcfile > ~/.pylintrc
+;; E0401,C0111,R0903,W0613,C0103
+
+(add-hook 'python-mode-hook
+  (setq indent-tabs-mode nil)
+  (setq tab-width 4)
+  )
+
 (pretty-hydra-define hydra-python
   (:color blue)
   ("IDE"
@@ -737,9 +786,10 @@
   ;; note that setting `venv-location` is not necessary if you
   ;; use the default location (`~/.virtualenvs`), or if the
   ;; the environment variable `WORKON_HOME` points to the right place
-  (setq venv-location "~/Envs/")
-  (global-set-key (kbd "C-c w") 'venv-workon)
-  (venv-workon "test3")
+  (setq venv-location "~/.virtualenvs/")
+  (global-set-key (kbd "C-c a") 'venv-workon)
+  (setq venv-location '("~/.virtualenvs/py3/"
+                        "~/.virtualenvs/gc/"))
   )
 
 ;; ITS BAD (if you as me)
@@ -776,26 +826,26 @@
 ;; 	))
 ;;   )
 
-;; (use-package anaconda-mode
-;;   :ensure t
-;;   :config
-;;   ;; (define-key python-mode-map (kbd "C-o") 'anaconda-mode-find-definitions)
-;;   (define-key python-mode-map (kbd "C-o") #'lsp-find-definition)
-;;   
-;;   ;; (define-key python-mode-map (kbd "C-i") 'anaconda-mode-show-doc)
-;;   (define-key python-mode-map (kbd "C-i") 'lsp-describe-thing-at-point)
-;;   
-;;   (define-key python-mode-map (kbd "C-r r") 'lsp-ui-peek-find-references)
-;;   (define-key python-mode-map (kbd "C-r i") 'lsp-ui-peek-find-implementation)
-;;   
-;;   (define-key python-mode-map (kbd "C-c a") 'pythonic-activate)
-;; 
-;;   (define-key python-mode-map (kbd "<tab>") 'python-indent-shift-right)
-;;   (define-key python-mode-map (kbd "<backtab>") 'python-indent-shift-left)
-;; 
-;;   (add-to-list 'python-shell-extra-pythonpaths "~/.virtualenvs/gc")
-;;   (add-hook 'python-mode-hook 'anaconda-mode)
-;;   )
+(use-package anaconda-mode
+  :ensure t
+  :config
+  ;; (define-key python-mode-map (kbd "C-o") 'anaconda-mode-find-definitions)
+  (define-key python-mode-map (kbd "C-o") #'lsp-find-definition)
+  
+  ;; (define-key python-mode-map (kbd "C-i") 'anaconda-mode-show-doc)
+  (define-key python-mode-map (kbd "C-i") 'lsp-describe-thing-at-point)
+  
+  (define-key python-mode-map (kbd "C-r r") 'lsp-ui-peek-find-references)
+  (define-key python-mode-map (kbd "C-r i") 'lsp-ui-peek-find-implementation)
+  
+  ;; (define-key python-mode-map (kbd "C-c a") 'pythonic-activate)
+
+  (define-key python-mode-map (kbd "<tab>") 'python-indent-shift-right)
+  (define-key python-mode-map (kbd "<backtab>") 'python-indent-shift-left)
+
+  (add-to-list 'python-shell-extra-pythonpaths "~/.virtualenvs/gc")
+  (add-hook 'python-mode-hook 'anaconda-mode)
+  )
 
 ;; Requires pyflakes to be installed.
 ;; This requires pyflakes to be on PATH. Alternatively, set pyimport-pyflakes-path.
@@ -860,9 +910,10 @@
 (use-package flymake-python-pyflakes
   :ensure t
   :config
-  (add-hook 'ropemacs-mode-hook 'flymake-python-pyflakes-load)
-  (setq flymake-python-pyflakes-executable "flake8")
-  (setq flymake-python-pyflakes-extra-arguments '("--ignore=C0111")))
+  (add-hook 'python-mode-hook 'flymake-python-pyflakes-load)
+  ;; (setq flymake-python-pyflakes-executable "flake8")
+  (setq flymake-python-pyflakes-extra-arguments '("--ignore=C0111"))
+  )
 
 (use-package powerline
   :ensure t)
@@ -873,7 +924,8 @@
 (use-package undo-tree
   :ensure t
   :config
-  (global-undo-tree-mode))
+  (global-undo-tree-mode)
+  )
 
 ;; (use-package multi-web-mode
 ;;   :ensure t
@@ -1068,10 +1120,6 @@
 ;; (add-hook 'after-init-hook 'session-initialize)
 (add-hook 'rust-mode-hook 'cargo-minor-mode)
 ;; (editorconfig-mode 1)
-;; Error navigation
-(global-set-key (kbd "M-z") 'flycheck-previous-error)
-(global-set-key (kbd "C-z") 'flycheck-next-error)
-(global-set-key (kbd "C-M-z") 'flycheck-copy-errors-as-kill)
 
 ;; Editor settings
 ;; (global-linum-mode)
