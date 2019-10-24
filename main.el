@@ -335,23 +335,6 @@
 (global-set-key (kbd "<Scroll_Lock>") 'centered-cursor-mode)
 (global-set-key (kbd "<C-Scroll_Lock>") 'scroll-lock-mode)
 
-;; Neotree
-(defun neotree-project-dir ()
-  "Open NeoTree using the git root."
-  (interactive)
-  (let ((project-dir (projectile-project-root))
-	(file-name (buffer-file-name)))
-    (neotree-toggle)
-    (if project-dir
-	(if (neo-global--window-exists-p)
-	    (progn
-	      (neotree-dir project-dir)
-	      (neotree-find file-name)))
-      (message "Could not find git project root."))))
-;; (global-set-key (kbd "<f8>") 'neotree-project-dir)
-(global-unset-key (kbd "C-t"))
-;; (global-set-key (kbd "C-t") 'neotree-toggle)
-(global-set-key (kbd "C-t") 'neotree-project-dir)
 
 (add-to-list 'custom-theme-load-path (concat settings_path "emacsd/themes/"))
 
@@ -574,10 +557,29 @@
 (add-hook 'csharp-mode-hook 'my-csharp-mode-setup t)
 
 (use-package neotree
-  :ensure t)
+  :ensure t
+  :config
+  (defun neotree-project-dir ()
+    "Open NeoTree using the git root."
+    (interactive)
+    (let ((project-dir (projectile-project-root))
+	  (file-name (buffer-file-name)))
+      (neotree-toggle)
+      (if project-dir
+	  (if (neo-global--window-exists-p)
+	      (progn
+		(neotree-dir project-dir)
+		(neotree-find file-name)))
+	(message "Could not find git project root."))))
+  ;; (global-set-key (kbd "<f8>") 'neotree-project-dir)
+  (global-unset-key (kbd "C-t"))
+  ;; (global-set-key (kbd "C-t") 'neotree-toggle)
+  (global-set-key (kbd "C-t") 'neotree-project-dir)
+  )
 
 (use-package racer
-  :ensure t)
+  :ensure t
+  )
 
 ;; https://github.com/emacs-pe/company-racer
 (use-package company-racer
