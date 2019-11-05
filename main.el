@@ -159,19 +159,24 @@
   (next-line lines)
   (recenter))
 (global-set-key (kbd "C-M-n")
-		(lambda () (interactive) (next-with-center 5)))
+                (lambda () (interactive) (next-with-center 5)))
 (defun previous-with-center (lines)
   "Move LINES lines and center."
   (previous-line lines)
   (recenter))
 (global-set-key (kbd "C-M-p")
-		(lambda () (interactive) (previous-with-center 5)))
+                (lambda () (interactive) (previous-with-center 5)))
 
 ;; Windows/frames
 (global-set-key (kbd "<C-S-right>") ' enlarge-window-horizontally)
 (global-set-key (kbd "<C-S-left>") 'shrink-window-horizontally)
 (global-set-key (kbd "<C-S-up>") 'enlarge-window)
 (global-set-key (kbd "<C-S-down>") 'shrink-window)
+
+(add-hook 'before-save-hook
+  (lambda ()
+    (untabify (point-min) (point-max))
+    ))
 
 (use-package realgud
   :ensure t
@@ -321,7 +326,7 @@
 
   (setq tabbar-ruler-excluded-buffers
     (quote
-     ("*Messages*" "*Completions*" "*ESS*" "*Packages*" "*log-edit-files*" "*helm-mini*" "*helm-mode-describe-variable*" "*anaconda-mode*" "*Anaconda*" "*Compile-Log*" "*grep*" "*pyls*" "*pyls::stderr*" "*rls*" "*rls::stderr*")))
+     ("*Messages*" "*Completions*" "*ESS*" "*Packages*" "*log-edit-files*" "*helm-mini*" "*helm-mode-describe-variable*" "*anaconda-mode*" "*Anaconda*" "*Compile-Log*" "*grep*" "*pyls*" "*pyls::stderr*" "*rls*" "*rls::stderr*" "*eglot*" "*EGLOT*")))
   )
 
 (window-number-meta-mode)
@@ -423,16 +428,17 @@
 ;;   ;; (global-set-key (kbd "C-c s") 'fci-mode)
 ;;   (add-hook 'ropemacs-mode-hook 'fci-mode))
 
-(setq python-python-command "/usr/bin/python3")
+(setq python-python-command "/usr/bin/python3.7")
 (use-package lsp-mode
   :quelpa (lsp-mode :fetcher github :repo "emacs-lsp/lsp-mode")
   :ensure t
   :config
   (setq lsp-auto-guess-root t)
   ;; (add-hook 'rust-mode-hook #'lsp)
+  (add-hook 'python-mode-hook #'lsp)
 
   ;; sudo pip install 'python-language-server[all]'
-  ;; (add-hook 'python-mode-hook #'lsp)
+  (add-hook 'python-mode-hook #'lsp)
   (setq lsp-pyls-plugins-jedi-references-enabled nil)
   (setq lsp-pyls-server-command (quote ("pyls")))
   )
@@ -447,13 +453,13 @@
                               "localhost" "--port" :autoport)))
   )
 
-(use-package auto-virtualenv
-  :ensure t
-  :config
-  (add-hook 'python-mode-hook 'auto-virtualenv-set-virtualenv)
-  (add-hook 'projectile-after-switch-project-hook 'auto-virtualenv-set-virtualenv)
-  (add-hook 'pyvenv-post-activate-hooks 'wcx-restart-python)
-  )
+;; (use-package auto-virtualenv
+;;   :ensure t
+;;   :config
+;;   (add-hook 'python-mode-hook 'auto-virtualenv-set-virtualenv)
+;;   (add-hook 'projectile-after-switch-project-hook 'auto-virtualenv-set-virtualenv)
+;;   (add-hook 'pyvenv-post-activate-hooks 'wcx-restart-python)
+;;   )
 
 (use-package dockerfile-mode
   :quelpa (dockerfile-mode :fetcher github :repo "spotify/dockerfile-mode")
@@ -563,14 +569,14 @@
     "Open NeoTree using the git root."
     (interactive)
     (let ((project-dir (projectile-project-root))
-	  (file-name (buffer-file-name)))
+          (file-name (buffer-file-name)))
       (neotree-toggle)
       (if project-dir
-	  (if (neo-global--window-exists-p)
-	      (progn
-		(neotree-dir project-dir)
-		(neotree-find file-name)))
-	(message "Could not find git project root."))))
+          (if (neo-global--window-exists-p)
+              (progn
+                (neotree-dir project-dir)
+                (neotree-find file-name)))
+        (message "Could not find git project root."))))
   ;; (global-set-key (kbd "<f8>") 'neotree-project-dir)
   (global-unset-key (kbd "C-t"))
   ;; (global-set-key (kbd "C-t") 'neotree-toggle)
@@ -722,7 +728,7 @@
   :config
   (add-hook 'sgml-mode-hook 'emmet-mode) ;; Auto-start on any markup modes
   (add-hook 'css-mode-hook  'emmet-mode) ;; enable Emmet's css abbreviation.
-  (define-key web-mode-map (kbd "C-j") 'emmet-expand-line)
+  (define-key web-mode-map (kbd "C-o") 'emmet-expand-line)
   )
 
 ;; pip install isort
@@ -755,7 +761,7 @@
 ;; Python
 
 ;; pip install virtualenvwrapper
-;; export WORKON_HOME=~/Envs
+;; export WORKON_HOME=~/.virtualenvs
 ;; mkdir -p $WORKON_HOME
 ;; source /usr/local/bin/virtualenvwrapper.sh
 ;; mkvirtualenv env1
@@ -825,7 +831,7 @@
 ;;   
 ;;   (setq jedi:server-args
 ;;       '("--virtual-env" "~/.virtualenvs/gc"
-;; 	))
+;;      ))
 ;;   )
 
 (use-package anaconda-mode
@@ -934,9 +940,9 @@
 ;;   :config
 ;;   (setq mweb-default-major-mode 'html-mode)
 ;;   (setq mweb-tags 
-;; 	'((php-mode "<\\?php\\|<\\? \\|<\\?=" "\\?>")
-;; 	  (js-mode  "<script[^>]*>" "</script>")
-;; 	  (css-mode "<style[^>]*>" "</style>")))
+;;      '((php-mode "<\\?php\\|<\\? \\|<\\?=" "\\?>")
+;;        (js-mode  "<script[^>]*>" "</script>")
+;;        (css-mode "<style[^>]*>" "</style>")))
 ;;   (setq mweb-filename-extensions '("php" "htm" "html" "ctp" "phtml" "php4" "php5"))
 ;;   (multi-web-global-mode 1))
 
@@ -1073,12 +1079,12 @@
   (define-key org-mode-map (kbd "C-S-o") 'org-metaleft)
 
   (setq org-todo-keywords
-	'((sequence "TODO" "IN" "|" "DONE")))
+        '((sequence "TODO" "IN" "|" "DONE")))
   (setq org-todo-keyword-faces
-	'(("TODO" . (:foreground "dodger blue" :weight bold))
-	  ("IN" . (:foreground "lawn green" :weight bold))
-	  ("DONE" . (:foreground "dim gray" :weight bold))
-	  ))
+        '(("TODO" . (:foreground "dodger blue" :weight bold))
+          ("IN" . (:foreground "lawn green" :weight bold))
+          ("DONE" . (:foreground "dim gray" :weight bold))
+          ))
 
   (setq org-agenda-files (list (concat dropbox_path "org_files")))
   (global-set-key (kbd "C-x n !") (lambda() (interactive)(find-file (concat dropbox_path "org_files/main.org"))))
