@@ -98,7 +98,6 @@
 
 (show-paren-mode 1)
 
-(setq tab-always-indent 'complete)
 (add-to-list 'completion-styles 'initials t)
 
 (custom-set-faces
@@ -134,7 +133,7 @@
 (global-set-key (kbd "C-c h") `whitespace-mode)
 
 (global-set-key (kbd "C-x c") `list-colors-display)
-(global-set-key (kbd "C-h") 'delete-backward-char)
+(global-set-key (kbd "C-h") 'backward-delete-char-untabify)
 (global-set-key (kbd "M-h") 'backward-delete-word)
 (global-set-key (kbd "M-d") 'delete-word)
 (global-set-key (kbd "C-c r") `revert-buffer)
@@ -367,23 +366,6 @@
   (global-set-key (kbd "C-c C-m") 'magit-dispatch-popup)
   )
 
-(use-package dap-mode
-  :ensure t
-  :config
-  (dap-mode 1)
-  (dap-ui-mode 1)
-  ;; enables mouse hover support
-  (dap-tooltip-mode 1)
-  ;; use tooltips for mouse hover
-  ;; if it is not enabled `dap-mode' will use the minibuffer.
-  (tooltip-mode 1)
-
-  (require 'dap-lldb)
-
-  ;; pip install "ptvsd>=4.2"
-  (require 'dap-python)
-  )
-
 ;; (use-package request
 ;;   :ensure t)
 
@@ -428,44 +410,52 @@
 ;;   ;; (global-set-key (kbd "C-c s") 'fci-mode)
 ;;   (add-hook 'ropemacs-mode-hook 'fci-mode))
 
-(setq python-python-command "/usr/bin/python3.7")
+(use-package company
+  :ensure t
+  :config
+  (global-company-mode)
+  (define-key company-active-map (kbd "C-h") 'backward-delete-char-untabify)
+  )
+
 (use-package lsp-mode
   :quelpa (lsp-mode :fetcher github :repo "emacs-lsp/lsp-mode")
   :ensure t
   :config
   (setq lsp-auto-guess-root t)
   ;; (add-hook 'rust-mode-hook #'lsp)
-  (add-hook 'python-mode-hook #'lsp)
 
   ;; sudo pip install 'python-language-server[all]'
   (add-hook 'python-mode-hook #'lsp)
   (setq lsp-pyls-plugins-jedi-references-enabled nil)
   (setq lsp-pyls-server-command (quote ("pyls")))
+
+  (setq lsp-document-highlight-delay 0.1)
+  (setq lsp-enable-semantic-highlighting t)
+  (setq lsp-enable-symbol-highlighting t)
+  (setq lsp-symbol-highlighting-skip-current t)
+
+  (setq lsp-enable-indentation nil)
+  (setq lsp-enable-snippet t)
+  (setq lsp-prefer-flymake nil)
+  
+  (define-key python-mode-map (kbd "C-i") 'lsp-describe-thing-at-point)
+  ;; (define-key python-mode-map (kbd "C-o") #'lsp-find-definition)
+    
+  (define-key python-mode-map (kbd "C-r r") 'lsp-ui-peek-find-references)
+  (define-key python-mode-map (kbd "C-r i") 'lsp-ui-peek-find-implementation)
   )
 
-(use-package eglot
-  :quelpa (eglot :fetcher github :repo "joaotavora/eglot")
+(use-package auto-complete
   :ensure t
   :config
-  (add-hook 'python-mode-hook 'eglot-ensure)
-  (add-to-list 'eglot-server-programs
-             `(python-mode . ("pyls" "-v" "--tcp" "--host"
-                              "localhost" "--port" :autoport)))
+  (ac-config-default)
+  (global-auto-complete-mode nil)
   )
 
-;; (use-package auto-virtualenv
-;;   :ensure t
-;;   :config
-;;   (add-hook 'python-mode-hook 'auto-virtualenv-set-virtualenv)
-;;   (add-hook 'projectile-after-switch-project-hook 'auto-virtualenv-set-virtualenv)
-;;   (add-hook 'pyvenv-post-activate-hooks 'wcx-restart-python)
-;;   )
-
-(use-package dockerfile-mode
-  :quelpa (dockerfile-mode :fetcher github :repo "spotify/dockerfile-mode")
+(use-package company-lsp
   :ensure t
   :config
-  (add-to-list 'auto-mode-alist '("Dockerfile\\'" . dockerfile-mode))
+  (push 'company-lsp company-backends)
   )
 
 (use-package lsp-ui
@@ -476,24 +466,40 @@
   (setq lsp-ui-doc-enable nil)
   (setq lsp-ui-flycheck-enable t)
   (setq lsp-ui-peek-enable nil)
+  (setq lsp-ui-sideline-enable nil)
   
   (setq lsp-ui-doc-alignment (quote frame))
   (setq lsp-ui-doc-delay 0.2)
   (setq lsp-ui-doc-max-height 30)
   (setq lsp-ui-doc-max-width 100)
   (setq lsp-ui-doc-use-webkit nil)
+  
+  (global-set-key (kbd "<C-M-return>") 'lsp-ui-imenu)
+  
+  (define-key python-mode-map (kbd "C-o") #'lsp-ui-peek-find-definitions)
   )
 
-(use-package company-lsp
-  :ensure t
-  :config
-  (push 'company-lsp company-backends)
-  )
+;; (use-package dap-mode
+;;   :ensure t
+;;   :config
+;;   (dap-mode 1)
+;;   (dap-ui-mode 1)
+;;   ;; enables mouse hover support
+;;   (dap-tooltip-mode 1)
+;;   ;; use tooltips for mouse hover
+;;   ;; if it is not enabled `dap-mode' will use the minibuffer.
+;;   (tooltip-mode 1)
+;; 
+;;   (require 'dap-lldb)
+;; 
+;;   ;; pip install "ptvsd>=4.2"
+;;   (require 'dap-python)
+;;   )
 
-(use-package lsp-treemacs
-  :ensure t
-  :commands lsp-treemacs-errors-list
-  )
+;; (use-package lsp-treemacs
+;;   :ensure t
+;;   :commands lsp-treemacs-errors-list
+;;   )
 
 ;; Rust
 ;; rustup component add rust-src
@@ -522,7 +528,6 @@
   (define-key rust-mode-map (kbd "C-i") #'lsp-describe-thing-at-point)
   
   ;; (define-key rust-mode-map (kbd "C-o") #'racer-find-definition)
-  (define-key rust-mode-map (kbd "C-o") #'lsp-find-definition)
 
   (define-key rust-mode-map (kbd "C-r r") 'lsp-ui-peek-find-references)
   (define-key rust-mode-map (kbd "C-r i") 'lsp-ui-peek-find-implementation)
@@ -552,6 +557,13 @@
 ;;   (global-set-key (kbd "<C-f2>") 'bm-toggle)
 ;;   (global-set-key (kbd "<f2>")   'bm-next)
 ;;   (global-set-key (kbd "<S-f2>") 'bm-previous))
+
+(use-package dockerfile-mode
+  :quelpa (dockerfile-mode :fetcher github :repo "spotify/dockerfile-mode")
+  :ensure t
+  :config
+  (add-to-list 'auto-mode-alist '("Dockerfile\\'" . dockerfile-mode))
+  )
 
 (use-package google-translate
   :ensure t
@@ -633,6 +645,10 @@
     candidates)
 
   (advice-add 'helm-buffers-sort-transformer :around 'helm-buffers-sort-transformer@donot-sort)
+  (setq helm-boring-buffer-regexp-list (list
+                                        (rx "*magit-") (rx "*helm") (rx "*py") (rx "*echo")
+                                        (rx "*Fly") (rx "*mini") (rx "*Qua") (rx "*Neo")
+                                        (rx "*Compa") (rx "*Cus") (rx "*code") (rx "*http")))
   )
 
 (use-package restclient
@@ -667,11 +683,6 @@
   (global-set-key (kbd "C-x p f") 'counsel-projectile-find-file)
   (global-set-key (kbd "C-M-s") 'counsel-projectile-git-grep)
   )
-
-(use-package company
-  :ensure t
-  :config
-  (global-company-mode))
 
 (use-package ivy
   :ensure t
@@ -709,6 +720,7 @@
   (global-flycheck-mode)
   (flycheck-julia-setup)
   (setq flycheck-disabled-checkers nil)
+  (setq flycheck-highlighting-mode (quote symbols))
 
   (global-set-key (kbd "M-z") 'flycheck-previous-error)
   (global-set-key (kbd "C-z") 'flycheck-next-error)
@@ -723,11 +735,15 @@
   :ensure t
   )
 
+(add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.vue?\\'" . web-mode))
+
 (use-package emmet-mode
   :ensure t
   :config
-  (add-hook 'sgml-mode-hook 'emmet-mode) ;; Auto-start on any markup modes
-  (add-hook 'css-mode-hook  'emmet-mode) ;; enable Emmet's css abbreviation.
+  (add-hook 'sgml-mode-hook 'emmet-mode)
+  (add-hook 'css-mode-hook  'emmet-mode)
+  (add-hook 'web-mode-hook  'emmet-mode)
   (define-key web-mode-map (kbd "C-o") 'emmet-expand-line)
   )
 
@@ -743,6 +759,7 @@
 (use-package epc
   :ensure t)
 
+;; sudo apt-get install sqlformat
 (use-package format-sql
   :ensure t)
 
@@ -752,13 +769,44 @@
 (use-package csv-mode
   :ensure t)
 
-(use-package auto-complete
+;; Python
+
+(setq python-python-command "/home/gagen/.virtualenvs/gc3/bin/python3.6")
+
+(define-key python-mode-map (kbd "<tab>") 'python-indent-shift-right)
+(define-key python-mode-map (kbd "<backtab>") 'python-indent-shift-left)
+
+(use-package virtualenvwrapper
   :ensure t
   :config
-  (ac-config-default)
-  (global-auto-complete-mode t))
+  (venv-initialize-interactive-shells) ;; if you want interactive shell support
+  (venv-initialize-eshell) ;; if you want eshell support
+  ;; note that setting `venv-location` is not necessary if you
+  ;; use the default location (`~/.virtualenvs`), or if the
+  ;; the environment variable `WORKON_HOME` points to the right place
+  (setq venv-location "~/.virtualenvs/")
+  (global-set-key (kbd "C-c a") 'venv-workon)
+  (setq venv-location '("~/.virtualenvs/py3/"
+                        "~/.virtualenvs/gc/"))
+  )
 
-;; Python
+;; (use-package eglot
+;;   :quelpa (eglot :fetcher github :repo "joaotavora/eglot")
+;;   :ensure t
+;;   :config
+;;   (add-hook 'python-mode-hook 'eglot-ensure)
+;;   (add-to-list 'eglot-server-programs
+;;              `(python-mode . ("pyls" "-v" "--tcp" "--host"
+;;                               "localhost" "--port" :autoport)))
+;;   )
+
+;; (use-package auto-virtualenv
+;;   :ensure t
+;;   :config
+;;   (add-hook 'python-mode-hook 'auto-virtualenv-set-virtualenv)
+;;   (add-hook 'projectile-after-switch-project-hook 'auto-virtualenv-set-virtualenv)
+;;   (add-hook 'pyvenv-post-activate-hooks 'wcx-restart-python)
+;;   )
 
 ;; pip install virtualenvwrapper
 ;; export WORKON_HOME=~/.virtualenvs
@@ -785,20 +833,6 @@
   )
 
 (define-key python-mode-map (kbd "C-x b") #'hydra-python/body)
-
-(use-package virtualenvwrapper
-  :ensure t
-  :config
-  (venv-initialize-interactive-shells) ;; if you want interactive shell support
-  (venv-initialize-eshell) ;; if you want eshell support
-  ;; note that setting `venv-location` is not necessary if you
-  ;; use the default location (`~/.virtualenvs`), or if the
-  ;; the environment variable `WORKON_HOME` points to the right place
-  (setq venv-location "~/.virtualenvs/")
-  (global-set-key (kbd "C-c a") 'venv-workon)
-  (setq venv-location '("~/.virtualenvs/py3/"
-                        "~/.virtualenvs/gc/"))
-  )
 
 ;; ITS BAD (if you as me)
 ;; (use-package python-mode
@@ -834,26 +868,18 @@
 ;;      ))
 ;;   )
 
-(use-package anaconda-mode
-  :ensure t
-  :config
-  ;; (define-key python-mode-map (kbd "C-o") 'anaconda-mode-find-definitions)
-  (define-key python-mode-map (kbd "C-o") #'lsp-find-definition)
-  
-  ;; (define-key python-mode-map (kbd "C-i") 'anaconda-mode-show-doc)
-  (define-key python-mode-map (kbd "C-i") 'lsp-describe-thing-at-point)
-  
-  (define-key python-mode-map (kbd "C-r r") 'lsp-ui-peek-find-references)
-  (define-key python-mode-map (kbd "C-r i") 'lsp-ui-peek-find-implementation)
-  
-  ;; (define-key python-mode-map (kbd "C-c a") 'pythonic-activate)
-
-  (define-key python-mode-map (kbd "<tab>") 'python-indent-shift-right)
-  (define-key python-mode-map (kbd "<backtab>") 'python-indent-shift-left)
-
-  (add-to-list 'python-shell-extra-pythonpaths "~/.virtualenvs/gc")
-  (add-hook 'python-mode-hook 'anaconda-mode)
-  )
+;; (use-package anaconda-mode
+;;   :ensure t
+;;   :config
+;;   (define-key python-mode-map (kbd "C-o") 'anaconda-mode-find-definitions)
+;;   
+;;   (define-key python-mode-map (kbd "C-i") 'anaconda-mode-show-doc)
+;;   
+;;   ;; (define-key python-mode-map (kbd "C-c a") 'pythonic-activate)
+;; 
+;;   (add-to-list 'python-shell-extra-pythonpaths "~/.virtualenvs/gc")
+;;   (add-hook 'python-mode-hook 'anaconda-mode)
+;;   )
 
 ;; Requires pyflakes to be installed.
 ;; This requires pyflakes to be on PATH. Alternatively, set pyimport-pyflakes-path.
@@ -915,13 +941,13 @@
   )
 
 ;; pip install flake8
-(use-package flymake-python-pyflakes
-  :ensure t
-  :config
-  (add-hook 'python-mode-hook 'flymake-python-pyflakes-load)
-  ;; (setq flymake-python-pyflakes-executable "flake8")
-  (setq flymake-python-pyflakes-extra-arguments '("--ignore=C0111"))
-  )
+;; (use-package flymake-python-pyflakes
+;;   :ensure t
+;;   :config
+;;   (add-hook 'python-mode-hook 'flymake-python-pyflakes-load)
+;;   ;; (setq flymake-python-pyflakes-executable "flake8")
+;;   (setq flymake-python-pyflakes-extra-arguments '("--ignore=C0111"))
+;;   )
 
 (use-package powerline
   :ensure t)
@@ -1119,7 +1145,6 @@
 (setq ns-pop-up-frames nil)
 
 (ac-config-default)
-(auto-complete-mode)
 
 ;; Charging isplay
 ;; (add-hook 'after-init-hook #'fancy-battery-mode)
@@ -1154,8 +1179,8 @@
 (add-to-list 'auto-mode-alist '("\\.py\\'" . python-mode))
 (add-to-list 'interpreter-mode-alist '("python" . python-mode))
 
- (setq desktop-load-locked-desktop t)
- (call-interactively 'desktop-read t (vector "~/.emacs.d/" t))
+(setq desktop-load-locked-desktop t)
+(call-interactively 'desktop-read t (vector "~/.emacs.d/" t))
 
 (load-file (concat settings_path "functions.el"))
 (load-file (concat settings_path "menu.el"))
