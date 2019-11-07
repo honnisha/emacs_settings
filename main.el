@@ -648,7 +648,7 @@
   (setq helm-boring-buffer-regexp-list (list
                                         (rx "*magit-") (rx "*helm") (rx "*py") (rx "*echo")
                                         (rx "*Fly") (rx "*mini") (rx "*Qua") (rx "*Neo")
-                                        (rx "*Compa") (rx "*Cus") (rx "*code") (rx "*http")))
+                                        (rx "*Compa") (rx "*code") (rx "*http")))
   )
 
 (use-package restclient
@@ -682,6 +682,7 @@
   ;; (counsel-projectile-mode)
   (global-set-key (kbd "C-x p f") 'counsel-projectile-find-file)
   (global-set-key (kbd "C-M-s") 'counsel-projectile-git-grep)
+  (global-set-key (kbd "C-x f") 'counsel-projectile-find-file)
   )
 
 (use-package ivy
