@@ -325,7 +325,7 @@
 
   (setq tabbar-ruler-excluded-buffers
     (quote
-     ("*Messages*" "*Completions*" "*ESS*" "*Packages*" "*log-edit-files*" "*helm-mini*" "*helm-mode-describe-variable*" "*anaconda-mode*" "*Anaconda*" "*Compile-Log*" "*grep*" "*pyls*" "*pyls::stderr*" "*rls*" "*rls::stderr*" "*eglot*" "*EGLOT*")))
+     ("*Messages*" "*Completions*" "*ESS*" "*Packages*" "*log-edit-files*" "*helm-mini*" "*helm-mode-describe-variable*" "*anaconda-mode*" "*Anaconda*" "*Compile-Log*" "*grep*" "*pyls*" "*pyls::stderr*" "*rls*" "*rls::stderr*" "*eglot*" "*EGLOT*" "magit*")))
   )
 
 (window-number-meta-mode)
@@ -607,10 +607,10 @@
     (add-to-list 'company-backends 'company-racer))
   )
 
-;; (use-package yascroll
-;;   :ensure t
-;;   :config
-;;   (global-yascroll-bar-mode 1))
+(use-package yascroll
+  :ensure t
+  :config
+  (global-yascroll-bar-mode 1))
 
 (use-package cargo
   :ensure t)
