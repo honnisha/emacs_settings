@@ -570,9 +570,15 @@
   :config
   (setq google-translate-pop-up-buffer-set-focus t)
   (setq google-translate-translation-directions-alist '(("en" . "ru")))
-  (global-set-key "\C-ct" 'google-translate-smooth-translate))
+  ;; (global-set-key "\C-ct" 'google-translate-smooth-translate))
 
 (add-hook 'csharp-mode-hook 'my-csharp-mode-setup t)
+
+(use-package dired-sidebar
+  :ensure t
+  :config
+  (global-set-key (kbd "C-c t") 'dired-sidebar-show-sidebar)
+  )
 
 (use-package neotree
   :ensure t
@@ -738,6 +744,9 @@
 
 (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.vue?\\'" . web-mode))
+
+(setq web-mode-markup-indent-offset 2)
+(setq web-mode-code-indent-offset 2)
 
 (use-package emmet-mode
   :ensure t
