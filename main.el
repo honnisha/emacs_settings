@@ -1,6 +1,7 @@
 ;;; Settings --- symmary:
 ;;; Commentary:
 ;;; Code:
+(message "Init main.py")
 
 ;; This tells Emacs not to warn you about anything except problems
 (setq warning-minimum-level :emergency)
@@ -103,6 +104,8 @@
 (custom-set-faces
  '(default ((t (:family "DejaVu Sans Mono" :foundry "PfEd" :slant normal :weight normal :height 85 :width normal)))))
 
+(message "Init base hotkeys")
+
 (global-set-key (kbd "C-x s") 'rgrep)
 
 ;; (global-set-key (kbd "<C-M-tab>") 'next-buffer)
@@ -176,6 +179,9 @@
   (lambda ()
     (untabify (point-min) (point-max))
     ))
+
+(message "Init use-package")
+(require 'use-package)
 
 (use-package realgud
   :ensure t
@@ -353,11 +359,6 @@
 (add-hook 'perl-mode-hook       'hs-minor-mode)
 (add-hook 'sh-mode-hook         'hs-minor-mode)
 
-(require 'use-package)
-;; (require 'multiple-cursors)
-;; (require 'google-translate)
-;; (require 'google-translate-default-ui)
-
 ;; Install the Git frontend Magit
 (use-package magit
   :ensure t
@@ -502,6 +503,7 @@
 ;;   )
 
 ;; Rust
+(message "Rust")
 ;; rustup component add rust-src
 ;; cargo +nightly install racer
 ;; rustup toolchain add nightly
@@ -533,11 +535,19 @@
   (define-key rust-mode-map (kbd "C-r i") 'lsp-ui-peek-find-implementation)
   )
 
+(use-package racer
+  :ensure t
+  )
+
 (use-package ron-mode
   :quelpa (ron-mode :fetcher github :repo "rhololkeolke/ron-mode")
   :ensure t
   :config
   (add-to-list 'auto-mode-alist '("\\.ron\\'" . ron-mode))
+  )
+
+(use-package cargo
+  :ensure t
   )
 
 ;; (use-package rainbow-delimiters
@@ -570,7 +580,8 @@
   :config
   (setq google-translate-pop-up-buffer-set-focus t)
   (setq google-translate-translation-directions-alist '(("en" . "ru")))
-  ;; (global-set-key "\C-ct" 'google-translate-smooth-translate))
+  ;; (global-set-key "\C-ct" 'google-translate-smooth-translate)
+  )
 
 (add-hook 'csharp-mode-hook 'my-csharp-mode-setup t)
 
@@ -601,10 +612,6 @@
   (global-set-key (kbd "C-t") 'neotree-project-dir)
   )
 
-(use-package racer
-  :ensure t
-  )
-
 ;; https://github.com/emacs-pe/company-racer
 (use-package company-racer
   :ensure t
@@ -617,9 +624,6 @@
   :ensure t
   :config
   (global-yascroll-bar-mode 1))
-
-(use-package cargo
-  :ensure t)
 
 (use-package flycheck-rust
   :ensure t
@@ -671,11 +675,6 @@
   (global-set-key (kbd "C-M-j") 'helm-projectile-switch-project)
   (global-set-key (kbd "C-S-SPC") 'helm-projectile-switch-to-buffer)
   )
-
-;;(use-package elpy
-;;  :ensure t
-;;  :config
-;;  (elpy-enable))
 
 (use-package projectile
   :ensure t
@@ -745,6 +744,10 @@
 (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.vue?\\'" . web-mode))
 
+(message "Web-mode")
+(use-package web-mode
+  :ensure t)
+
 (setq web-mode-markup-indent-offset 2)
 (setq web-mode-code-indent-offset 2)
 
@@ -755,15 +758,6 @@
   (add-hook 'css-mode-hook  'emmet-mode)
   (add-hook 'web-mode-hook  'emmet-mode)
   (define-key web-mode-map (kbd "C-o") 'emmet-expand-line)
-  )
-
-;; pip install isort
-;; https://github.com/timothycrosley/isort
-;; ~/.isort.cfg multi_line_output=4 - Hanging Grid
-(use-package py-isort
-  :ensure t
-  :config
-  (global-set-key (kbd "C-c o") 'py-isort-buffer)
   )
 
 (use-package epc
@@ -779,7 +773,16 @@
 (use-package csv-mode
   :ensure t)
 
-;; Python
+(message "Python")
+
+;; pip install isort
+;; https://github.com/timothycrosley/isort
+;; ~/.isort.cfg multi_line_output=4 - Hanging Grid
+(use-package py-isort
+  :ensure t
+  :config
+  (global-set-key (kbd "C-c o") 'py-isort-buffer)
+  )
 
 (setq python-python-command "/home/gagen/.virtualenvs/gc3/bin/python3.6")
 
