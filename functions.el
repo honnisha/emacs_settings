@@ -1,3 +1,7 @@
+(defun eval-string (string)
+  "Evaluate elisp code stored in a string."
+  (eval (car (read-from-string string))))
+
 (defun delete-word (arg)
   "Delete characters forward until encountering the end of a word.
 With argument, do this that many times."
@@ -32,10 +36,10 @@ buffer in current window."
   (save-excursion
     (let ((count 0))
       (dolist (buffer (buffer-list))
-	(set-buffer buffer)
-	(when (equal major-mode 'dired-mode)
-	  (setq count (1+ count))
-	  (kill-buffer buffer)))
+        (set-buffer buffer)
+        (when (equal major-mode 'dired-mode)
+          (setq count (1+ count))
+          (kill-buffer buffer)))
       (message "Killed %i dired buffer(s)." count))))
 (global-set-key (kbd "C-x d") 'kill-all-dired-buffers)
 

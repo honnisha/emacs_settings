@@ -1204,14 +1204,8 @@
 ;; Make sure that your Emacs was compiled with module support.
 ;; Check that module-file-suffix is not nil
 ;; --> (message module-file-suffix)
-;;
-;; cargo build
-;; cd target/debug
-;; ln -s libgreeting.so greeting.so
 
-(add-to-list 'load-path (concat settings_path "parsers/target/debug/"))
-(load "parsers.so")
-(parsers-get-frelansim-data)
+(load (concat settings_path "parsers/target/debug/libparsers1.so"))
 
 (load-file (concat settings_path "functions.el"))
 (load-file (concat settings_path "menu.el"))

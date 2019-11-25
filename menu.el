@@ -1,30 +1,24 @@
 (require 'bui)
 (require 'request)
 
-(setq link_data
-      (list
-      '((name "blah")
-        (link "linkosik")
-        (money "10 rubley ebat"))
-      '((name "vano")
-        (link "google.ru")
-        (money "2 rubley ebat"))
-      ))
+(setq frelansim-data (parsers-get-frelansim-date))
+
+(defun links-buffer->entry (link_data)
+  `(
+    (name ,(nth 0 link_data))
+    (desc ,(nth 1 link_data))
+    (money ,(nth 1 link_data))
+    (link ,(nth 2 link_data))
+    ))
 
 (defun links-get-entries ()
-  (request "http://httpbin.org/get"
- :params '(("key" . "value") ("key2" . "value2"))
- :parser 'json-read
- :success (cl-function
- (lambda (&key data &allow-other-keys)
-             (message "I sent: %S" (assoc-default data)))))
-  link_data
-  )
+  (mapcar 'links-buffer->entry frelansim-data))
 
 (bui-define-interface links list
   :link-name "*Links*"
   :get-entries-function 'links-get-entries
   :format '((name nil 30 t)
+            (desc nil 80 t)
             (money nil 10 t)
             (link nil 30 t)
             )

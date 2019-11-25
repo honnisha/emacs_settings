@@ -1,6 +1,9 @@
-use emacs::{defun, Env, Result, Value};
+extern crate reqwest;
+extern crate scraper;
 
-// Emacs won't load the module without this.
+use emacs::{defun, Env, Result, Value};
+use scraper::{Html, Selector};
+
 emacs::plugin_is_GPL_compatible!();
 
 // Register the initialization hook that Emacs will call when it loads the module.
@@ -9,12 +12,23 @@ fn init(env: &Env) -> Result<Value<'_>> {
     env.message("Done parsers loading!")
 }
 
-// Define a function callable by Lisp code.
-#[defun(user_ptr)]
-fn get_frelansim_data() -> Result<Vec<String>> {
-    let mut vec = vec![];
-    for i in 0..10 {
-        vec.push(i.to_string());
+#[defun]
+fn get_frelansim_date(env: &Env) -> Result<Value> {
+    let mut values: Vec<Value> = vec![];
+
+    let url = "https://freelansim.ru/tasks";
+    let mut resp = reqwest::get(url).unwrap();
+    assert!(resp.status().is_success());
+    
+    let body = resp.text().unwrap();
+
+    let fragment = Html::parse_document(&body);
+    let selector = Selector::parse("article/div/header/div[1]/a").unwrap();
+
+    for element in fragment.select(&selector) {
+        assert_eq!("li", element.value().name());
     }
-    Ok(vec)
+    values.push(env.list(("name", "test", "test2"))?);
+    values.push(env.list(("2", "2", "2"))?);
+    env.list(&values)
 }
