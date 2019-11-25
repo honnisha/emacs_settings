@@ -360,6 +360,7 @@
 (add-hook 'sh-mode-hook         'hs-minor-mode)
 
 ;; Install the Git frontend Magit
+;; git config --global status.showUntrackedFiles all
 (use-package magit
   :ensure t
   :config
@@ -549,10 +550,6 @@
 (use-package cargo
   :ensure t
   )
-
-;; Make sure that your Emacs was compiled with module support.
-;; Check that module-file-suffix is not nil
-;; --> (message module-file-suffix)
 
 ;; (use-package rainbow-delimiters
 ;;   :ensure t
@@ -1203,6 +1200,18 @@
 
 (setq desktop-load-locked-desktop t)
 (call-interactively 'desktop-read t (vector "~/.emacs.d/" t))
+
+;; Make sure that your Emacs was compiled with module support.
+;; Check that module-file-suffix is not nil
+;; --> (message module-file-suffix)
+;;
+;; cargo build
+;; cd target/debug
+;; ln -s libgreeting.so greeting.so
+
+(add-to-list 'load-path (concat settings_path "parsers/target/debug/"))
+(load "parsers.so")
+(parsers-get-frelansim-data)
 
 (load-file (concat settings_path "functions.el"))
 (load-file (concat settings_path "menu.el"))
