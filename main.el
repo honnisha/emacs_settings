@@ -106,7 +106,7 @@
 
 (message "Init base hotkeys")
 
-(global-set-key (kbd "C-x s") 'rgrep)
+;; (global-set-key (kbd "C-x s") 'rgrep)
 
 ;; (global-set-key (kbd "<C-M-tab>") 'next-buffer)
 ;; (global-set-key (kbd "<C-M-iso-lefttab>") 'previous-buffer)
@@ -550,6 +550,10 @@
   :ensure t
   )
 
+;; Make sure that your Emacs was compiled with module support.
+;; Check that module-file-suffix is not nil
+;; --> (message module-file-suffix)
+
 ;; (use-package rainbow-delimiters
 ;;   :ensure t
 ;;   :config
@@ -687,6 +691,11 @@
   ;; (counsel-projectile-mode)
   (global-set-key (kbd "C-x p f") 'counsel-projectile-find-file)
   (global-set-key (kbd "C-M-s") 'counsel-projectile-git-grep)
+  (defun counsel-projectile-git-grep-py ()
+    (interactive)
+    (setq current-prefix-arg '"git --no-pager grep --full-name -n --no-color -i -I -e \"%s\" -- \"*.py\"")
+    (call-interactively 'counsel-projectile-git-grep))
+  (global-set-key (kbd "C-x s") 'counsel-projectile-git-grep-py)
   (global-set-key (kbd "C-x f") 'counsel-projectile-find-file)
   )
 
