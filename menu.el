@@ -1,7 +1,4 @@
 (require 'bui)
-(require 'request)
-
-(setq frelansim-data (parsers-get-frelansim-date))
 
 (defun links-buffer->entry (link_data)
   `(
@@ -12,7 +9,7 @@
     ))
 
 (defun links-get-entries ()
-  (mapcar 'links-buffer->entry frelansim-data))
+  (mapcar 'links-buffer->entry (parsers-get-frelansim-env)))
 
 (bui-define-interface links list
   :link-name "*Links*"

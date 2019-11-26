@@ -1,6 +1,3 @@
-extern crate reqwest;
-extern crate scraper;
-
 use emacs::{defun, Env, Result, Value};
 use scraper::{Html, Selector};
 
@@ -12,10 +9,9 @@ fn init(env: &Env) -> Result<Value<'_>> {
     env.message("Done parsers loading!")
 }
 
-#[defun]
-fn get_frelansim_date(env: &Env) -> Result<Value> {
-    let mut values: Vec<Value> = vec![];
-
+pub fn get_freelansim_links() -> Vec<Vec<char>> {
+    let mut links_data: Vec<Vec<char>> = vec![];
+    
     let url = "https://freelansim.ru/tasks";
     let mut resp = reqwest::get(url).unwrap();
     assert!(resp.status().is_success());
@@ -28,6 +24,13 @@ fn get_frelansim_date(env: &Env) -> Result<Value> {
     for element in fragment.select(&selector) {
         assert_eq!("li", element.value().name());
     }
+    links_data
+}
+
+#[defun]
+pub fn get_frelansim_env(env: &Env) -> Result<Value> {
+    let mut values: Vec<Value> = vec![];
+
     values.push(env.list(("name", "test", "test2"))?);
     values.push(env.list(("2", "2", "2"))?);
     env.list(&values)

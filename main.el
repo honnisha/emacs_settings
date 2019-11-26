@@ -366,6 +366,8 @@
   :config
   (global-set-key (kbd "C-c m") 'magit-status)
   (global-set-key (kbd "C-c C-m") 'magit-dispatch-popup)
+  (global-set-key (kbd "C-x v h") 'magit-log-buffer-file)
+  (global-set-key (kbd "C-x v b") 'magit-blame)
   )
 
 ;; (use-package request
@@ -1205,7 +1207,7 @@
 ;; Check that module-file-suffix is not nil
 ;; --> (message module-file-suffix)
 
-(load (concat settings_path "parsers/target/debug/libparsers1.so"))
+(load (concat settings_path "parsers/target/debug/libparsers.so"))
 
 (load-file (concat settings_path "functions.el"))
 (load-file (concat settings_path "menu.el"))
