@@ -191,6 +191,20 @@
   :ensure t
   )
 
+(use-package yasnippet
+  :ensure t
+  :config
+  (setq yas-snippet-dirs (list
+                          (concat settings_path "snippets")
+                          ))
+  (yas-global-mode 1)
+  )
+
+;; https://github.com/AndreaCrotti/yasnippet-snippets
+(use-package yasnippet-snippets
+  :ensure t
+  )
+
 ;; w3m
 (use-package w3m
   :ensure t
@@ -481,6 +495,7 @@
   (global-set-key (kbd "<C-M-return>") 'lsp-ui-imenu)
   
   (define-key python-mode-map (kbd "C-o") #'lsp-ui-peek-find-definitions)
+  (define-key rust-mode-map (kbd "C-o") #'lsp-ui-peek-find-definitions)
   )
 
 ;; (use-package dap-mode
@@ -830,8 +845,6 @@
 ;;   )
 
 ;; pip install virtualenvwrapper
-;; export WORKON_HOME=~/.virtualenvs
-;; mkdir -p $WORKON_HOME
 ;; source /usr/local/bin/virtualenvwrapper.sh
 ;; mkvirtualenv env1
 ;; mkvirtualenv --python=python3.7 test3
