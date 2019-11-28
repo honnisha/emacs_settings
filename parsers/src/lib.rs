@@ -19,10 +19,16 @@ pub fn get_freelansim_links() -> Vec<Vec<char>> {
     let body = resp.text().unwrap();
 
     let fragment = Html::parse_document(&body);
-    let selector = Selector::parse("article/div/header/div[1]/a").unwrap();
+    let selector = Selector::parse(r#"div[class="task__column_desc"]"#).unwrap();
 
-    for element in fragment.select(&selector) {
-        assert_eq!("li", element.value().name());
+    for block in fragment.select(&selector) {
+        let title_link = block.select(&Selector::parse(r#"a"#).unwrap()).next().unwrap();
+        let title = title_link.inner_html();
+        let link = title_link.value().attr("href").unwrap();
+        
+        let responses = block.select(&Selector::parse(r#".params__views i"#).unwrap()).next().unwrap().inner_html();
+        let responses = block.select(&Selector::parse(r#"i"#).unwrap()).next().unwrap().inner_html();
+        println!("{}", responses);
     }
     links_data
 }
@@ -30,7 +36,6 @@ pub fn get_freelansim_links() -> Vec<Vec<char>> {
 #[defun]
 pub fn get_frelansim_env(env: &Env) -> Result<Value> {
     let mut values: Vec<Value> = vec![];
-
     values.push(env.list(("name", "test", "test2"))?);
     values.push(env.list(("2", "2", "2"))?);
     env.list(&values)
