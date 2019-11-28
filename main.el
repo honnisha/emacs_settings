@@ -846,6 +846,10 @@
 
 ;; pip install virtualenvwrapper
 ;; source /usr/local/bin/virtualenvwrapper.sh
+;; Add this to your .bashrc / .bash_profile / .zshrc:
+;; # load virtualenvwrapper for python (after custom PATHs)
+;; source /home/user/.local/bin/virtualenvwrapper.sh
+
 ;; mkvirtualenv env1
 ;; mkvirtualenv --python=python3.7 test3
 ;; pip install 'python-language-server[all]'
@@ -1220,7 +1224,7 @@
 ;; Check that module-file-suffix is not nil
 ;; --> (message module-file-suffix)
 
-(load (concat settings_path "parsers/target/debug/libparsers.so"))
+;; (load (concat settings_path "parsers/target/debug/libparsers.so"))
 
 (load-file (concat settings_path "functions.el"))
 (load-file (concat settings_path "menu.el"))
