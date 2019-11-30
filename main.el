@@ -1220,13 +1220,17 @@
 (setq desktop-load-locked-desktop t)
 (call-interactively 'desktop-read t (vector "~/.emacs.d/" t))
 
+(load-file (concat settings_path "functions.el"))
+
 ;; Make sure that your Emacs was compiled with module support.
 ;; Check that module-file-suffix is not nil
-;; --> (message module-file-suffix)
+(if (string-suffix-p module-file-suffix ".so")
+    (progn (message module-file-suffix)
+           
+           (load (concat settings_path "parsers/target/debug/libparserslib.so"))
+           (load-file (concat settings_path "menu.el"))
 
-;; (load (concat settings_path "parsers/target/debug/libparsers.so"))
-
-(load-file (concat settings_path "functions.el"))
-(load-file (concat settings_path "menu.el"))
+           (global-set-key (kbd "C-x n f") 'frelansim-links)
+           ))
 
 (define-key lisp-mode-map (kbd "C-i") 'describe-function-in-popup)

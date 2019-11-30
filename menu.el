@@ -2,24 +2,26 @@
 
 (defun links-buffer->entry (link_data)
   `(
-    (name ,(nth 0 link_data))
-    (desc ,(nth 1 link_data))
-    (money ,(nth 1 link_data))
-    (link ,(nth 2 link_data))
+    (title ,(nth 0 link_data))
+    (responses ,(nth 2 link_data))
+    (views ,(nth 3 link_data))
+    (time ,(nth 4 link_data))
+    (link ,(nth 1 link_data))
+    (money ,(nth 5 link_data))
     ))
 
 (defun links-get-entries ()
-  (mapcar 'links-buffer->entry (parsers-get-frelansim-env)))
+  (mapcar 'links-buffer->entry (parserslib-get-frelansim-env)))
 
 (bui-define-interface links list
   :link-name "*Links*"
   :get-entries-function 'links-get-entries
-  :format '((name nil 30 t)
-            (desc nil 80 t)
-            (money nil 10 t)
-            (link nil 30 t)
+  :format '((title nil 60 t)
+            (responses nil 3 t)
+            (views nil 3 t)
+            (time nil 20 t)
+            (money nil 35 t)
             )
-  :sort-key '(name)
   )
 
 (defun frelansim-links ()
