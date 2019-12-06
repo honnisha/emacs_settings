@@ -103,6 +103,7 @@
 
 (custom-set-faces
  '(default ((t (:family "DejaVu Sans Mono" :foundry "PfEd" :slant normal :weight normal :height 85 :width normal)))))
+;; (set-default-font "DejaVu Sans Mono 9")
 
 (message "Init base hotkeys")
 
@@ -433,6 +434,11 @@
   :config
   (global-company-mode)
   (define-key company-active-map (kbd "C-h") 'backward-delete-char-untabify)
+  (setq company-tooltip-limit 10
+        company-idle-delay 0.05
+        company-minimum-prefix-length 2
+        company-show-numbers t
+        company-tooltip-align-annotations t)
   )
 
 (use-package lsp-mode
@@ -474,6 +480,8 @@
   :ensure t
   :config
   (push 'company-lsp company-backends)
+  (setq company-lsp-enable-snippet t)
+  (define-key python-mode-map (kbd "<tab>") #'company-lsp)
   )
 
 (use-package lsp-ui
@@ -712,7 +720,30 @@
   (global-set-key (kbd "C-x s") 'counsel-projectile-git-grep-py)
   (global-set-key (kbd "C-x f") 'counsel-projectile-find-file)
   )
+(defun counsel-projectile-git-grep (&optional cmd)
+  "Search the current project with git grep.
 
+CMD, if non-nil, is a string containing an alternative git grep
+command. It is read from the minibuffer if the function is called
+with a prefix argument."
+  (interactive)
+  (if (and (eq projectile-require-project-root 'prompt)
+           (not (projectile-project-p)))
+      (counsel-projectile-git-grep-action-switch-project)
+    (let* ((ivy--actions-list (copy-sequence ivy--actions-list))
+           (path
+            (mapconcat 'shell-quote-argument
+                       (projectile-normalise-paths
+                        (car (projectile-parse-dirconfig-file)))
+                       " "))
+           (counsel-git-grep-cmd-default
+            (concat (counsel-projectile--string-trim-right counsel-git-grep-cmd-default " \\.")
+                    " " path)))
+      (ivy-add-actions
+       'counsel-git-grep
+       counsel-projectile-git-grep-extra-actions)
+      (counsel-git-grep (or current-prefix-arg cmd)
+                        (eval counsel-projectile-grep-initial-input)))))
 (use-package ivy
   :ensure t
   :config

@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: trace
+# key: trace
+# group: debug
+# --
+import traceback; traceback.print_exc()
