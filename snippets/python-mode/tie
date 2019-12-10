@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: tre
+# key: tie
+# group: debug
+# --
+print("--- %s seconds ---" % (time.time() - start_time))

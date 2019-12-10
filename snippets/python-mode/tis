@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: tis
+# key: tis
+# group: debug
+# --
+import time; start_time = time.time()
