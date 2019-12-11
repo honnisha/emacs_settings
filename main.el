@@ -3,6 +3,8 @@
 ;;; Code:
 (message "Init main.py")
 
+(global-set-key (kbd "C-x C-n") (lambda() (interactive)(find-file (concat dropbox_path "text.org"))))
+
 ;; This tells Emacs not to warn you about anything except problems
 (setq warning-minimum-level :emergency)
 
@@ -101,9 +103,10 @@
 
 (add-to-list 'completion-styles 'initials t)
 
-(custom-set-faces
- '(default ((t (:family "DejaVu Sans Mono" :foundry "PfEd" :slant normal :weight normal :height 85 :width normal)))))
+;; (custom-set-faces
+;;  '(default ((t (:family "DejaVu Sans Mono" :foundry "PfEd" :slant normal :weight normal :height 85 :width normal)))))
 ;; (set-default-font "DejaVu Sans Mono 9")
+(set-default-font "Hack 9")
 
 (message "Init base hotkeys")
 
@@ -126,6 +129,8 @@
 (global-set-key (kbd "C-x l h") `hide-subtree)
 (global-set-key (kbd "C-x l s") `show-subtree)
 (global-set-key (kbd "C-x l a") `show-all)
+
+(global-set-key (kbd "C-x m") `shell)
 
 ;; Open buffers list in the same frame
 ;; (global-set-key "\C-x\C-b" 'buffer-menu)
@@ -831,7 +836,9 @@ with a prefix argument."
 
 ;; pip install isort
 ;; https://github.com/timothycrosley/isort
-;; ~/.isort.cfg multi_line_output=4 - Hanging Grid
+;; ~/.isort.cfg
+;; [settings]
+;; multi_line_output=4
 (use-package py-isort
   :ensure t
   :config
@@ -1172,6 +1179,8 @@ with a prefix argument."
 
   (define-key org-mode-map (kbd "C-o") 'org-metaright)
   (define-key org-mode-map (kbd "C-S-o") 'org-metaleft)
+
+  (define-key org-mode-map (kbd "<C-tab>") (lambda () (interactive) (other-window 1)))
 
   (setq org-todo-keywords
         '((sequence "TODO" "IN" "|" "DONE")))
