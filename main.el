@@ -3,6 +3,18 @@
 ;;; Code:
 (message "Init main.py")
 
+;; This works out of the box in Emacsen using its ForceBackups framework
+(setq
+   backup-by-copying t
+   backup-directory-alist
+    '(("." . "~/.saves/"))
+   delete-old-versions t
+   kept-new-versions 6
+   kept-old-versions 2
+   version-control t)
+
+(load-file (concat settings_path "functions.el"))
+
 (global-set-key (kbd "C-x C-n") (lambda() (interactive)(find-file (concat dropbox_path "text.org"))))
 
 ;; This tells Emacs not to warn you about anything except problems
@@ -21,6 +33,8 @@
 (desktop-save-mode 1)
 
 (setq package-check-signature nil)
+
+(setq kept-old-versions t)
 
 (savehist-mode 1)
 (setq savehist-additional-variables '(kill-ring search-ring regexp-search-ring))
@@ -309,9 +323,21 @@
   :config (quelpa-use-package-activate-advice)
   )
 
-(use-package window-number
+(message "Init winum")
+(use-package winum
   :ensure t
-  :quelpa (window-number :fetcher github :repo "nikolas/window-number")
+  :config
+  (setq winum-ignored-buffers-regexp (list (rx "*neotree*")))
+  (setq window-numbering-scope 'global)
+  (winum-mode)
+  (global-set-key (kbd "M-1") 'winum-select-window-1)
+  (global-set-key (kbd "M-2") 'winum-select-window-2)
+  (global-set-key (kbd "M-3") 'winum-select-window-3)
+  (global-set-key (kbd "M-4") 'winum-select-window-4)
+  (global-set-key (kbd "M-5") 'winum-select-window-5)
+  (global-set-key (kbd "M-6") 'winum-select-window-6)
+  (global-set-key (kbd "M-7") 'winum-select-window-7)
+  (global-set-key (kbd "M-8") 'winum-select-window-8)
   )
 
 ;; (use-package dumb-jump
@@ -331,12 +357,14 @@
   :config (tabbar-mode)
   )
 
+(message "Init yasnippet")
 (use-package yasnippet
   ;; template system for Emacs
   :ensure t
   :config
   )
 
+(message "Init tabbar-ruler")
 (use-package tabbar-ruler
   :ensure t
   :quelpa (tabbar-ruler :fetcher github :repo "mattfidler/tabbar-ruler.el")
@@ -354,17 +382,9 @@
      ("*Messages*" "*Completions*" "*ESS*" "*Packages*" "*log-edit-files*" "*helm-mini*" "*helm-mode-describe-variable*" "*anaconda-mode*" "*Anaconda*" "*Compile-Log*" "*grep*" "*pyls*" "*pyls::stderr*" "*rls*" "*rls::stderr*" "*eglot*" "*EGLOT*" "magit*")))
   )
 
-(window-number-meta-mode)
-(window-number-mode 1)
-
 ;; Available only on mercurial versions 1.9 or higher
 (setq monky-process-type 'cmdserver)
 (global-set-key (kbd "C-c l") 'monky-status)
-
-;; centered-cursor-mode
-(global-set-key (kbd "<Scroll_Lock>") 'centered-cursor-mode)
-(global-set-key (kbd "<C-Scroll_Lock>") 'scroll-lock-mode)
-
 
 (add-to-list 'custom-theme-load-path (concat settings_path "emacsd/themes/"))
 
@@ -379,6 +399,7 @@
 (add-hook 'perl-mode-hook       'hs-minor-mode)
 (add-hook 'sh-mode-hook         'hs-minor-mode)
 
+(message "Init magit")
 ;; Install the Git frontend Magit
 ;; git config --global status.showUntrackedFiles all
 (use-package magit
@@ -388,6 +409,8 @@
   (global-set-key (kbd "C-c C-m") 'magit-dispatch-popup)
   (global-set-key (kbd "C-x v h") 'magit-log-buffer-file)
   (global-set-key (kbd "C-x v b") 'magit-blame)
+  
+  (define-key magit-mode-map (kbd "<C-tab>") (lambda () (interactive) (other-window 1)))
   )
 
 ;; (use-package request
@@ -398,6 +421,7 @@
 ;;   :init
 ;;   (setq alert-default-style 'notifier))
 
+(message "Init multiple-cursors")
 (use-package multiple-cursors
   :ensure t
   :config
@@ -625,6 +649,8 @@
 (use-package neotree
   :ensure t
   :config
+  (setq neo-autorefresh t)
+  
   (defun neotree-project-dir ()
     "Open NeoTree using the git root."
     (interactive)
@@ -641,6 +667,8 @@
   (global-unset-key (kbd "C-t"))
   ;; (global-set-key (kbd "C-t") 'neotree-toggle)
   (global-set-key (kbd "C-t") 'neotree-project-dir)
+  (setq neo-window-fixed-size t)
+  (setq neo-window-width 26)
   )
 
 ;; https://github.com/emacs-pe/company-racer
@@ -682,6 +710,8 @@
   (define-key helm-map (kbd "C-h") nil)
   (global-set-key (kbd "C-x r r") #'helm-filtered-bookmarks)
 
+  ;; (global-set-key (kbd "C-M-s") #'helm-grep-do-git-grep)
+
   (defun helm-buffers-sort-transformer@donot-sort (_ candidates _)
     candidates)
 
@@ -718,37 +748,14 @@
   ;; (counsel-projectile-mode)
   (global-set-key (kbd "C-x p f") 'counsel-projectile-find-file)
   (global-set-key (kbd "C-M-s") 'counsel-projectile-git-grep)
-  (defun counsel-projectile-git-grep-py ()
-    (interactive)
-    (setq current-prefix-arg '"git --no-pager grep --full-name -n --no-color -i -I -e \"%s\" -- \"*.py\"")
-    (call-interactively 'counsel-projectile-git-grep))
-  (global-set-key (kbd "C-x s") 'counsel-projectile-git-grep-py)
+  ;; (defun counsel-projectile-git-grep-py ()
+  ;;   (interactive)
+  ;;   (setq current-prefix-arg '"git --no-pager grep --full-name -n --no-color -i -I -e \"%s\" -- \"*.py\"")
+  ;;   (call-interactively 'counsel-projectile-git-grep))
+  ;; (global-set-key (kbd "C-x s") 'counsel-projectile-git-grep-py)
   (global-set-key (kbd "C-x f") 'counsel-projectile-find-file)
   )
-(defun counsel-projectile-git-grep (&optional cmd)
-  "Search the current project with git grep.
 
-CMD, if non-nil, is a string containing an alternative git grep
-command. It is read from the minibuffer if the function is called
-with a prefix argument."
-  (interactive)
-  (if (and (eq projectile-require-project-root 'prompt)
-           (not (projectile-project-p)))
-      (counsel-projectile-git-grep-action-switch-project)
-    (let* ((ivy--actions-list (copy-sequence ivy--actions-list))
-           (path
-            (mapconcat 'shell-quote-argument
-                       (projectile-normalise-paths
-                        (car (projectile-parse-dirconfig-file)))
-                       " "))
-           (counsel-git-grep-cmd-default
-            (concat (counsel-projectile--string-trim-right counsel-git-grep-cmd-default " \\.")
-                    " " path)))
-      (ivy-add-actions
-       'counsel-git-grep
-       counsel-projectile-git-grep-extra-actions)
-      (counsel-git-grep (or current-prefix-arg cmd)
-                        (eval counsel-projectile-grep-initial-input)))))
 (use-package ivy
   :ensure t
   :config
@@ -1237,17 +1244,11 @@ with a prefix argument."
 (global-set-key (kbd "C-c i") `linum-mode)
 ;; (global-set-key (kbd "C-c a") `auto-revert-mode)
 (electric-pair-mode 1)
+
 ;; Column marker
 
-(setq fci-rule-width 1)
 (setq fci-rule-color "dim gray")
 ;; show-paren-mode allows one to see matching pairs of parentheses and other characters.
-(global-set-key (kbd "C-c u") `show-paren-mode)
-
-;; Emcas help/dev
-(global-set-key (kbd "C-c C-f") 'find-function)
-;; (global-set-key (kbd "C-c j") 'describe-function)
-;; (global-set-key (kbd "C-c k") 'describe-key)
 
 ;; Word wrap
 (visual-line-mode 1)
@@ -1259,8 +1260,6 @@ with a prefix argument."
 
 (setq desktop-load-locked-desktop t)
 (call-interactively 'desktop-read t (vector "~/.emacs.d/" t))
-
-(load-file (concat settings_path "functions.el"))
 
 ;; Make sure that your Emacs was compiled with module support.
 ;; Check that module-file-suffix is not nil
