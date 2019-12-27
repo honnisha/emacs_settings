@@ -323,23 +323,6 @@
   :config (quelpa-use-package-activate-advice)
   )
 
-(message "Init winum")
-(use-package winum
-  :ensure t
-  :config
-  (setq winum-ignored-buffers-regexp (list (rx "*neotree*")))
-  (setq window-numbering-scope 'global)
-  (winum-mode)
-  (global-set-key (kbd "M-1") 'winum-select-window-1)
-  (global-set-key (kbd "M-2") 'winum-select-window-2)
-  (global-set-key (kbd "M-3") 'winum-select-window-3)
-  (global-set-key (kbd "M-4") 'winum-select-window-4)
-  (global-set-key (kbd "M-5") 'winum-select-window-5)
-  (global-set-key (kbd "M-6") 'winum-select-window-6)
-  (global-set-key (kbd "M-7") 'winum-select-window-7)
-  (global-set-key (kbd "M-8") 'winum-select-window-8)
-  )
-
 ;; (use-package dumb-jump
 ;;   :ensure t
 ;;   :config
@@ -411,6 +394,32 @@
   (global-set-key (kbd "C-x v b") 'magit-blame)
   
   (define-key magit-mode-map (kbd "<C-tab>") (lambda () (interactive) (other-window 1)))
+  (define-key magit-mode-map (kbd "<C-tab>") (lambda () (interactive) (other-window 1)))
+  (define-key magit-mode-map (kbd "M-1") 'winum-select-window-1)
+  (define-key magit-mode-map (kbd "M-2") 'winum-select-window-2)
+  (define-key magit-mode-map (kbd "M-3") 'winum-select-window-3)
+  (define-key magit-mode-map (kbd "M-4") 'winum-select-window-4)
+  (define-key magit-mode-map (kbd "1") 'magit-section-show-level-1-all)
+  (define-key magit-mode-map (kbd "2") 'magit-section-show-level-2-all)
+  (define-key magit-mode-map (kbd "3") 'magit-section-show-level-3-all)
+  (define-key magit-mode-map (kbd "4") 'magit-section-show-level-4-all)
+  )
+
+(message "Init winum")
+(use-package winum
+  :ensure t
+  :config
+  (setq winum-ignored-buffers-regexp (list (rx "*neotree*")))
+  (setq window-numbering-scope 'global)
+  (winum-mode)
+  (global-set-key (kbd "M-1") 'winum-select-window-1)
+  (global-set-key (kbd "M-2") 'winum-select-window-2)
+  (global-set-key (kbd "M-3") 'winum-select-window-3)
+  (global-set-key (kbd "M-4") 'winum-select-window-4)
+  (global-set-key (kbd "M-5") 'winum-select-window-5)
+  (global-set-key (kbd "M-6") 'winum-select-window-6)
+  (global-set-key (kbd "M-7") 'winum-select-window-7)
+  (global-set-key (kbd "M-8") 'winum-select-window-8)
   )
 
 ;; (use-package request
