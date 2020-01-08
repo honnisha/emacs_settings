@@ -110,17 +110,15 @@
                          ("marmalade" . "https://marmalade-repo.org/packages/")
                          ("melpa" . "https://melpa.org/packages/")))
 (add-to-list 'package-archives '("MELPA Stable" . "https://stable.melpa.org/packages/"))
-(add-to-list 'package-archives '("melpa" . "http://melpa.milkbox.net/packages/") t)
 (package-refresh-contents)
 
 (show-paren-mode 1)
 
 (add-to-list 'completion-styles 'initials t)
 
-;; (custom-set-faces
-;;  '(default ((t (:family "DejaVu Sans Mono" :foundry "PfEd" :slant normal :weight normal :height 85 :width normal)))))
+;; (custom-set-faces '(default ((t (:family "DejaVu Sans Mono" :foundry "PfEd" :slant normal :weight normal :height 85 :width normal)))))
 ;; (set-default-font "DejaVu Sans Mono 9")
-(set-default-font "Hack 9")
+(set-default-font "Hack 8")
 
 (message "Init base hotkeys")
 
@@ -203,6 +201,14 @@
 (message "Init use-package")
 (require 'use-package)
 
+(use-package hydra
+  :ensure t
+  )
+
+(use-package pretty-hydra
+  :ensure t
+  )
+
 (use-package realgud
   :ensure t
   )
@@ -278,14 +284,6 @@
   )
 
 (define-key smerge-mode-map (kbd "C-x b") #'hydra-smerge/body)
-
-(use-package hydra
-  :ensure t
-  )
-
-(use-package pretty-hydra
-  :ensure t
-  )
 
 (use-package eww
   :ensure t
@@ -1047,6 +1045,7 @@
 ;; (use-package pdf-tools
 ;;   :ensure t)
 
+(message "Init undo-tree")
 (use-package undo-tree
   :ensure t
   :config
@@ -1272,13 +1271,20 @@
 
 ;; Make sure that your Emacs was compiled with module support.
 ;; Check that module-file-suffix is not nil
-(if (string-suffix-p module-file-suffix ".so")
-    (progn (message module-file-suffix)
-           
-           (load (concat settings_path "parsers/target/debug/libparserslib.so"))
-           (load-file (concat settings_path "menu.el"))
+(message "Init so libs")
+(message module-file-suffix)
+(if module-file-suffix
+    (if (string-suffix-p module-file-suffix ".so")
+        (progn (message module-file-suffix)
+               
+               (load (concat settings_path "parsers/target/debug/libparserslib.so"))
+               (load-file (concat settings_path "menu.el"))
 
-           (global-set-key (kbd "C-x n f") 'frelansim-links)
-           ))
+               (global-set-key (kbd "C-x n f") 'frelansim-links)
+               ))
+  (message "module-file-suffix is nil")
+  )
 
 (define-key lisp-mode-map (kbd "C-i") 'describe-function-in-popup)
+
+(message "End main.py")
