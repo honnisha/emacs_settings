@@ -3,16 +3,6 @@
 ;;; Code:
 (message "Init main.py")
 
-;; This works out of the box in Emacsen using its ForceBackups framework
-(setq
-   backup-by-copying t
-   backup-directory-alist
-    '(("." . "~/.saves/"))
-   delete-old-versions t
-   kept-new-versions 6
-   kept-old-versions 2
-   version-control t)
-
 (load-file (concat settings_path "functions.el"))
 
 (global-set-key (kbd "C-x C-n") (lambda() (interactive)(find-file (concat dropbox_path "text.org"))))
@@ -66,8 +56,14 @@
 ;; if you want it for every buffer
 (global-linum-mode t)
 
-;; backup in one place. flat, no tree structure
-(setq backup-directory-alist '(("" . "~/.emacs.d/emacs-backup")))
+(setq
+   backup-by-copying t
+   backup-directory-alist
+    '(("." . "~/.saves/"))
+   delete-old-versions t
+   kept-new-versions 6
+   kept-old-versions 2
+   version-control t)
 
 (setq mouse-wheel-scroll-amount '(1 ((shift) . 1) ((control) . nil)))
 (setq mouse-wheel-progressive-speed nil)
@@ -689,7 +685,9 @@
 (use-package yascroll
   :ensure t
   :config
-  (global-yascroll-bar-mode 1))
+  (global-yascroll-bar-mode 1)
+  (setq yascroll:delay-to-hide nul)
+  )
 
 (use-package flycheck-rust
   :ensure t
