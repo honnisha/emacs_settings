@@ -7,6 +7,8 @@
 
 (global-set-key (kbd "C-x C-n") (lambda() (interactive)(find-file (concat dropbox_path "text.org"))))
 
+(setq truncate-lines nil)
+
 ;; This tells Emacs not to warn you about anything except problems
 (setq warning-minimum-level :emergency)
 
@@ -21,8 +23,6 @@
       desktop-auto-save-timeout   30)
 (setq desktop-path (list "~/.emacs.d/"))
 (desktop-save-mode 1)
-
-(setq package-check-signature nil)
 
 (setq kept-old-versions t)
 
@@ -114,7 +114,7 @@
 
 ;; (custom-set-faces '(default ((t (:family "DejaVu Sans Mono" :foundry "PfEd" :slant normal :weight normal :height 85 :width normal)))))
 ;; (set-default-font "DejaVu Sans Mono 9")
-(set-default-font "Hack 8")
+(set-default-font "Hack 9")
 
 (message "Init base hotkeys")
 
@@ -387,7 +387,6 @@
   (global-set-key (kbd "C-x v h") 'magit-log-buffer-file)
   (global-set-key (kbd "C-x v b") 'magit-blame)
   
-  (define-key magit-mode-map (kbd "<C-tab>") (lambda () (interactive) (other-window 1)))
   (define-key magit-mode-map (kbd "<C-tab>") (lambda () (interactive) (other-window 1)))
   (define-key magit-mode-map (kbd "M-1") 'winum-select-window-1)
   (define-key magit-mode-map (kbd "M-2") 'winum-select-window-2)
@@ -817,7 +816,10 @@
 
 (message "Web-mode")
 (use-package web-mode
-  :ensure t)
+  :ensure t
+  :config
+  (setq web-mode-enable-auto-indentation nil)
+  )
 
 (setq web-mode-markup-indent-offset 2)
 (setq web-mode-code-indent-offset 2)
@@ -1194,6 +1196,7 @@
   (define-key org-mode-map (kbd "C-S-o") 'org-metaleft)
 
   (define-key org-mode-map (kbd "<C-tab>") (lambda () (interactive) (other-window 1)))
+  (define-key org-mode-map (kbd "<C-iso-lefttab>") (lambda () (interactive) (other-window -1)))
 
   (setq org-todo-keywords
         '((sequence "TODO" "IN" "|" "DONE")))
