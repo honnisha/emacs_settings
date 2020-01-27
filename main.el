@@ -125,9 +125,6 @@
 ;; (global-set-key (kbd "<C-M-tab>") 'next-buffer)
 ;; (global-set-key (kbd "<C-M-iso-lefttab>") 'previous-buffer)
 
-(global-set-key (kbd "<C-M-tab>") 'tabbar-forward)
-(global-set-key (kbd "<C-M-iso-lefttab>") 'tabbar-backward)
-
 (global-set-key (kbd "<C-tab>") (lambda () (interactive) (other-window 1)))
 (global-set-key (kbd "<C-iso-lefttab>") (lambda () (interactive) (other-window -1)))
 
@@ -331,34 +328,11 @@
   ;; (global-set-key (kbd "C-x o") 'smart-jump-go)
   )
 
-(use-package tabbar
-  :ensure t
-  :config (tabbar-mode)
-  )
-
 (message "Init yasnippet")
 (use-package yasnippet
   ;; template system for Emacs
   :ensure t
   :config
-  )
-
-(message "Init tabbar-ruler")
-(use-package tabbar-ruler
-  :ensure t
-  :quelpa (tabbar-ruler :fetcher github :repo "mattfidler/tabbar-ruler.el")
-  :config
-  (setq tabbar-ruler-global-tabbar t) ; If you want tabbar
-  (setq tabbar-ruler-global-ruler nil) ; if you want a global ruler
-  ;; (setq tabbar-ruler-popup-menu t) ; If you want a popup menu.
-  ;; (setq tabbar-ruler-popup-toolbar t) ; If you want a popup toolbar
-  ;; (setq tabbar-ruler-popup-scrollbar t) ; If you want to only show the
-  (tabbar-ruler-group-by-projectile-project)
-  (tabbar-ruler-group-buffer-groups)
-
-  (setq tabbar-ruler-excluded-buffers
-    (quote
-     ("*Messages*" "*Completions*" "*ESS*" "*Packages*" "*log-edit-files*" "*helm-mini*" "*helm-mode-describe-variable*" "*anaconda-mode*" "*Anaconda*" "*Compile-Log*" "*grep*" "*pyls*" "*pyls::stderr*" "*rls*" "*rls::stderr*" "*eglot*" "*EGLOT*" "magit*")))
   )
 
 ;; Available only on mercurial versions 1.9 or higher
@@ -1040,6 +1014,88 @@
 ;;   ;; (setq flymake-python-pyflakes-executable "flake8")
 ;;   (setq flymake-python-pyflakes-extra-arguments '("--ignore=C0111"))
 ;;   )
+
+;; (use-package tabbar
+;;   :ensure t
+;;   :config (tabbar-mode)
+;;   )
+
+;; (message "Init tabbar-ruler")
+;; (use-package tabbar-ruler
+;;   :ensure t
+;;   :quelpa (tabbar-ruler :fetcher github :repo "mattfidler/tabbar-ruler.el")
+;;   :config
+;;   (setq tabbar-ruler-global-tabbar t) ; If you want tabbar
+;;   (setq tabbar-ruler-global-ruler nil) ; if you want a global ruler
+;;   ;; (setq tabbar-ruler-popup-menu t) ; If you want a popup menu.
+;;   ;; (setq tabbar-ruler-popup-toolbar t) ; If you want a popup toolbar
+;;   ;; (setq tabbar-ruler-popup-scrollbar t) ; If you want to only show the
+;;   (tabbar-ruler-group-by-projectile-project)
+;;   (tabbar-ruler-group-buffer-groups)
+
+;; (global-set-key (kbd "<C-M-tab>") 'tabbar-forward)
+;; (global-set-key (kbd "<C-M-iso-lefttab>") 'tabbar-backward)
+;; 
+;;   (setq tabbar-ruler-excluded-buffers
+;;     (quote
+;;      ("*Messages*" "*Completions*" "*ESS*" "*Packages*" "*log-edit-files*" "*helm-mini*" "*helm-mode-describe-variable*" "*anaconda-mode*" "*Anaconda*" "*Compile-Log*" "*grep*" "*pyls*" "*pyls::stderr*" "*rls*" "*rls::stderr*" "*eglot*" "*EGLOT*" "magit*")))
+;;   )
+
+(message "Init centaur-tabs")
+(use-package centaur-tabs
+  :ensure t
+  :quelpa (centaur-tabs :fetcher github :repo "ema2159/centaur-tabs")
+  :config
+  (centaur-tabs-mode t)
+  (setq centaur-tabs-style "bar")
+  (setq centaur-tabs-height 20)
+  (setq centaur-tabs-set-icons t)
+  (setq centaur-tabs-gray-out-icons 'buffer)
+
+  (centaur-tabs-headline-match)
+
+  (setq centaur-tabs-adjust-buffer-order t)
+
+  ;; (centaur-tabs-group-by-projectile-project)
+  
+  (global-set-key (kbd "<C-M-tab>") 'centaur-tabs-forward)
+  (global-set-key (kbd "<C-M-iso-lefttab>") 'centaur-tabs-backward)
+
+  (defun centaur-tabs-buffer-groups ()
+    (list
+     (cond
+      ((or (string-equal "*" (substring (buffer-name) 0 1))
+           (memq major-mode '(magit-process-mode magit-status-mode
+                              magit-diff-mode magit-log-mode
+                              magit-file-mode magit-blob-mode
+                              magit-blame-mode)))
+       "Emacs")
+      ((derived-mode-p 'dired-mode) "Dired")
+      ((derived-mode-p 'emacs-lisp-mode) "Lisp")
+      ((derived-mode-p 'python-mode) "Python")
+      ((derived-mode-p 'web-mode) "Web")
+      ((memq major-mode '(org-mode org-agenda-clockreport-mode
+                                   org-src-mode org-agenda-mode
+                                   org-beamer-mode org-indent-mode
+                                   org-bullets-mode org-cdlatex-mode
+                                   org-agenda-log-mode diary-mode))
+       "OrgMode")
+      (t
+       (centaur-tabs-get-group-name (current-buffer))))))
+
+  (defun centaur-tabs-hide-tab (x)
+    (let ((name (format "%s" x)))
+      (or
+       (string-prefix-p "*epc" name)
+       (string-prefix-p "*vc" name)
+       (string-prefix-p "*helm" name)
+       (string-prefix-p "*Compile-Log*" name)
+       (string-prefix-p "*lsp" name)
+       (and (string-prefix-p "magit" name)
+            (not (file-name-extension name)))
+       )))
+  (centaur-tabs-group-buffer-groups)
+  )
 
 (use-package powerline
   :ensure t)
