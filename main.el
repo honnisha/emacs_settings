@@ -26,6 +26,8 @@
 
 (setq kept-old-versions t)
 
+(setq mouse-wheel-scroll-amount '(3))
+
 (savehist-mode 1)
 (setq savehist-additional-variables '(kill-ring search-ring regexp-search-ring))
 
