@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: telnet
+# key: telnet
+# group: debug
+# --
+telnet 0.0.0.0 4444

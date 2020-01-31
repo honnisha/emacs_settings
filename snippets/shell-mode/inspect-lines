@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: inspect-lines
+# key: inspect-lines
+# group: debug
+# --
+import inspect; lines = inspect.getsourcelines(); print("".join(lines[0]))

@@ -24,9 +24,9 @@
 (setq desktop-path (list "~/.emacs.d/"))
 (desktop-save-mode 1)
 
-(setq kept-old-versions t)
+(setq mouse-wheel-scroll-amount '(5))
 
-(setq mouse-wheel-scroll-amount '(3))
+(setq kept-old-versions t)
 
 (savehist-mode 1)
 (setq savehist-additional-variables '(kill-ring search-ring regexp-search-ring))
@@ -67,7 +67,6 @@
    kept-old-versions 2
    version-control t)
 
-(setq mouse-wheel-scroll-amount '(1 ((shift) . 1) ((control) . nil)))
 (setq mouse-wheel-progressive-speed nil)
 
 ;; (global-visual-line-mode -1)
@@ -219,6 +218,7 @@
                           (concat settings_path "snippets")
                           ))
   (yas-global-mode 1)
+  (global-set-key (kbd "<f1> s") 'yas/describe-tables)
   )
 
 ;; https://github.com/AndreaCrotti/yasnippet-snippets
@@ -326,13 +326,6 @@
   :ensure t
   :config
   ;; (global-set-key (kbd "C-x o") 'smart-jump-go)
-  )
-
-(message "Init yasnippet")
-(use-package yasnippet
-  ;; template system for Emacs
-  :ensure t
-  :config
   )
 
 ;; Available only on mercurial versions 1.9 or higher
@@ -618,6 +611,15 @@
 
 (add-hook 'csharp-mode-hook 'my-csharp-mode-setup t)
 
+(use-package dired-single
+  :ensure t
+  :config
+  (define-key dired-mode-map [return] 'dired-single-buffer)
+  (define-key dired-mode-map [mouse-1] 'dired-single-buffer-mouse)
+  (define-key dired-mode-map "^" 'dired-single-up-directory)
+  (define-key dired-mode-map (kbd "C-M-m") 'dired-single-buffer)
+  )
+
 (use-package dired-sidebar
   :ensure t
   :config
@@ -661,7 +663,7 @@
   :ensure t
   :config
   (global-yascroll-bar-mode 1)
-  (setq yascroll:delay-to-hide nul)
+  (setq yascroll:delay-to-hide nil)
   )
 
 (use-package flycheck-rust
@@ -1049,11 +1051,10 @@
   (centaur-tabs-mode t)
   (setq centaur-tabs-style "bar")
   (setq centaur-tabs-height 20)
-  (setq centaur-tabs-set-icons t)
+  (setq centaur-tabs-set-icons nil)
   (setq centaur-tabs-gray-out-icons 'buffer)
 
-  (centaur-tabs-headline-match)
-
+  (centaur-tabs-enable-buffer-reordering)
   (setq centaur-tabs-adjust-buffer-order t)
 
   ;; (centaur-tabs-group-by-projectile-project)
@@ -1064,21 +1065,22 @@
   (defun centaur-tabs-buffer-groups ()
     (list
      (cond
-      ((or (string-equal "*" (substring (buffer-name) 0 1))
-           (memq major-mode '(magit-process-mode magit-status-mode
-                              magit-diff-mode magit-log-mode
-                              magit-file-mode magit-blob-mode
-                              magit-blame-mode)))
+      ((memq major-mode '(
+                          magit-process-mode magit-status-mode
+                          magit-diff-mode magit-log-mode
+                          magit-file-mode magit-blob-mode
+                          magit-blame-mode))
        "Emacs")
-      ((derived-mode-p 'dired-mode) "Dired")
       ((derived-mode-p 'emacs-lisp-mode) "Lisp")
+      ((derived-mode-p 'shell-mode) "Shell")
       ((derived-mode-p 'python-mode) "Python")
       ((derived-mode-p 'web-mode) "Web")
-      ((memq major-mode '(org-mode org-agenda-clockreport-mode
-                                   org-src-mode org-agenda-mode
-                                   org-beamer-mode org-indent-mode
-                                   org-bullets-mode org-cdlatex-mode
-                                   org-agenda-log-mode diary-mode))
+      ((memq major-mode '(
+                          org-mode org-agenda-clockreport-mode
+                          org-src-mode org-agenda-mode
+                          org-beamer-mode org-indent-mode
+                          org-bullets-mode org-cdlatex-mode
+                          org-agenda-log-mode diary-mode))
        "OrgMode")
       (t
        (centaur-tabs-get-group-name (current-buffer))))))
@@ -1185,6 +1187,18 @@
     (all-the-icons-install-fonts t))
   :config
   (all-the-icons-octicon "file-binary")
+  )
+
+(use-package all-the-icons-ivy
+  :ensure t
+  :config
+  (all-the-icons-ivy-setup)
+  )
+
+(use-package dashboard
+  :ensure t
+  :config
+  (dashboard-setup-startup-hook)
   )
 
 ;;(use-package solaire-mode
