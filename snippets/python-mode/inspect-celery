@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: inspect-celery
+# key: inspect-celery
+# group: debug
+# --
+from celery.task.control import inspect; i = inspect(); scheduled = i.scheduled(); active = i.active(); reserved = i.reserved()

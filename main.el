@@ -86,6 +86,8 @@
 
 (tool-bar-mode -1)
 
+(global-set-key (kbd "C-=") `comment-region)
+
 ;; Note that this will affect all histories, not just the shell.
 ;; Save sessions history
 (setq savehist-save-minibuffer-history 1)
@@ -193,7 +195,9 @@
     ))
 
 (message "Init use-package")
-(require 'use-package)
+(dolist (package '(use-package))
+   (unless (package-installed-p package)
+     (package-install package)))
 
 (use-package hydra
   :ensure t

@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: User
+# key: User
+# group: debug
+# --
+from django.contrib.auth.models import User
