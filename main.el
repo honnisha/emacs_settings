@@ -3,6 +3,9 @@
 ;;; Code:
 (message "Init main.py")
 
+(setq jit-lock-defer-time 0)
+(setq fast-but-imprecise-scrolling t)
+
 (load-file (concat settings_path "functions.el"))
 
 (global-set-key (kbd "C-x C-n") (lambda() (interactive)(find-file (concat dropbox_path "text.org"))))
@@ -12,6 +15,7 @@
 ;; This tells Emacs not to warn you about anything except problems
 (setq warning-minimum-level :emergency)
 
+(message "Init desktop settings")
 ;; Automatically save and restore sessions
 (setq desktop-dirname             "~/.emacs.d/"
       desktop-base-file-name      "emacs.desktop"
@@ -58,6 +62,7 @@
 ;; if you want it for every buffer
 (global-linum-mode t)
 
+(message "Init backup")
 (setq
    backup-by-copying t
    backup-directory-alist
@@ -115,9 +120,10 @@
 
 (add-to-list 'completion-styles 'initials t)
 
+(message "Init font")
 ;; (custom-set-faces '(default ((t (:family "DejaVu Sans Mono" :foundry "PfEd" :slant normal :weight normal :height 85 :width normal)))))
 ;; (set-default-font "DejaVu Sans Mono 9")
-(set-default-font "Hack 9")
+;; (set-default-font "Hack 9")
 
 (message "Init base hotkeys")
 
@@ -215,6 +221,7 @@
   :ensure t
   )
 
+(message "Init yasnippet")
 (use-package yasnippet
   :ensure t
   :config
@@ -230,6 +237,10 @@
   :ensure t
   )
 
+(cond
+ ((not (string-equal system-type "windows-nt")) ; Microsoft Windows
+  (progn
+(message "Init w3m")
 ;; w3m
 (use-package w3m
   :ensure t
@@ -258,6 +269,8 @@
   )
 
 (define-key w3m-mode-map (kbd "C-x b") #'hydra-w3m/body)
+  ))
+  )
 
 (use-package smerge-mode
   :ensure t
@@ -445,6 +458,7 @@
         company-tooltip-align-annotations t)
   )
 
+(message "Init lsp-mode")
 (use-package lsp-mode
   :quelpa (lsp-mode :fetcher github :repo "emacs-lsp/lsp-mode")
   :ensure t
@@ -473,6 +487,7 @@
   (define-key python-mode-map (kbd "C-r i") 'lsp-ui-peek-find-implementation)
   )
 
+(message "Init auto-complete")
 (use-package auto-complete
   :ensure t
   :config
@@ -480,6 +495,7 @@
   (global-auto-complete-mode nil)
   )
 
+(message "Init company-lsp")
 (use-package company-lsp
   :ensure t
   :config
@@ -488,6 +504,7 @@
   (define-key python-mode-map (kbd "<tab>") #'company-lsp)
   )
 
+(message "Init lsp-ui")
 (use-package lsp-ui
   :ensure t
   :config
@@ -533,7 +550,7 @@
 ;;   )
 
 ;; Rust
-(message "Rust")
+(message "Init Rust")
 ;; rustup component add rust-src
 ;; cargo +nightly install racer
 ;; rustup toolchain add nightly
@@ -1184,6 +1201,7 @@
 ;; Since I just was bitten by this. Installation of the fonts is as simple as:
 ;; $ git clone https://github.com/domtronn/all-the-icons.el.git
 ;; $ install -m 0644 -D all-the-icons.el/fonts/*.ttf -t ~/.local/share/fonts/
+;; all-the-icons-install-fonts
 (use-package all-the-icons
   :ensure t
   :init 
