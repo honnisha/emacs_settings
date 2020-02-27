@@ -121,6 +121,15 @@
 (electric-pair-mode 1)
 (setq electric-pair-preserve-balance nil)
 
+;; Don’t open files from the workspace in a new frame
+(setq ns-pop-up-frames nil)
+
+(ac-config-default)
+
+(setq display-battery-mode 1)
+
+(global-set-key (kbd "C-c i") `linum-mode)
+
 (message "Init base hotkeys")
 
 ;; (global-set-key (kbd "<C-M-tab>") 'next-buffer)
@@ -1270,33 +1279,8 @@
 ;;  (global-set-key (kbd "s-\\") 'wg-switch-to-previous-workgroup)
 ;;  )
 
-;; Don’t open files from the workspace in a new frame
-(setq ns-pop-up-frames nil)
-
-(ac-config-default)
-
 ;; Charging isplay
 ;; (add-hook 'after-init-hook #'fancy-battery-mode)
-(setq display-battery-mode 1)
-
-;; (add-hook 'after-init-hook 'session-initialize)
-(add-hook 'rust-mode-hook 'cargo-minor-mode)
-;; (editorconfig-mode 1)
-
-;; Editor settings
-;; (global-linum-mode)
-(global-set-key (kbd "C-c i") `linum-mode)
-;; (global-set-key (kbd "C-c a") `auto-revert-mode)
-(electric-pair-mode 1)
-
-;; Column marker
-
-(setq fci-rule-color "dim gray")
-;; show-paren-mode allows one to see matching pairs of parentheses and other characters.
-
-;; Word wrap
-(visual-line-mode 1)
-;; (global-set-key (kbd "C-c b") 'visual-line-mode)
 
 (autoload 'python-mode "python-mode" "Python Mode." t)
 (add-to-list 'auto-mode-alist '("\\.py\\'" . python-mode))
@@ -1320,6 +1304,7 @@
 
 (define-key lisp-mode-map (kbd "C-i") 'describe-function-in-popup)
 
+(message "Read desktop")
 (setq desktop-load-locked-desktop t)
 (call-interactively 'desktop-read t (vector "~/.emacs-save/" t))
 (message "End main.py")
