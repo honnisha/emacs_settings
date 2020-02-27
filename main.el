@@ -3,8 +3,18 @@
 ;;; Code:
 (message "Init main.py")
 
-(setq jit-lock-defer-time 0)
-(setq fast-but-imprecise-scrolling t)
+(require 'package)
+(package-initialize)
+(setq package-archives '(
+                         ;; ("gnu" . "https://elpa.gnu.org/packages/")
+                         ;; ("marmalade" . "https://marmalade-repo.org/packages/")
+                         ("melpa" . "https://melpa.org/packages/")))
+;; (add-to-list 'package-archives '("MELPA Stable" . "https://stable.melpa.org/packages/"))
+(package-refresh-contents)
+
+(remove-hook 'kill-emacs-hook 'ac-comphist-save)
+
+(visual-line-mode t)
 
 (load-file (concat settings_path "functions.el"))
 
@@ -15,17 +25,21 @@
 ;; This tells Emacs not to warn you about anything except problems
 (setq warning-minimum-level :emergency)
 
-(message "Init desktop settings")
 ;; Automatically save and restore sessions
-(setq desktop-dirname             "~/.emacs.d/"
+(setq desktop-dirname             "~/.emacs-save/"
       desktop-base-file-name      "emacs.desktop"
       desktop-base-lock-name      "lock"
       desktop-path                (list desktop-dirname)
       desktop-save                t
       desktop-files-not-to-save   "^$" ;reload tramp paths
       desktop-load-locked-desktop nil
-      desktop-auto-save-timeout   30)
-(setq desktop-path (list "~/.emacs.d/"))
+      desktop-auto-save-timeout   10)
+
+(desktop-change-dir desktop-dirname)
+
+(unless (file-exists-p desktop-dirname)
+  (make-directory desktop-dirname t))
+
 (desktop-save-mode 1)
 
 (setq mouse-wheel-scroll-amount '(5))
@@ -62,7 +76,6 @@
 ;; if you want it for every buffer
 (global-linum-mode t)
 
-(message "Init backup")
 (setq
    backup-by-copying t
    backup-directory-alist
@@ -98,7 +111,7 @@
 (setq savehist-save-minibuffer-history 1)
 (setq savehist-additional-variables
       '(kill-ring search-ring regexp-search-ring compile-history log-edit-comment-ring)
-      savehist-file "~/.emacs.d/savehist")
+      savehist-file "~/.emacs-save/savehist")
 (savehist-mode t)
 (setq history-delete-duplicates t)
 (setq comint-input-ignoredups t)
@@ -108,26 +121,15 @@
 
 (set-variable 'dov-view-continues t)
 
-(require 'package)
-(package-initialize)
-(setq package-archives '(("gnu" . "https://elpa.gnu.org/packages/")
-                         ("marmalade" . "https://marmalade-repo.org/packages/")
-                         ("melpa" . "https://melpa.org/packages/")))
-(add-to-list 'package-archives '("MELPA Stable" . "https://stable.melpa.org/packages/"))
-(package-refresh-contents)
-
 (show-paren-mode 1)
 
 (add-to-list 'completion-styles 'initials t)
 
-(message "Init font")
 ;; (custom-set-faces '(default ((t (:family "DejaVu Sans Mono" :foundry "PfEd" :slant normal :weight normal :height 85 :width normal)))))
 ;; (set-default-font "DejaVu Sans Mono 9")
-;; (set-default-font "Hack 9")
+(set-default-font "Hack 9")
 
 (message "Init base hotkeys")
-
-;; (global-set-key (kbd "C-x s") 'rgrep)
 
 ;; (global-set-key (kbd "<C-M-tab>") 'next-buffer)
 ;; (global-set-key (kbd "<C-M-iso-lefttab>") 'previous-buffer)
@@ -221,7 +223,6 @@
   :ensure t
   )
 
-(message "Init yasnippet")
 (use-package yasnippet
   :ensure t
   :config
@@ -237,10 +238,6 @@
   :ensure t
   )
 
-(cond
- ((not (string-equal system-type "windows-nt")) ; Microsoft Windows
-  (progn
-(message "Init w3m")
 ;; w3m
 (use-package w3m
   :ensure t
@@ -269,8 +266,6 @@
   )
 
 (define-key w3m-mode-map (kbd "C-x b") #'hydra-w3m/body)
-  ))
-  )
 
 (use-package smerge-mode
   :ensure t
@@ -458,7 +453,6 @@
         company-tooltip-align-annotations t)
   )
 
-(message "Init lsp-mode")
 (use-package lsp-mode
   :quelpa (lsp-mode :fetcher github :repo "emacs-lsp/lsp-mode")
   :ensure t
@@ -487,15 +481,6 @@
   (define-key python-mode-map (kbd "C-r i") 'lsp-ui-peek-find-implementation)
   )
 
-(message "Init auto-complete")
-(use-package auto-complete
-  :ensure t
-  :config
-  (ac-config-default)
-  (global-auto-complete-mode nil)
-  )
-
-(message "Init company-lsp")
 (use-package company-lsp
   :ensure t
   :config
@@ -504,7 +489,6 @@
   (define-key python-mode-map (kbd "<tab>") #'company-lsp)
   )
 
-(message "Init lsp-ui")
 (use-package lsp-ui
   :ensure t
   :config
@@ -524,7 +508,6 @@
   (global-set-key (kbd "<C-M-return>") 'lsp-ui-imenu)
   
   (define-key python-mode-map (kbd "C-o") #'lsp-ui-peek-find-definitions)
-  (define-key rust-mode-map (kbd "C-o") #'lsp-ui-peek-find-definitions)
   )
 
 ;; (use-package dap-mode
@@ -550,7 +533,7 @@
 ;;   )
 
 ;; Rust
-(message "Init Rust")
+(message "Rust")
 ;; rustup component add rust-src
 ;; cargo +nightly install racer
 ;; rustup toolchain add nightly
@@ -704,6 +687,7 @@
   :config
   (setq helm-split-window-in-side-p t)
   ;; (global-set-key (kbd "C-x b") 'helm-buffers-list)
+  ;; (global-set-key (kbd "C-x s") 'helm-grep-do-git-grep)
   (global-set-key (kbd "C-SPC") 'helm-buffers-list)
   (global-unset-key (kbd "C-x C-f"))
   (global-set-key (kbd "C-x C-f") 'helm-find-files)
@@ -712,8 +696,6 @@
   (global-set-key (kbd "M-RET") 'helm-imenu)
   (define-key helm-map (kbd "C-h") nil)
   (global-set-key (kbd "C-x r r") #'helm-filtered-bookmarks)
-
-  ;; (global-set-key (kbd "C-M-s") #'helm-grep-do-git-grep)
 
   (defun helm-buffers-sort-transformer@donot-sort (_ candidates _)
     candidates)
@@ -734,7 +716,6 @@
 (use-package helm-projectile
   :ensure t
   :config
-  ; (global-set-key (kbd "C-x s") 'helm-projectile-grep)
   (global-unset-key (kbd "C-M-j"))
   (global-set-key (kbd "C-M-j") 'helm-projectile-switch-project)
   (global-set-key (kbd "C-S-SPC") 'helm-projectile-switch-to-buffer)
@@ -749,13 +730,14 @@
   :ensure t
   :config
   ;; (counsel-projectile-mode)
-  (global-set-key (kbd "C-x p f") 'counsel-projectile-find-file)
-  (global-set-key (kbd "C-M-s") 'counsel-projectile-git-grep)
-  ;; (defun counsel-projectile-git-grep-py ()
-  ;;   (interactive)
-  ;;   (setq current-prefix-arg '"git --no-pager grep --full-name -n --no-color -i -I -e \"%s\" -- \"*.py\"")
-  ;;   (call-interactively 'counsel-projectile-git-grep))
-  ;; (global-set-key (kbd "C-x s") 'counsel-projectile-git-grep-py)
+  ;; (global-set-key (kbd "C-x p f") 'counsel-projectile-find-file)
+
+  ;; (global-set-key (kbd "C-M-s") 'counsel-projectile-git-grep)
+  (global-set-key (kbd "C-x s")
+                  (lambda () (interactive)
+                    (counsel-git-grep nil nil "git --no-pager grep -n --no-color -I -e \"%s\" -- \"*.py\" \"*.html\"")))
+  (global-set-key (kbd "C-M-s") 'counsel-git-grep)
+
   (global-set-key (kbd "C-x f") 'counsel-projectile-find-file)
   )
 
@@ -986,10 +968,6 @@
     '(add-to-list 'company-backends 'company-anaconda))
   )
 
-(use-package jedi-direx
-  :ensure t
-  )
-
 ;; (use-package omnisharp
 ;;   :ensure t
 ;;   :config
@@ -1201,7 +1179,6 @@
 ;; Since I just was bitten by this. Installation of the fonts is as simple as:
 ;; $ git clone https://github.com/domtronn/all-the-icons.el.git
 ;; $ install -m 0644 -D all-the-icons.el/fonts/*.ttf -t ~/.local/share/fonts/
-;; all-the-icons-install-fonts
 (use-package all-the-icons
   :ensure t
   :init 
@@ -1215,6 +1192,16 @@
   :ensure t
   :config
   (all-the-icons-ivy-setup)
+  )
+
+(use-package all-the-icons-ivy-rich
+  :ensure t
+  :init (all-the-icons-ivy-rich-mode 1)
+  )
+
+(use-package ivy-rich
+  :ensure t
+  :init (ivy-rich-mode 1)
   )
 
 (use-package dashboard
@@ -1361,9 +1348,6 @@
 (add-to-list 'auto-mode-alist '("\\.py\\'" . python-mode))
 (add-to-list 'interpreter-mode-alist '("python" . python-mode))
 
-(setq desktop-load-locked-desktop t)
-(call-interactively 'desktop-read t (vector "~/.emacs.d/" t))
-
 ;; Make sure that your Emacs was compiled with module support.
 ;; Check that module-file-suffix is not nil
 (message "Init so libs")
@@ -1382,4 +1366,6 @@
 
 (define-key lisp-mode-map (kbd "C-i") 'describe-function-in-popup)
 
+(setq desktop-load-locked-desktop t)
+(call-interactively 'desktop-read t (vector "~/.emacs-save/" t))
 (message "End main.py")
