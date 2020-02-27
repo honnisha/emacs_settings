@@ -25,6 +25,7 @@
 ;; This tells Emacs not to warn you about anything except problems
 (setq warning-minimum-level :emergency)
 
+(message "Inig desktop save settings")
 ;; Automatically save and restore sessions
 (setq desktop-dirname             "~/.emacs-save/"
       desktop-base-file-name      "emacs.desktop"
@@ -35,22 +36,37 @@
       desktop-load-locked-desktop nil
       desktop-auto-save-timeout   10)
 
-(desktop-change-dir desktop-dirname)
+(unless (file-exists-p desktop-dirname) (make-directory desktop-dirname t))
 
-(unless (file-exists-p desktop-dirname)
-  (make-directory desktop-dirname t))
+;; Note that this will affect all histories, not just the shell.
+;; Save sessions history
+(setq savehist-save-minibuffer-history 1)
+(setq savehist-additional-variables
+      '(kill-ring search-ring regexp-search-ring compile-history log-edit-comment-ring)
+      savehist-file "~/.emacs-save/savehist")
+(savehist-mode t)
+(setq history-delete-duplicates t)
+(setq comint-input-ignoredups t)
+
+(setq
+   backup-by-copying t
+   backup-directory-alist
+    '(("~/.saves/"))
+   delete-old-versions t
+   kept-new-versions 6
+   kept-old-versions 2
+   version-control t)
 
 (desktop-save-mode 1)
 
+(message "Init emacs settings")
+(setq mouse-wheel-progressive-speed nil)
 (setq mouse-wheel-scroll-amount '(5))
 
-(setq kept-old-versions t)
-
-(savehist-mode 1)
-(setq savehist-additional-variables '(kill-ring search-ring regexp-search-ring))
-
+(menu-bar-mode -1)
 (global-set-key [f9] 'toggle-menu-bar-mode-from-frame)
 (set-frame-parameter nil 'undecorated nil)
+(tool-bar-mode -1)
 
 ;; How to get rid of "Loading a theme can run Lisp code. Really load? (y or n) " message?
 (set-variable 'sml/no-confirm-load-theme t)
@@ -60,8 +76,6 @@
 
 ;; How to overwrite text by yank in Emacs?
 (delete-selection-mode 1)
-
-(menu-bar-mode -1)
 
 ;; To make the cursor even more visible
 (global-hl-line-mode)
@@ -76,19 +90,6 @@
 ;; if you want it for every buffer
 (global-linum-mode t)
 
-(setq
-   backup-by-copying t
-   backup-directory-alist
-    '(("." . "~/.saves/"))
-   delete-old-versions t
-   kept-new-versions 6
-   kept-old-versions 2
-   version-control t)
-
-(setq mouse-wheel-progressive-speed nil)
-
-;; (global-visual-line-mode -1)
-
 ;; From Pragmatic Emacs a more concise way to kill the buffer.
 (global-set-key (kbd "C-x k") 'kill-this-buffer)
 
@@ -102,22 +103,10 @@
 (global-set-key (kbd "C-c [") `wg-undo-wconfig-change)
 (global-set-key (kbd "C-c ]") `wg-redo-wconfig-change)
 
-(tool-bar-mode -1)
-
 (global-set-key (kbd "C-=") `comment-region)
 
-;; Note that this will affect all histories, not just the shell.
-;; Save sessions history
-(setq savehist-save-minibuffer-history 1)
-(setq savehist-additional-variables
-      '(kill-ring search-ring regexp-search-ring compile-history log-edit-comment-ring)
-      savehist-file "~/.emacs-save/savehist")
-(savehist-mode t)
-(setq history-delete-duplicates t)
-(setq comint-input-ignoredups t)
-
-;; (define-key shell-mode-map (kbd "<up>") 'comint-previous-input)
-;; (define-key shell-mode-map (kbd "<down>") 'comint-next-input)
+(define-key shell-mode-map (kbd "<up>") 'comint-previous-input)
+(define-key shell-mode-map (kbd "<down>") 'comint-next-input)
 
 (set-variable 'dov-view-continues t)
 
@@ -128,6 +117,9 @@
 ;; (custom-set-faces '(default ((t (:family "DejaVu Sans Mono" :foundry "PfEd" :slant normal :weight normal :height 85 :width normal)))))
 ;; (set-default-font "DejaVu Sans Mono 9")
 (set-default-font "Hack 9")
+
+(electric-pair-mode 1)
+(setq electric-pair-preserve-balance nil)
 
 (message "Init base hotkeys")
 
@@ -246,27 +238,6 @@
   (global-set-key (kbd "C-x w") (lambda() (interactive)(w3m-browse-url "https://www.google.com/webhp?nomo=1&hl=ru")))
   )
 
-;; w3m
-(pretty-hydra-define hydra-w3m
-  (:color blue)
-  ("Navigation"
-   (("B" w3m-view-previous-page)
-    ("N" w3m-view-next-page)
-    ("[" w3m-previous-form)
-    ("]" w3m-next-form)
-    ("M" w3m-view-url-with-browse-url)
-    ("R" w3m-reload-this-page)
-    ("\\" w3m-view-source)
-    )
-   "Bookmarks"
-   (("a" w3m-bookmark-add-current-url)
-    ("M-a" w3m-bookmark-add-this-url)
-    ("v" w3m-bookmark-view)
-    ))
-  )
-
-(define-key w3m-mode-map (kbd "C-x b") #'hydra-w3m/body)
-
 (use-package smerge-mode
   :ensure t
   )
@@ -328,18 +299,6 @@
   :config (quelpa-use-package-activate-advice)
   )
 
-;; (use-package dumb-jump
-;;   :ensure t
-;;   :config
-;;   (global-set-key (kbd "C-x o") 'dumb-jump-go)
-;;   )
-
-(use-package smart-jump
-  :ensure t
-  :config
-  ;; (global-set-key (kbd "C-x o") 'smart-jump-go)
-  )
-
 ;; Available only on mercurial versions 1.9 or higher
 (setq monky-process-type 'cmdserver)
 (global-set-key (kbd "C-c l") 'monky-status)
@@ -396,14 +355,6 @@
   (global-set-key (kbd "M-8") 'winum-select-window-8)
   )
 
-;; (use-package request
-;;   :ensure t)
-
-;; (use-package alert
-;;   :commands (alert)
-;;   :init
-;;   (setq alert-default-style 'notifier))
-
 (message "Init multiple-cursors")
 (use-package multiple-cursors
   :ensure t
@@ -422,6 +373,7 @@
   (global-set-key (kbd "C-c C-p") 'mc/mark-previous-word-like-this) ; choose same word previous
   )
 
+(message "Init back-button")
 (use-package back-button
   :ensure t
   :config
@@ -453,6 +405,7 @@
         company-tooltip-align-annotations t)
   )
 
+(message "Init lsp-mode")
 (use-package lsp-mode
   :quelpa (lsp-mode :fetcher github :repo "emacs-lsp/lsp-mode")
   :ensure t
@@ -633,7 +586,7 @@
 (use-package neotree
   :ensure t
   :config
-  (setq neo-autorefresh t)
+  (setq neo-autorefresh nil)
   
   (defun neotree-project-dir ()
     "Open NeoTree using the git root."
@@ -680,6 +633,7 @@
 ;; (use-package ess
 ;;   :ensure t)
 
+(message "Init helm")
 (use-package helm
   :ensure t
   :init
@@ -792,14 +746,14 @@
   :ensure t
   )
 
-(add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.vue?\\'" . web-mode))
-
 (message "Web-mode")
 (use-package web-mode
   :ensure t
   :config
   (setq web-mode-enable-auto-indentation nil)
+
+  (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.vue?\\'" . web-mode))
   )
 
 (setq web-mode-markup-indent-offset 2)
