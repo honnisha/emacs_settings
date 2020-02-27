@@ -5,12 +5,7 @@
 
 (require 'package)
 (package-initialize)
-(setq package-archives '(
-                         ;; ("gnu" . "https://elpa.gnu.org/packages/")
-                         ;; ("marmalade" . "https://marmalade-repo.org/packages/")
-                         ("melpa" . "https://melpa.org/packages/")))
-;; (add-to-list 'package-archives '("MELPA Stable" . "https://stable.melpa.org/packages/"))
-(package-refresh-contents)
+(setq package-archives '(("melpa" . "https://melpa.org/packages/")))
 
 (remove-hook 'kill-emacs-hook 'ac-comphist-save)
 
@@ -35,7 +30,7 @@
       desktop-path                (list desktop-dirname)
       desktop-save                t
       desktop-files-not-to-save   "^$" ;reload tramp paths
-      desktop-load-locked-desktop nil
+      desktop-load-locked-desktop t
       desktop-auto-save-timeout   10)
 
 (unless (file-exists-p desktop-dirname) (make-directory desktop-dirname t))
@@ -244,14 +239,6 @@
 ;; https://github.com/AndreaCrotti/yasnippet-snippets
 (use-package yasnippet-snippets
   :ensure t
-  )
-
-;; w3m
-(use-package w3m
-  :ensure t
-  :config
-  (setq w3m-user-agent "Mozilla/5.0 (Linux; U; zh-tw; HTC_Pyramid Build/GRI40) AppleWebKit/533.1 (KHTML, like Gecko) Version/4.0 Mobile Safari/533.")
-  (global-set-key (kbd "C-x w") (lambda() (interactive)(w3m-browse-url "https://www.google.com/webhp?nomo=1&hl=ru")))
   )
 
 (use-package smerge-mode
@@ -724,8 +711,6 @@
   (global-set-key (kbd "<f1> f") 'counsel-describe-function)
   (global-set-key (kbd "<f1> v") 'counsel-describe-variable)
   (global-set-key (kbd "<f1> l") 'counsel-find-library)
-  (global-set-key (kbd "<f2> i") 'counsel-info-lookup-symbol)
-  (global-set-key (kbd "<f2> u") 'counsel-unicode-char)
   (global-set-key (kbd "C-c g") 'counsel-git)
   ;; (global-set-key (kbd "C-c j") 'counsel-git-grep)
   ;; (global-set-key (kbd "C-c k") 'counsel-ag)
@@ -809,8 +794,6 @@
   :config
   (global-set-key (kbd "C-c o") 'py-isort-buffer)
   )
-
-(setq python-python-command "/home/gagen/.virtualenvs/gc3/bin/python3.6")
 
 (define-key python-mode-map (kbd "<tab>") 'python-indent-shift-right)
 (define-key python-mode-map (kbd "<backtab>") 'python-indent-shift-left)
@@ -1017,7 +1000,7 @@
   :ensure t
   :quelpa (centaur-tabs :fetcher github :repo "ema2159/centaur-tabs")
   :config
-  (centaur-tabs-mode t)
+  ;; (centaur-tabs-mode t)
   (setq centaur-tabs-style "bar")
   (setq centaur-tabs-height 20)
   (setq centaur-tabs-set-icons nil)
@@ -1067,9 +1050,6 @@
        )))
   (centaur-tabs-group-buffer-groups)
   )
-
-(use-package powerline
-  :ensure t)
 
 ;; (use-package pdf-tools
 ;;   :ensure t)
@@ -1174,11 +1154,11 @@
   :init (ivy-rich-mode 1)
   )
 
-(use-package dashboard
-  :ensure t
-  :config
-  (dashboard-setup-startup-hook)
-  )
+;; (use-package dashboard
+;;   :ensure t
+;;   :config
+;;   (dashboard-setup-startup-hook)
+;;   )
 
 ;;(use-package solaire-mode
 ;;  :ensure t
