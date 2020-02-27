@@ -27,6 +27,8 @@
 
 (message "Inig desktop save settings")
 ;; Automatically save and restore sessions
+(setq desktop-load-locked-desktop t)
+
 (setq desktop-dirname             "~/.emacs-save/"
       desktop-base-file-name      "emacs.desktop"
       desktop-base-lock-name      "lock"
@@ -124,13 +126,16 @@
 ;; Don’t open files from the workspace in a new frame
 (setq ns-pop-up-frames nil)
 
-(ac-config-default)
-
 (setq display-battery-mode 1)
 
 (global-set-key (kbd "C-c i") `linum-mode)
 
 (message "Init base hotkeys")
+
+(global-set-key (kbd "<f2>") 'bookmark-jump)
+(global-set-key (kbd "<f3>") 'bookmark-set)
+(global-set-key (kbd "<f4>") 'bookmark-bmenu-list)
+(setq bookmark-default-file (concat user-emacs-directory ".emacs-save"))
 
 ;; (global-set-key (kbd "<C-M-tab>") 'next-buffer)
 ;; (global-set-key (kbd "<C-M-iso-lefttab>") 'previous-buffer)
@@ -156,6 +161,8 @@
 
 (global-set-key (kbd "C-x C-d") (lambda() (interactive)(find-file (concat settings_path "main.el"))))
 
+(setq whitespace-line-column 1000)
+;; (setq global-whitespace-mode 1)
 (global-set-key (kbd "C-c h") `whitespace-mode)
 
 (global-set-key (kbd "C-x c") `list-colors-display)
@@ -1305,6 +1312,5 @@
 (define-key lisp-mode-map (kbd "C-i") 'describe-function-in-popup)
 
 (message "Read desktop")
-(setq desktop-load-locked-desktop t)
 (call-interactively 'desktop-read t (vector "~/.emacs-save/" t))
 (message "End main.py")
