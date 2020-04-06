@@ -4,8 +4,19 @@
 (message "Init main.py")
 
 (require 'package)
+(setq package-enable-at-startup nil)
+
+;; https://emacs.stackexchange.com/a/2989
+(setq package-archives
+      '(("elpa"     . "https://elpa.gnu.org/packages/")
+        ("melpa-stable" . "https://stable.melpa.org/packages/")
+        ("melpa"        . "https://melpa.org/packages/"))
+      package-archive-priorities
+      '(("melpa-stable" . 10)
+        ("elpa"     . 5)
+        ("melpa"        . 0)))
+
 (package-initialize)
-(setq package-archives '(("melpa" . "https://melpa.org/packages/")))
 
 (remove-hook 'kill-emacs-hook 'ac-comphist-save)
 
@@ -90,9 +101,6 @@
 ;; From Pragmatic Emacs a more concise way to kill the buffer.
 (global-set-key (kbd "C-x k") 'kill-this-buffer)
 
-(when (string-equal system-type "windows-nt")
-  (setenv "HOME" (concat (getenv "HOMEDRIVE") (getenv "HOMEPATH"))))
-
 ;; If you enable winner-mode, you get something akin to a stack-based
 ;; undo/redo functionality for all your window configuration changes.
 ;; By default, C-c <left> gets bound to winner-undo, while C-c <right> performs winner-redo.
@@ -113,7 +121,7 @@
 
 ;; (custom-set-faces '(default ((t (:family "DejaVu Sans Mono" :foundry "PfEd" :slant normal :weight normal :height 85 :width normal)))))
 ;; (set-default-font "DejaVu Sans Mono 9")
-(set-default-font "Hack 9")
+;; (set-default-font "Hack 9")
 
 (electric-pair-mode 1)
 (setq electric-pair-preserve-balance nil)
@@ -206,9 +214,10 @@
     ))
 
 (message "Init use-package")
-(dolist (package '(use-package))
-   (unless (package-installed-p package)
-     (package-install package)))
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
+(require 'use-package)
 
 (use-package hydra
   :ensure t
