@@ -1016,8 +1016,8 @@
  (global-set-key (kbd "<C-M-tab>") 'tabbar-forward)
  (global-set-key (kbd "<C-M-iso-lefttab>") 'tabbar-backward)
 
- (global-set-key (kbd "<M-right>") 'tabbar-forward)
- (global-set-key (kbd "<M-left>") 'tabbar-backward)
+ (global-set-key (kbd "C-x <C-tab>") 'tabbar-forward)
+ (global-set-key (kbd "C-x <C-S-tab>") 'tabbar-backward)
  
    (setq tabbar-ruler-excluded-buffers
      (quote
@@ -1322,8 +1322,8 @@
 
 (define-key lisp-mode-map (kbd "C-i") 'describe-function-in-popup)
 
-(load-file (concat settings_path "functions.el"))
-
 (message "Read desktop")
 (call-interactively 'desktop-read t (vector "~/.emacs-save/" t))
 (message "End main.py")
+
+(load-file (concat settings_path "functions.el"))
