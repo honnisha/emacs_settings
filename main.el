@@ -21,8 +21,6 @@
 
 (visual-line-mode t)
 
-(load-file (concat settings_path "functions.el"))
-
 (global-set-key (kbd "C-x C-n") (lambda() (interactive)(find-file (concat dropbox_path "text.org"))))
 
 (setq truncate-lines nil)
@@ -68,7 +66,7 @@
 
 (message "Init emacs settings")
 
-(setq backup-directory-alist `("~/.saves"))
+(setq backup-directory-alist '(("~/.saves/")))
 
 (setq mouse-wheel-progressive-speed nil)
 (setq mouse-wheel-scroll-amount '(5))
@@ -112,9 +110,6 @@
 
 (global-set-key (kbd "C-=") `comment-region)
 
-(define-key shell-mode-map (kbd "<up>") 'comint-previous-input)
-(define-key shell-mode-map (kbd "<down>") 'comint-next-input)
-
 (set-variable 'dov-view-continues t)
 
 (show-paren-mode 1)
@@ -150,6 +145,7 @@
 
 (global-set-key (kbd "<C-tab>") (lambda () (interactive) (other-window 1)))
 (global-set-key (kbd "<C-iso-lefttab>") (lambda () (interactive) (other-window -1)))
+(global-set-key (kbd "<C-S-tab>") (lambda () (interactive) (other-window -1)))
 
 (global-set-key (kbd "<f10>") 'toggle-frame-fullscreen)
 
@@ -506,6 +502,10 @@
 ;; cargo +nightly install racer
 ;; rustup toolchain add nightly
 ;; rustup component add rls rust-analysis rust-src
+
+;; For windows:
+;; rustup component add rls --toolchain stable-x86_64-pc-windows-msvc
+
 (use-package rust-mode
   :ensure t
   :config
@@ -527,7 +527,7 @@
   ;; (define-key rust-mode-map (kbd "C-i") #'racer-describe-tooltip)
   (define-key rust-mode-map (kbd "C-i") #'lsp-describe-thing-at-point)
   
-  ;; (define-key rust-mode-map (kbd "C-o") #'racer-find-definition)
+  (define-key rust-mode-map (kbd "C-o") #'racer-find-definition)
 
   (define-key rust-mode-map (kbd "C-r r") 'lsp-ui-peek-find-references)
   (define-key rust-mode-map (kbd "C-r i") 'lsp-ui-peek-find-implementation)
@@ -801,7 +801,11 @@
   :config
   (global-set-key (kbd "C-x m") `powershell)
   )
-  (global-set-key (kbd "C-x m") `shell))
+  (progn
+    (global-set-key (kbd "C-x m") `shell)
+    (define-key shell-mode-map (kbd "<up>") 'comint-previous-input)
+    (define-key shell-mode-map (kbd "<down>") 'comint-next-input))
+  )
 
 
 (message "Python")
@@ -1011,6 +1015,9 @@
 
  (global-set-key (kbd "<C-M-tab>") 'tabbar-forward)
  (global-set-key (kbd "<C-M-iso-lefttab>") 'tabbar-backward)
+
+ (global-set-key (kbd "<M-right>") 'tabbar-forward)
+ (global-set-key (kbd "<M-left>") 'tabbar-backward)
  
    (setq tabbar-ruler-excluded-buffers
      (quote
@@ -1314,6 +1321,8 @@
   )
 
 (define-key lisp-mode-map (kbd "C-i") 'describe-function-in-popup)
+
+(load-file (concat settings_path "functions.el"))
 
 (message "Read desktop")
 (call-interactively 'desktop-read t (vector "~/.emacs-save/" t))

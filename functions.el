@@ -360,7 +360,8 @@ Otherwise, one argument `-i' is passed to the shell.
                         (switch-to-buffer "*Help*")
                         (buffer-string))))
     (kill-buffer "*Help*")
-    (pos-tip-show description)))
+    (pos-tip-show description))
+  (pos-tip-cancel-timer))
 
 ;;     (pos-tip-show description
 ;;                :point (point)
@@ -368,3 +369,17 @@ Otherwise, one argument `-i' is passed to the shell.
 ;;                :height 30
 ;;                :scroll-bar t
 ;;                :margin t)))
+
+(defun lsp-describe-thing-at-point ()
+  "Display the type signature and documentation of the thing at
+point."
+  (interactive)
+  (let ((contents (-some->> (lsp--text-document-position-params)
+                    (lsp--make-request "textDocument/hover")
+                    (lsp--send-request)
+                    (gethash "contents"))))
+    (if (and contents (not (equal contents "")))
+        (pos-tip-show
+         (string-trim-right (lsp--render-on-hover-content contents t)))
+      (pos-tip-show "No content at point.")))
+  (pos-tip-cancel-timer))
