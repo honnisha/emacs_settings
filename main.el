@@ -498,7 +498,6 @@
 
 ;; Rust
 (message "Rust")
-;; rustup component add rust-src
 ;; cargo +nightly install racer
 ;; rustup toolchain add nightly
 ;; rustup component add rls rust-analysis rust-src
@@ -794,10 +793,10 @@
 (use-package csv-mode
   :ensure t)
 
-
-
+(message "Shell")
 (if (string-equal system-type "windows-nt")
   (use-package powershell
+  :ensure t
   :config
   (global-set-key (kbd "C-x m") `powershell)
   )
@@ -806,7 +805,6 @@
     (define-key shell-mode-map (kbd "<up>") 'comint-previous-input)
     (define-key shell-mode-map (kbd "<down>") 'comint-next-input))
   )
-
 
 (message "Python")
 
