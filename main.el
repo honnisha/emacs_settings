@@ -4,8 +4,18 @@
 (message "Init main.py")
 
 (require 'package)
+(setq package-enable-at-startup nil)
+
+;; https://emacs.stackexchange.com/a/2989
+(setq package-archives
+      '(("elpa"     . "https://elpa.gnu.org/packages/")
+        ("melpa-stable" . "https://stable.melpa.org/packages/")
+        ("melpa"        . "https://melpa.org/packages/"))
+      package-archive-priorities
+      '(("melpa-stable" . 10)
+        ("elpa"     . 5)
+        ("melpa"        . 0)))
 (package-initialize)
-(setq package-archives '(("melpa" . "https://melpa.org/packages/")))
 
 (remove-hook 'kill-emacs-hook 'ac-comphist-save)
 
@@ -57,6 +67,9 @@
 (desktop-save-mode 1)
 
 (message "Init emacs settings")
+
+(setq backup-directory-alist `("~/.saves"))
+
 (setq mouse-wheel-progressive-speed nil)
 (setq mouse-wheel-scroll-amount '(5))
 
@@ -90,9 +103,6 @@
 ;; From Pragmatic Emacs a more concise way to kill the buffer.
 (global-set-key (kbd "C-x k") 'kill-this-buffer)
 
-(when (string-equal system-type "windows-nt")
-  (setenv "HOME" (concat (getenv "HOMEDRIVE") (getenv "HOMEPATH"))))
-
 ;; If you enable winner-mode, you get something akin to a stack-based
 ;; undo/redo functionality for all your window configuration changes.
 ;; By default, C-c <left> gets bound to winner-undo, while C-c <right> performs winner-redo.
@@ -111,9 +121,12 @@
 
 (add-to-list 'completion-styles 'initials t)
 
-;; (custom-set-faces '(default ((t (:family "DejaVu Sans Mono" :foundry "PfEd" :slant normal :weight normal :height 85 :width normal)))))
-;; (set-default-font "DejaVu Sans Mono 9")
-(set-default-font "Hack 9")
+(if (find-font (font-spec :name "Hack"))
+    (if (string-equal system-type "windows-nt")
+        (set-face-attribute 'default nil :font "Hack" :height 80)
+      (set-default-font "Hack 9"))
+  (error "Install Hack font from https://github.com/source-foundry/Hack")
+  )
 
 (electric-pair-mode 1)
 (setq electric-pair-preserve-balance nil)
@@ -146,8 +159,6 @@
 (global-set-key (kbd "C-x l h") `hide-subtree)
 (global-set-key (kbd "C-x l s") `show-subtree)
 (global-set-key (kbd "C-x l a") `show-all)
-
-(global-set-key (kbd "C-x m") `shell)
 
 ;; Open buffers list in the same frame
 ;; (global-set-key "\C-x\C-b" 'buffer-menu)
@@ -206,10 +217,11 @@
     ))
 
 (message "Init use-package")
-(dolist (package '(use-package))
-   (unless (package-installed-p package)
-     (package-install package)))
-
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
+(require 'use-package)
+                   
 (use-package hydra
   :ensure t
   )
@@ -403,14 +415,14 @@
   (define-key company-active-map (kbd "C-h") 'backward-delete-char-untabify)
   (setq company-tooltip-limit 10
         company-idle-delay 0.05
-        company-minimum-prefix-length 2
+        company-minimum-prefix-length 3
         company-show-numbers t
         company-tooltip-align-annotations t)
   )
 
 (message "Init lsp-mode")
 (use-package lsp-mode
-  :quelpa (lsp-mode :fetcher github :repo "emacs-lsp/lsp-mode")
+  ;; :quelpa (lsp-mode :fetcher github :repo "emacs-lsp/lsp-mode")
   :ensure t
   :config
   (setq lsp-auto-guess-root t)
@@ -782,6 +794,16 @@
 (use-package csv-mode
   :ensure t)
 
+
+
+(if (string-equal system-type "windows-nt")
+  (use-package powershell
+  :config
+  (global-set-key (kbd "C-x m") `powershell)
+  )
+  (global-set-key (kbd "C-x m") `shell))
+
+
 (message "Python")
 
 ;; pip install isort
@@ -977,7 +999,7 @@
 (message "Init tabbar-ruler")
 (use-package tabbar-ruler
   :ensure t
-  :quelpa (tabbar-ruler :fetcher github :repo "mattfidler/tabbar-ruler.el")
+  ;; :quelpa (tabbar-ruler :fetcher github :repo "mattfidler/tabbar-ruler.el")
   :config
   (setq tabbar-ruler-global-tabbar t) ; If you want tabbar
   (setq tabbar-ruler-global-ruler nil) ; if you want a global ruler
@@ -1130,9 +1152,12 @@
 ;; $ install -m 0644 -D all-the-icons.el/fonts/*.ttf -t ~/.local/share/fonts/
 (use-package all-the-icons
   :ensure t
-  :init 
-  (unless (member "all-the-icons" (font-family-list))
-    (all-the-icons-install-fonts t))
+  :init
+  (if (string-equal system-type "windows-nt")
+      (setq font-dest "C:\\Windows\\Fonts")
+      (unless (member "all-the-icons" (font-family-list))
+        (all-the-icons-install-fonts t))
+  )
   :config
   (all-the-icons-octicon "file-binary")
   )
