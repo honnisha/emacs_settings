@@ -117,9 +117,7 @@
 (add-to-list 'completion-styles 'initials t)
 
 (if (find-font (font-spec :name "Hack"))
-    (if (string-equal system-type "windows-nt")
-        (set-face-attribute 'default nil :font "Hack" :height 80)
-      (set-default-font "Hack 9"))
+    (set-face-attribute 'default nil :font "Hack" :height 83)
   (error "Install Hack font from https://github.com/source-foundry/Hack")
   )
 
@@ -451,6 +449,7 @@
   (push 'company-lsp company-backends)
   (setq company-lsp-enable-snippet t)
   (define-key python-mode-map (kbd "<tab>") #'company-lsp)
+  (define-key rust-mode-map (kbd "<tab>") #'company-lsp)
   )
 
 (use-package lsp-ui
