@@ -37,7 +37,7 @@
       desktop-base-lock-name      "lock"
       desktop-path                (list desktop-dirname)
       desktop-save                t
-      desktop-files-not-to-save   "^$" ;reload tramp paths
+      desktop-files-not-to-save   "^$"
       desktop-load-locked-desktop t
       desktop-auto-save-timeout   10)
 
@@ -65,8 +65,6 @@
 (desktop-save-mode 1)
 
 (message "Init emacs settings")
-
-(setq backup-directory-alist '(("~/.saves/")))
 
 (setq mouse-wheel-progressive-speed nil)
 (setq mouse-wheel-scroll-amount '(5))
@@ -529,6 +527,8 @@
 
   (define-key rust-mode-map (kbd "C-r r") 'lsp-ui-peek-find-references)
   (define-key rust-mode-map (kbd "C-r i") 'lsp-ui-peek-find-implementation)
+
+  (define-key rust-mode-map (kbd "<tab>") #'company-lsp)
   )
 
 (use-package racer
@@ -738,7 +738,7 @@
 
 (use-package flycheck
   :ensure t
-  :init
+  :config
   (global-flycheck-mode)
   (flycheck-julia-setup)
   (setq flycheck-disabled-checkers nil)
@@ -747,6 +747,14 @@
   (global-set-key (kbd "M-z") 'flycheck-previous-error)
   (global-set-key (kbd "C-z") 'flycheck-next-error)
   (global-set-key (kbd "C-M-z") 'flycheck-copy-errors-as-kill)
+  )
+
+(use-package flycheck-pos-tip
+  :ensure t
+  :config
+  (setq flycheck-pos-tip-timeout 100000)
+  (with-eval-after-load 'flycheck
+    (flycheck-pos-tip-mode))
   )
 
 (use-package flycheck-julia
@@ -1303,6 +1311,10 @@
 
 ;; Make sure that your Emacs was compiled with module support.
 ;; Check that module-file-suffix is not nil
+
+(message "Load functions.el")
+(load-file (concat settings_path "functions.el"))
+
 (message "Init so libs")
 (message module-file-suffix)
 (if module-file-suffix
@@ -1322,5 +1334,3 @@
 (message "Read desktop")
 (call-interactively 'desktop-read t (vector "~/.emacs-save/" t))
 (message "End main.py")
-
-(load-file (concat settings_path "functions.el"))
