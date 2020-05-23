@@ -217,6 +217,14 @@
 (use-package hydra
   :ensure t
   )
+                   
+(use-package vlfi
+  :quelpa (vlfi :fetcher github :repo "m00natic/vlfi")
+  :ensure t
+  :config
+  (custom-set-variables
+   '(vlf-application 'dont-ask))
+  )
 
 (use-package pretty-hydra
   :ensure t
