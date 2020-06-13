@@ -62,6 +62,11 @@
    kept-old-versions 2
    version-control t)
 
+(setq make-backup-files nil)
+
+(setq auto-save-file-name-transforms
+  `(("~/.emacs-saves/" t)))
+
 (desktop-save-mode 1)
 
 (message "Init emacs settings")
@@ -218,6 +223,10 @@
   :ensure t
   )
                    
+(use-package quelpa
+  :ensure t
+  )
+                   
 (use-package vlfi
   :quelpa (vlfi :fetcher github :repo "m00natic/vlfi")
   :ensure t
@@ -357,7 +366,7 @@
 (use-package winum
   :ensure t
   :config
-  (setq winum-ignored-buffers-regexp (list (rx "*neotree*")))
+  ;; (setq winum-ignored-buffers-regexp (list (rx "*neotree*")))
   (setq window-numbering-scope 'global)
   (winum-mode)
   (global-set-key (kbd "M-1") 'winum-select-window-1)
@@ -455,7 +464,6 @@
   (push 'company-lsp company-backends)
   (setq company-lsp-enable-snippet t)
   (define-key python-mode-map (kbd "<tab>") #'company-lsp)
-  (define-key rust-mode-map (kbd "<tab>") #'company-lsp)
   )
 
 (use-package lsp-ui
@@ -644,12 +652,12 @@
   (setq yascroll:delay-to-hide nil)
   )
 
-(use-package flycheck-rust
-  :ensure t
-  :config
-  (with-eval-after-load 'rust-mode
-    (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
-  )
+;; (use-package flycheck-rust
+;;   :ensure t
+;;   :config
+;;   (with-eval-after-load 'rust-mode
+;;     (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
+;;   )
 
 ;; (use-package ess
 ;;   :ensure t)
@@ -1163,9 +1171,9 @@
 
 ;; M-x customize-face RET auto-dim-other-buffers-face RET #333843
 ;;(use-package auto-dim-other-buffers
-  ;; :config
-  ;; (auto-dim-other-buffers-mode t)
-  ;; )
+;;  :config
+;;  (auto-dim-other-buffers-mode t)
+;;  )
 
 ;; Since I just was bitten by this. Installation of the fonts is as simple as:
 ;; $ git clone https://github.com/domtronn/all-the-icons.el.git
@@ -1323,19 +1331,19 @@
 (message "Load functions.el")
 (load-file (concat settings_path "functions.el"))
 
-(message "Init so libs")
-(message module-file-suffix)
-(if module-file-suffix
-    (if (string-suffix-p module-file-suffix ".so")
-        (progn (message module-file-suffix)
-               
-               (load (concat settings_path "parsers/target/debug/libparserslib.so"))
-               (load-file (concat settings_path "menu.el"))
-
-               (global-set-key (kbd "C-x n f") 'frelansim-links)
-               ))
-  (message "module-file-suffix is nil")
-  )
+;; (message "Init so libs")
+;; (message module-file-suffix)
+;; (if module-file-suffix
+;;     (if (string-suffix-p module-file-suffix ".so")
+;;         (progn (message module-file-suffix)
+;;                
+;;                (load (concat settings_path "parsers/target/debug/libparserslib.so"))
+;;                (load-file (concat settings_path "menu.el"))
+;; 
+;;                (global-set-key (kbd "C-x n f") 'frelansim-links)
+;;                ))
+;;   (message "module-file-suffix is nil")
+;;   )
 
 (define-key lisp-mode-map (kbd "C-i") 'describe-function-in-popup)
 
