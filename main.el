@@ -9,10 +9,10 @@
 ;; https://emacs.stackexchange.com/a/2989
 (setq package-archives
       '(("elpa"     . "https://elpa.gnu.org/packages/")
-        ("melpa-stable" . "https://stable.melpa.org/packages/")
+        ;("melpa-stable" . "https://stable.melpa.org/packages/")
         ("melpa"        . "https://melpa.org/packages/"))
       package-archive-priorities
-      '(("melpa-stable" . 10)
+      '(;("melpa-stable" . 10)
         ("elpa"     . 5)
         ("melpa"        . 0)))
 (package-initialize)
@@ -220,6 +220,12 @@
   (package-install 'use-package))
 (require 'use-package)
 
+(use-package python-mode
+  :ensure t
+  :config
+  (global-eldoc-mode -1)
+  )
+
 (use-package hydra
   :ensure t
   )
@@ -316,13 +322,13 @@
   :config (quelpa-use-package-activate-advice)
   )
                    
-(use-package vlfi
-  :quelpa (vlfi :fetcher github :repo "m00natic/vlfi")
-  :ensure t
-  :config
-  (custom-set-variables
-   '(vlf-application 'dont-ask))
-  )
+;; (use-package vlfi
+;;   :quelpa (vlfi :fetcher github :repo "m00natic/vlfi")
+;;   :ensure t
+;;   :config
+;;   (custom-set-variables
+;;    '(vlf-application 'dont-ask))
+;;   )
 
 ;; Available only on mercurial versions 1.9 or higher
 (setq monky-process-type 'cmdserver)
@@ -393,7 +399,7 @@
   (global-set-key (kbd "C-c <mouse-1>") 'mc/add-cursor-on-click)
   (global-set-key (kbd "C-c n") 'mc/insert-numbers)
   ;; (global-set-key (kbd "C-c l") 'mc/insert-letters)
-  (global-set-key (kbd "C-c c") 'mc/edit-lines)
+  ;; (global-set-key (kbd "C-c c") 'mc/edit-lines)
   (global-set-key (kbd "C-c C-n") 'mc/mark-next-like-this-word) ; choose same word next
   (global-set-key (kbd "C-c C-p") 'mc/mark-previous-word-like-this) ; choose same word previous
   )
@@ -451,6 +457,8 @@
   (setq lsp-enable-indentation nil)
   (setq lsp-enable-snippet t)
   (setq lsp-prefer-flymake nil)
+
+  (setq lsp-diagnostic-package :none)
   
   (define-key python-mode-map (kbd "C-i") 'lsp-describe-thing-at-point)
   ;; (define-key python-mode-map (kbd "C-o") #'lsp-find-definition)
@@ -467,26 +475,26 @@
   (define-key python-mode-map (kbd "<tab>") #'company-lsp)
   )
 
-(use-package lsp-ui
-  :ensure t
-  :config
-  (add-hook 'lsp-mode-hook 'lsp-ui-mode)
-
-  (setq lsp-ui-doc-enable nil)
-  (setq lsp-ui-flycheck-enable t)
-  (setq lsp-ui-peek-enable nil)
-  (setq lsp-ui-sideline-enable nil)
-  
-  (setq lsp-ui-doc-alignment (quote frame))
-  (setq lsp-ui-doc-delay 0.2)
-  (setq lsp-ui-doc-max-height 30)
-  (setq lsp-ui-doc-max-width 100)
-  (setq lsp-ui-doc-use-webkit nil)
-  
-  (global-set-key (kbd "<C-M-return>") 'lsp-ui-imenu)
-  
-  (define-key python-mode-map (kbd "C-o") #'lsp-ui-peek-find-definitions)
-  )
+;; (use-package lsp-ui
+;;   :ensure t
+;;   :config
+;;   (add-hook 'lsp-mode-hook 'lsp-ui-mode)
+;; 
+;;   (setq lsp-ui-doc-enable nil)
+;;   (setq lsp-ui-flycheck-enable t)
+;;   (setq lsp-ui-peek-enable nil)
+;;   (setq lsp-ui-sideline-enable nil)
+;;   
+;;   (setq lsp-ui-doc-alignment (quote frame))
+;;   (setq lsp-ui-doc-delay 0.2)
+;;   (setq lsp-ui-doc-max-height 30)
+;;   (setq lsp-ui-doc-max-width 100)
+;;   (setq lsp-ui-doc-use-webkit nil)
+;;   
+;;   (global-set-key (kbd "<C-M-return>") 'lsp-ui-imenu)
+;;   
+;;   (define-key python-mode-map (kbd "C-o") #'lsp-ui-peek-find-definitions)
+;;   )
 
 ;; (use-package dap-mode
 ;;   :ensure t
@@ -754,16 +762,20 @@
   )
 
 (use-package flycheck
+  :quelpa (flycheck :fetcher github :repo "flycheck/flycheck")
   :ensure t
   :config
+
   (global-flycheck-mode)
-  (flycheck-julia-setup)
-  (setq flycheck-disabled-checkers nil)
+  ;; (flycheck-julia-setup)
+
   (setq flycheck-highlighting-mode (quote symbols))
 
   (global-set-key (kbd "M-z") 'flycheck-previous-error)
   (global-set-key (kbd "C-z") 'flycheck-next-error)
   (global-set-key (kbd "C-M-z") 'flycheck-copy-errors-as-kill)
+
+  (add-to-list 'flycheck-disabled-checkers 'lsp)
   )
 
 (use-package flycheck-pos-tip
@@ -772,14 +784,6 @@
   (setq flycheck-pos-tip-timeout 100000)
   (with-eval-after-load 'flycheck
     (flycheck-pos-tip-mode))
-  )
-
-(use-package flycheck-julia
-  :ensure t
-  )
-
-(use-package flycheck-mypy
-  :ensure t
   )
 
 (message "Web-mode")
@@ -849,6 +853,8 @@
 (use-package virtualenvwrapper
   :ensure t
   :config
+  (venv-projectile-auto-workon)
+
   (venv-initialize-interactive-shells) ;; if you want interactive shell support
   (venv-initialize-eshell) ;; if you want eshell support
   ;; note that setting `venv-location` is not necessary if you
@@ -906,13 +912,6 @@
   )
 
 (define-key python-mode-map (kbd "C-x b") #'hydra-python/body)
-
-;; ITS BAD (if you as me)
-;; (use-package python-mode
-;;   :ensure t
-;;   :config
-;;   (add-hook 'python-mode-hook (lambda () (auto-complete-mode -1)))
-;;   )
 
 ;; (use-package company-jedi
 ;;   :ensure t
@@ -1010,13 +1009,13 @@
   )
 
 ;; pip install flake8
-(use-package flymake-python-pyflakes
-  :ensure t
-  :config
-  (add-hook 'python-mode-hook 'flymake-python-pyflakes-load)
-  ;; (setq flymake-python-pyflakes-executable "flake8")
-  (setq flymake-python-pyflakes-extra-arguments '("--ignore=C0111"))
-  )
+;; (use-package flymake-python-pyflakes
+;;   :ensure t
+;;   :config
+;;   (add-hook 'python-mode-hook 'flymake-python-pyflakes-load)
+;;   ;; (setq flymake-python-pyflakes-executable "flake8")
+;;   (setq flymake-python-pyflakes-extra-arguments '("--ignore=C0111"))
+;;   )
 
 ;; (use-package tabbar
 ;;   :ensure t
