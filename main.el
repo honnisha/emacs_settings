@@ -9,10 +9,10 @@
 ;; https://emacs.stackexchange.com/a/2989
 (setq package-archives
       '(("elpa"     . "https://elpa.gnu.org/packages/")
-        ;("melpa-stable" . "https://stable.melpa.org/packages/")
+        ("melpa-stable" . "https://stable.melpa.org/packages/")
         ("melpa"        . "https://melpa.org/packages/"))
       package-archive-priorities
-      '(;("melpa-stable" . 10)
+      '(("melpa-stable" . 10)
         ("elpa"     . 5)
         ("melpa"        . 0)))
 (package-initialize)
@@ -136,6 +136,8 @@
 (global-set-key (kbd "C-c i") `linum-mode)
 
 (message "Init base hotkeys")
+
+(global-set-key (kbd "<f2>") 'bookmark-jump)
 
 (global-set-key (kbd "<f2>") 'bookmark-jump)
 (global-set-key (kbd "<f3>") 'bookmark-set)
@@ -266,7 +268,8 @@
   )
 
 ;; smerge
-(setq smerge-command-prefix "\C-cv")
+
+(setq smerge-command-prefix "\C-c v")
 (pretty-hydra-define hydra-smerge
   (:color blue)
   ("smerge-command-prefix +"
@@ -438,7 +441,7 @@
 
 (message "Init lsp-mode")
 (use-package lsp-mode
-  ;; :quelpa (lsp-mode :fetcher github :repo "emacs-lsp/lsp-mode")
+  :quelpa (lsp-mode :fetcher github :repo "emacs-lsp/lsp-mode")
   :ensure t
   :config
   (setq lsp-auto-guess-root t)
@@ -468,6 +471,7 @@
   )
 
 (use-package company-lsp
+  :quelpa (company-lsp :fetcher github :repo "tigersoldier/company-lsp")
   :ensure t
   :config
   (push 'company-lsp company-backends)
@@ -475,48 +479,27 @@
   (define-key python-mode-map (kbd "<tab>") #'company-lsp)
   )
 
-;; (use-package lsp-ui
-;;   :ensure t
-;;   :config
-;;   (add-hook 'lsp-mode-hook 'lsp-ui-mode)
-;; 
-;;   (setq lsp-ui-doc-enable nil)
-;;   (setq lsp-ui-flycheck-enable t)
-;;   (setq lsp-ui-peek-enable nil)
-;;   (setq lsp-ui-sideline-enable nil)
-;;   
-;;   (setq lsp-ui-doc-alignment (quote frame))
-;;   (setq lsp-ui-doc-delay 0.2)
-;;   (setq lsp-ui-doc-max-height 30)
-;;   (setq lsp-ui-doc-max-width 100)
-;;   (setq lsp-ui-doc-use-webkit nil)
-;;   
-;;   (global-set-key (kbd "<C-M-return>") 'lsp-ui-imenu)
-;;   
-;;   (define-key python-mode-map (kbd "C-o") #'lsp-ui-peek-find-definitions)
-;;   )
+(use-package lsp-ui
+  :quelpa (lsp-ui :fetcher github :repo "emacs-lsp/lsp-ui")
+  :ensure t
+  :config
+  (add-hook 'lsp-mode-hook 'lsp-ui-mode)
 
-;; (use-package dap-mode
-;;   :ensure t
-;;   :config
-;;   (dap-mode 1)
-;;   (dap-ui-mode 1)
-;;   ;; enables mouse hover support
-;;   (dap-tooltip-mode 1)
-;;   ;; use tooltips for mouse hover
-;;   ;; if it is not enabled `dap-mode' will use the minibuffer.
-;;   (tooltip-mode 1)
-;; 
-;;   (require 'dap-lldb)
-;; 
-;;   ;; pip install "ptvsd>=4.2"
-;;   (require 'dap-python)
-;;   )
-
-;; (use-package lsp-treemacs
-;;   :ensure t
-;;   :commands lsp-treemacs-errors-list
-;;   )
+  (setq lsp-ui-doc-enable nil)
+  (setq lsp-ui-flycheck-enable t)
+  (setq lsp-ui-peek-enable nil)
+  (setq lsp-ui-sideline-enable nil)
+  
+  (setq lsp-ui-doc-alignment (quote frame))
+  (setq lsp-ui-doc-delay 0.2)
+  (setq lsp-ui-doc-max-height 30)
+  (setq lsp-ui-doc-max-width 100)
+  (setq lsp-ui-doc-use-webkit nil)
+  
+  (global-set-key (kbd "<C-M-return>") 'lsp-ui-imenu)
+  
+  (define-key python-mode-map (kbd "C-o") #'lsp-ui-peek-find-definitions)
+  )
 
 ;; Rust
 (message "Rust")
@@ -863,7 +846,8 @@
   (setq venv-location "~/.virtualenvs/")
   (global-set-key (kbd "C-c a") 'venv-workon)
   (setq venv-location '("~/.virtualenvs/py3/"
-                        "~/.virtualenvs/gc/"))
+                        "~/.virtualenvs/eblitz/"
+                        "~/.virtualenvs/stream/"))
   )
 
 ;; (use-package eglot

@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: up
+# key: up
+# group: debug
+# --
+sudo docker-compose up
