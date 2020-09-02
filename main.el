@@ -272,7 +272,7 @@
 (setq smerge-command-prefix "\C-c v")
 (pretty-hydra-define hydra-smerge
   (:color blue)
-  ("smerge-command-prefix +"
+  ("C-c v +"
    (("n" smerge-next)
     ("p" smerge-previous)
     ("RET" smerge-keep-current)
@@ -286,6 +286,12 @@
     ("v" w3m-bookmark-view)
     ))
   )
+(define-key smerge-mode-map (kbd "C-c v n") 'smerge-next)
+(define-key smerge-mode-map (kbd "C-c v p") 'smerge-previous)
+(define-key smerge-mode-map (kbd "C-c v RET") 'smerge-keep-current)
+(define-key smerge-mode-map (kbd "C-c v m") 'smerge-keep-mine)
+(define-key smerge-mode-map (kbd "C-c v o") 'smerge-keep-other)
+(define-key smerge-mode-map (kbd "C-c v e") 'smerge-ediff)
 
 (define-key smerge-mode-map (kbd "C-x b") #'hydra-smerge/body)
 
@@ -433,7 +439,7 @@
   (global-company-mode)
   (define-key company-active-map (kbd "C-h") 'backward-delete-char-untabify)
   (setq company-tooltip-limit 10
-        company-idle-delay 0.05
+        company-idle-delay 0.00
         company-minimum-prefix-length 3
         company-show-numbers t
         company-tooltip-align-annotations t)
@@ -462,21 +468,31 @@
   (setq lsp-prefer-flymake nil)
 
   (setq lsp-diagnostic-package :none)
+
+  (setq lsp-signature-auto-activate nil)
   
   (define-key python-mode-map (kbd "C-i") 'lsp-describe-thing-at-point)
   ;; (define-key python-mode-map (kbd "C-o") #'lsp-find-definition)
     
   (define-key python-mode-map (kbd "C-r r") 'lsp-ui-peek-find-references)
   (define-key python-mode-map (kbd "C-r i") 'lsp-ui-peek-find-implementation)
+
+  (define-key python-mode-map (kbd "<tab>") 'company-capf)
+
+  (setq lsp-modeline-diagnostics-scope :project)
   )
 
-(use-package company-lsp
-  :quelpa (company-lsp :fetcher github :repo "tigersoldier/company-lsp")
+(use-package lsp-python-ms
+  :quelpa (lsp-python-ms :fetcher github :repo "emacs-lsp/lsp-python-ms")
+  :ensure t
+  :init (setq lsp-python-ms-auto-install-server t)
+  )
+
+(use-package helm-lsp
+  :quelpa (helm-lsp :fetcher github :repo "emacs-lsp/helm-lsp")
   :ensure t
   :config
-  (push 'company-lsp company-backends)
-  (setq company-lsp-enable-snippet t)
-  (define-key python-mode-map (kbd "<tab>") #'company-lsp)
+  (define-key python-mode-map (kbd "C-x o") 'xref-find-apropos)
   )
 
 (use-package lsp-ui
@@ -525,7 +541,7 @@
   (add-hook 'racer-mode-hook #'eldoc-mode)
   
   (add-hook 'racer-mode-hook #'company-mode)
-  (define-key rust-mode-map (kbd "TAB") #'company-indent-or-complete-common)
+  (define-key rust-mode-map (kbd "TAB") 'company-capf)
   (setq company-tooltip-align-annotations t)
   
   ;; (define-key rust-mode-map (kbd "C-i") #'racer-describe-tooltip)
@@ -535,8 +551,6 @@
 
   (define-key rust-mode-map (kbd "C-r r") 'lsp-ui-peek-find-references)
   (define-key rust-mode-map (kbd "C-r i") 'lsp-ui-peek-find-implementation)
-
-  (define-key rust-mode-map (kbd "<tab>") #'company-lsp)
   )
 
 (use-package racer
@@ -683,9 +697,8 @@
   )
 
 (use-package restclient
+  :quelpa (restclient :fetcher github :repo "pashky/restclient.el")
   :ensure t
-  :config
-  (define-key restclient-mode-map (kbd "M-RET") 'helm-restclient)
   )
 
 (use-package helm-projectile
@@ -890,7 +903,7 @@
 (pretty-hydra-define hydra-python
   (:color blue)
   ("IDE"
-   (("C-x o" pyimport-insert-missing)
+   (
    ("C-x i" pyimport-remove-unused)
     ))
   )
@@ -942,7 +955,7 @@
 (use-package pyimport
   :ensure t
   :config
-  (define-key python-mode-map (kbd "C-x o") 'pyimport-insert-missing)
+  ;; (define-key python-mode-map (kbd "C-x o") 'pyimport-insert-missing)
   (define-key python-mode-map (kbd "C-x i") 'pyimport-remove-unused)
   )
 
@@ -1259,9 +1272,12 @@
   ;; (setq org-log-done 'time)
 
   (define-key org-mode-map (kbd "C-c l") 'org-scontexttore-link)
-  (define-key org-mode-map (kbd "C-c a") 'org-agenda)
   (define-key org-mode-map (kbd "C-h") 'delete-backward-char)
   (define-key org-mode-map (kbd "M-h") 'backward-delete-word)
+
+  (define-key org-mode-map (kbd "C-c a") 'org-clock-in)
+  (define-key org-mode-map (kbd "C-c e") 'org-clock-out)
+  (define-key org-mode-map (kbd "C-c c") 'org-clock-in-last)
 
   (define-key org-mode-map (kbd "C-i") 'org-shiftright)
   (define-key org-mode-map (kbd "C-S-i") 'org-shiftleft)
@@ -1284,6 +1300,9 @@
   (global-set-key (kbd "C-x n !") (lambda() (interactive)(find-file (concat dropbox_path "org_files/main.org"))))
   (global-set-key (kbd "C-x n @") (lambda() (interactive)(find-file (concat dropbox_path "org_files/work.org"))))
   (custom-set-faces '(org-link ((t (:underline "dodger blue" :foreground "dodger blue")))))
+  (add-hook 'org-mode-hook #'(lambda ()
+                               (visual-line-mode)
+                               (org-indent-mode)))
   )
 
 (use-package org-super-agenda

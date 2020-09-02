@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: rai
+# key: rai
+# group: debug
+# --
+raise Exception()
