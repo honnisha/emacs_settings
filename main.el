@@ -17,6 +17,8 @@
         ("melpa"        . 0)))
 (package-initialize)
 
+(setq backup-directory-alist '(("." . "~/emacs.d/backups/")))
+
 (tool-bar-mode -1)
 
 (remove-hook 'kill-emacs-hook 'ac-comphist-save)
@@ -846,6 +848,21 @@
 (define-key python-mode-map (kbd "<tab>") 'python-indent-shift-right)
 (define-key python-mode-map (kbd "<backtab>") 'python-indent-shift-left)
 
+;; sudo apt install virtualenv
+;; pip install virtualenvwrapper
+;; source /usr/local/bin/virtualenvwrapper.sh
+;; Add this to your .bashrc / .bash_profile / .zshrc:
+;; # load virtualenvwrapper for python (after custom PATHs)
+;; source /home/user/.local/bin/virtualenvwrapper.sh
+;; ~/.local/bin/virtualenvwrapper.sh
+
+;; VIRTUALENVWRAPPER_PYTHON="$(command \which python)"
+;; sudo pip3 install virtualenv==20.0.23
+
+;; mkvirtualenv env1
+;; mkvirtualenv --python=python3.7 py3
+;; pip install 'python-language-server[all]'
+
 (use-package virtualenvwrapper
   :ensure t
   :config
@@ -880,17 +897,6 @@
 ;;   (add-hook 'projectile-after-switch-project-hook 'auto-virtualenv-set-virtualenv)
 ;;   (add-hook 'pyvenv-post-activate-hooks 'wcx-restart-python)
 ;;   )
-
-;; sudo apt install virtualenv
-;; pip install virtualenvwrapper
-;; source /usr/local/bin/virtualenvwrapper.sh
-;; Add this to your .bashrc / .bash_profile / .zshrc:
-;; # load virtualenvwrapper for python (after custom PATHs)
-;; source /home/user/.local/bin/virtualenvwrapper.sh
-
-;; mkvirtualenv env1
-;; mkvirtualenv --python=python3.7 py3
-;; pip install 'python-language-server[all]'
 
 ;; pylint --generate-rcfile > ~/.pylintrc
 ;; E0401,C0111,R0903,W0613,C0103
