@@ -17,6 +17,9 @@
         ("melpa"        . 0)))
 (package-initialize)
 
+;; How to overwrite text by yank in Emacs?
+(delete-selection-mode 1)
+
 (setq backup-directory-alist '(("." . "~/emacs.d/backups/")))
 
 (tool-bar-mode -1)
@@ -87,9 +90,6 @@
 
 ;; No more typing the whole yes or no. Just y or n will do.
 (fset 'yes-or-no-p 'y-or-n-p)
-
-;; How to overwrite text by yank in Emacs?
-(delete-selection-mode 1)
 
 ;; To make the cursor even more visible
 (global-hl-line-mode)
@@ -230,6 +230,16 @@
   (global-eldoc-mode -1)
   )
 
+(use-package ibuffer-projectile
+  :ensure t
+  :config
+  (add-hook 'ibuffer-hook
+    (lambda ()
+      (ibuffer-projectile-set-filter-groups)
+      (ibuffer-switch-to-saved-filter-groups "default")
+      ))
+  )
+
 (use-package hydra
   :ensure t
   )
@@ -274,13 +284,14 @@
 (setq smerge-command-prefix "\C-c v")
 (pretty-hydra-define hydra-smerge
   (:color blue)
-  ("C-c v +"
+  ("smerge-mode-map"
    (("n" smerge-next)
     ("p" smerge-previous)
-    ("RET" smerge-keep-current)
+    ("c" smerge-keep-current)
     ("m" smerge-keep-mine)
-    ("o" smerge-keep-other)
-    ("E" smerge-ediff)
+    ("o" smerge-resolve)
+    ("r" smerge-ediff)
+    ("R" smerge-resolve-all)
     )
    "Bookmarks"
    (("a" w3m-bookmark-add-current-url)
@@ -288,14 +299,17 @@
     ("v" w3m-bookmark-view)
     ))
   )
-(define-key smerge-mode-map (kbd "C-c v n") 'smerge-next)
-(define-key smerge-mode-map (kbd "C-c v p") 'smerge-previous)
-(define-key smerge-mode-map (kbd "C-c v RET") 'smerge-keep-current)
-(define-key smerge-mode-map (kbd "C-c v m") 'smerge-keep-mine)
-(define-key smerge-mode-map (kbd "C-c v o") 'smerge-keep-other)
-(define-key smerge-mode-map (kbd "C-c v e") 'smerge-ediff)
 
-(define-key smerge-mode-map (kbd "C-x b") #'hydra-smerge/body)
+(define-key smerge-mode-map (kbd "<down>") 'smerge-next)
+(define-key smerge-mode-map (kbd "n") 'smerge-next)
+(define-key smerge-mode-map (kbd "<up>") 'smerge-prev)
+(define-key smerge-mode-map (kbd "p") 'smerge-prev)
+(define-key smerge-mode-map (kbd "с") 'smerge-keep-current)
+(define-key smerge-mode-map (kbd "m") 'smerge-keep-mine)
+(define-key smerge-mode-map (kbd "o") 'smerge-keep-other)
+(define-key smerge-mode-map (kbd "r") 'smerge-resolve)
+(define-key smerge-mode-map (kbd "R") 'smerge-resolve-all)
+(global-set-key (kbd "C-x b") #'hydra-smerge/body)
 
 (use-package eww
   :ensure t
@@ -368,7 +382,7 @@
   (global-set-key (kbd "C-c C-m") 'magit-dispatch-popup)
   (global-set-key (kbd "C-x v h") 'magit-log-buffer-file)
   (global-set-key (kbd "C-x v b") 'magit-blame)
-  
+
   (define-key magit-mode-map (kbd "<C-tab>") (lambda () (interactive) (other-window 1)))
   (define-key magit-mode-map (kbd "M-1") 'winum-select-window-1)
   (define-key magit-mode-map (kbd "M-2") 'winum-select-window-2)
@@ -436,6 +450,7 @@
 ;;   (add-hook 'ropemacs-mode-hook 'fci-mode))
 
 (use-package company
+  :quelpa (company-mode :fetcher github :repo "company-mode/company-mode")
   :ensure t
   :config
   (global-company-mode)
@@ -456,7 +471,7 @@
   ;; (add-hook 'rust-mode-hook #'lsp)
 
   ;; sudo pip install 'python-language-server[all]'
-  (add-hook 'python-mode-hook #'lsp)
+  ;; (add-hook 'python-mode-hook #'lsp)
   (setq lsp-pyls-plugins-jedi-references-enabled nil)
   (setq lsp-pyls-server-command (quote ("pyls")))
 
@@ -516,7 +531,7 @@
   
   (global-set-key (kbd "<C-M-return>") 'lsp-ui-imenu)
   
-  (define-key python-mode-map (kbd "C-o") #'lsp-ui-peek-find-definitions)
+  ;; (define-key python-mode-map (kbd "C-o") #'lsp-ui-peek-find-definitions)
   )
 
 ;; Rust
@@ -588,6 +603,10 @@
 ;;   (global-set-key (kbd "<f2>")   'bm-next)
 ;;   (global-set-key (kbd "<S-f2>") 'bm-previous))
 
+(use-package yaml-mode
+  :ensure t
+  )
+
 (use-package dockerfile-mode
   :quelpa (dockerfile-mode :fetcher github :repo "spotify/dockerfile-mode")
   :ensure t
@@ -649,8 +668,9 @@
 (use-package company-racer
   :ensure t
   :config
-  (with-eval-after-load 'company
+  (eval-after-load "company"
     (add-to-list 'company-backends 'company-racer))
+  (define-key python-mode-map (kbd "<tab>") 'company-indent-or-complete-common)
   )
 
 (use-package yascroll
@@ -679,7 +699,7 @@
   (setq helm-split-window-in-side-p t)
   ;; (global-set-key (kbd "C-x b") 'helm-buffers-list)
   ;; (global-set-key (kbd "C-x s") 'helm-grep-do-git-grep)
-  (global-set-key (kbd "C-SPC") 'helm-buffers-list)
+  (global-set-key (kbd "C-S-SPC") 'helm-buffers-list)
   (global-unset-key (kbd "C-x C-f"))
   (global-set-key (kbd "C-x C-f") 'helm-find-files)
   ;; (global-set-key (kbd "M-x") 'helm-M-x)
@@ -708,7 +728,7 @@
   :config
   (global-unset-key (kbd "C-M-j"))
   (global-set-key (kbd "C-M-j") 'helm-projectile-switch-project)
-  (global-set-key (kbd "C-S-SPC") 'helm-projectile-switch-to-buffer)
+  (global-set-key (kbd "C-SPC") 'helm-projectile-switch-to-buffer)
   )
 
 (use-package projectile
@@ -785,6 +805,7 @@
   )
 
 (message "Web-mode")
+(setq js-indent-level 2)
 (use-package web-mode
   :ensure t
   :config
@@ -792,6 +813,16 @@
 
   (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
   (add-to-list 'auto-mode-alist '("\\.vue?\\'" . web-mode))
+  )
+
+(use-package yafolding
+  :ensure t
+  :config
+
+  (define-key yafolding-mode-map (kbd "<C-left>") 'yafolding-hide-element)
+  (define-key yafolding-mode-map (kbd "<C-right>") 'yafolding-show-element)
+  (define-key yafolding-mode-map (kbd "<C-up>") 'yafolding-hide-parent-element)
+  (define-key yafolding-mode-map (kbd "<C-down>") 'yafolding-toggle-all)
   )
 
 (setq web-mode-markup-indent-offset 2)
@@ -820,12 +851,32 @@
   :ensure t)
 
 (message "Shell")
+(use-package aweshell
+  :quelpa (aweshell :fetcher github :repo "manateelazycat/aweshell")
+  :ensure t
+  :config
+  (setq eshell-up-print-parent-dir nil)
+
+  (set-face-attribute 'epe-pipeline-delimiter-face nil :foreground "#4169e1")
+  (set-face-attribute 'epe-pipeline-user-face nil :foreground "cornflower blue")
+  (set-face-attribute 'epe-pipeline-host-face nil :foreground "dodger blue")
+  (set-face-attribute 'epe-pipeline-time-face nil :foreground "cornflower")
+  )
+
+(use-package multi-term
+  :quelpa (multi-term :fetcher github :repo "manateelazycat/multi-term")
+  :ensure t
+  :config
+  (define-key term-raw-map (kbd "C-h") 'term-send-backspace)
+  )
+
 (if (string-equal system-type "windows-nt")
   (use-package powershell
   :ensure t
   :config
   (global-set-key (kbd "C-x m") `powershell)
   )
+  (setq shell-file-name "/bin/bash")
   (progn
     (global-set-key (kbd "C-x m") `shell)
     (define-key shell-mode-map (kbd "<up>") 'comint-previous-input)
@@ -899,7 +950,7 @@
 ;;   )
 
 ;; pylint --generate-rcfile > ~/.pylintrc
-;; E0401,C0111,R0903,W0613,C0103
+;; E0401,C0111,R0903,W0613,C0103,E1,E23,W503,E1101,R0201
 
 (add-hook 'python-mode-hook
   (setq indent-tabs-mode nil)
@@ -943,18 +994,26 @@
 ;;      ))
 ;;   )
 
-;; (use-package anaconda-mode
-;;   :ensure t
-;;   :config
-;;   (define-key python-mode-map (kbd "C-o") 'anaconda-mode-find-definitions)
-;;   
-;;   (define-key python-mode-map (kbd "C-i") 'anaconda-mode-show-doc)
-;;   
-;;   ;; (define-key python-mode-map (kbd "C-c a") 'pythonic-activate)
-;; 
-;;   (add-to-list 'python-shell-extra-pythonpaths "~/.virtualenvs/gc")
-;;   (add-hook 'python-mode-hook 'anaconda-mode)
-;;   )
+(use-package anaconda-mode
+  :ensure t
+  :config
+  (define-key python-mode-map (kbd "C-o") 'anaconda-mode-find-definitions)
+  (define-key python-mode-map (kbd "C-i") 'anaconda-mode-show-doc)
+  (define-key python-mode-map (kbd "<tab>") 'anaconda-mode-complete)
+  
+  ;; (define-key python-mode-map (kbd "C-c a") 'pythonic-activate)
+
+  (add-to-list 'python-shell-extra-pythonpaths "~/.virtualenvs/gc")
+  (add-to-list 'python-shell-extra-pythonpaths "~/.virtualenvs/stream")
+  )
+
+(use-package company-anaconda
+  :quelpa (company-anaconda :fetcher github :repo "pythonic-emacs/company-anaconda")
+  :ensure t
+  :config
+  (eval-after-load "company"
+    '(add-to-list 'company-backends '(company-anaconda :with company-capf)))
+  )
 
 ;; Requires pyflakes to be installed.
 ;; This requires pyflakes to be on PATH. Alternatively, set pyimport-pyflakes-path.
@@ -963,13 +1022,6 @@
   :config
   ;; (define-key python-mode-map (kbd "C-x o") 'pyimport-insert-missing)
   (define-key python-mode-map (kbd "C-x i") 'pyimport-remove-unused)
-  )
-
-(use-package company-anaconda
-  :ensure t
-  :config
-  (eval-after-load "company"
-    '(add-to-list 'company-backends 'company-anaconda))
   )
 
 ;; (use-package omnisharp
@@ -1079,6 +1131,8 @@
        "Emacs")
       ((derived-mode-p 'emacs-lisp-mode) "Lisp")
       ((derived-mode-p 'shell-mode) "Shell")
+      ((derived-mode-p 'eshell-mode) "Shell")
+      ((derived-mode-p 'aweshell-mode) "Shell")
       ((derived-mode-p 'python-mode) "Python")
       ((derived-mode-p 'web-mode) "Web")
       ((memq major-mode '(
