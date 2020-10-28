@@ -793,7 +793,15 @@
   (global-set-key (kbd "C-z") 'flycheck-next-error)
   (global-set-key (kbd "C-M-z") 'flycheck-copy-errors-as-kill)
 
-  (add-to-list 'flycheck-disabled-checkers 'lsp)
+  ;; (add-to-list 'flycheck-disabled-checkers 'lsp)
+
+  (flycheck-add-next-checker 'python-flake8 'python-pylint)
+  (flycheck-add-next-checker 'python-pylint 'python-mypy)
+  (flycheck-add-next-checker 'python-mypy 'python-pycompile)
+
+  (setq flycheck-python-mypy-config `("mypy.ini" ,(concat settings_path "configs/mypy.ini")))
+  (setq flycheck-flake8rc (concat settings_path "configs/flake8rc"))
+  (setq flycheck-pylintrc (concat settings_path "configs/.pylintrc"))
   )
 
 (use-package flycheck-pos-tip
@@ -948,9 +956,6 @@
 ;;   (add-hook 'projectile-after-switch-project-hook 'auto-virtualenv-set-virtualenv)
 ;;   (add-hook 'pyvenv-post-activate-hooks 'wcx-restart-python)
 ;;   )
-
-;; pylint --generate-rcfile > ~/.pylintrc
-;; E0401,C0111,R0903,W0613,C0103,E1,E23,W503,E1101,R0201
 
 (add-hook 'python-mode-hook
   (setq indent-tabs-mode nil)
