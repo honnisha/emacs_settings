@@ -17,6 +17,10 @@
         ("melpa"        . 0)))
 (package-initialize)
 
+(setq x-gtk-use-system-tooltips t)
+(setq pos-tip-background-color "gray20")
+(setq pos-tip-saved-max-width-height 100)
+
 ;; How to overwrite text by yank in Emacs?
 (delete-selection-mode 1)
 
@@ -184,7 +188,7 @@
 (global-set-key (kbd "C-x r s") `bookmark-set)
 (global-set-key (kbd "C-x r d") `bookmark-delete)
 
-(global-set-key (kbd "C-c b") 'ibuffer-list-buffers)
+(global-set-key (kbd "C-x b") 'ibuffer-list-buffers)
 
 (global-unset-key (kbd "C-o"))
 
@@ -224,12 +228,11 @@
   (package-install 'use-package))
 (require 'use-package)
 
-(use-package python-mode
-  :ensure t
+(use-package auto-package-update
   :config
-  (global-eldoc-mode -1)
-  (py-underscore-word-syntax-p-off)
-  )
+  (setq auto-package-update-delete-old-versions t)
+  (setq auto-package-update-hide-results t)
+  (auto-package-update-maybe))
 
 (use-package ibuffer-projectile
   :ensure t
@@ -237,7 +240,7 @@
   (add-hook 'ibuffer-hook
     (lambda ()
       (ibuffer-projectile-set-filter-groups)
-      (ibuffer-switch-to-saved-filter-groups "default")
+      ;; (ibuffer-switch-to-saved-filter-groups "default")
       ))
   )
 
@@ -310,7 +313,7 @@
 (define-key smerge-mode-map (kbd "o") 'smerge-keep-other)
 (define-key smerge-mode-map (kbd "r") 'smerge-resolve)
 (define-key smerge-mode-map (kbd "R") 'smerge-resolve-all)
-(global-set-key (kbd "C-x b") #'hydra-smerge/body)
+;; (global-set-key (kbd "C-x b") #'hydra-smerge/body)
 
 (use-package eww
   :ensure t
@@ -330,7 +333,7 @@
     ))
   )
 
-(define-key eww-mode-map (kbd "C-x b") #'hydra-eww/body)
+;; (define-key eww-mode-map (kbd "C-x b") #'hydra-eww/body)
 
 (use-package evil
   :ensure t
@@ -443,13 +446,6 @@
   (global-set-key (kbd "C-M-[") 'back-button-global-forward)
   (global-set-key (kbd "C-M-]") 'back-button-global-backward))
 
-;; (use-package fill-column-indicator
-;;   :ensure t
-;;   :config
-;;   (setq-default fill-column 80)
-;;   ;; (global-set-key (kbd "C-c s") 'fci-mode)
-;;   (add-hook 'ropemacs-mode-hook 'fci-mode))
-
 (use-package company
   :quelpa (company-mode :fetcher github :repo "company-mode/company-mode")
   :ensure t
@@ -470,91 +466,106 @@
          )
         (company-abbrev company-dabbrev)
         ))
-  (define-key python-mode-map (kbd "<tab>") 'company-indent-or-complete-common)
+
+  (set-face-attribute 'company-tooltip nil
+                    :background "#0f2c57"
+                    :foreground "LightSteelBlue1"
+                    :inherit 'company-tooltip
+                    :underline nil
+                    :weight 'normal)
+  (set-face-attribute 'company-tooltip-common nil
+                      :background nil
+                      :foreground "DodgerBlue1"
+                      :inherit 'company-tooltip
+                      :underline nil
+                      :weight 'normal)
   )
 
-(message "Init lsp-mode")
-(use-package lsp-mode
-  :quelpa (lsp-mode :fetcher github :repo "emacs-lsp/lsp-mode")
-  :ensure t
-  :config
-  (setq lsp-auto-guess-root t)
-  (add-hook 'rust-mode-hook #'lsp)
+(setq use-lsp nil)
+(if use-lsp
+  (message "Init lsp-mode")
+  (use-package lsp-mode
+    :quelpa (lsp-mode :fetcher github :repo "emacs-lsp/lsp-mode")
+    :ensure t
+    :config
+    (setq lsp-auto-guess-root t)
+    (add-hook 'rust-mode-hook #'lsp)
 
-  ;; sudo pip install 'python-language-server[all]'
-  ;; (add-hook 'python-mode-hook #'lsp)
+    ;; sudo pip install 'python-language-server[all]'
+    ;; (add-hook 'python-mode-hook #'lsp)
 
-  (setq lsp-pyls-plugins-jedi-references-enabled t)
-  (setq lsp-pyls-server-command (quote ("pyls")))
+    (setq lsp-pyls-plugins-jedi-references-enabled t)
+    (setq lsp-pyls-server-command (quote ("pyls")))
 
-  (setq lsp-document-highlight-delay 0.1)
-  (setq lsp-enable-semantic-highlighting t)
-  (setq lsp-enable-symbol-highlighting t)
-  (setq lsp-symbol-highlighting-skip-current t)
+    (setq lsp-document-highlight-delay 0.1)
+    (setq lsp-enable-semantic-highlighting t)
+    (setq lsp-enable-symbol-highlighting t)
+    (setq lsp-symbol-highlighting-skip-current t)
 
-  (setq lsp-enable-indentation nil)
-  (setq lsp-enable-snippet t)
-  (setq lsp-prefer-flymake nil)
+    (setq lsp-enable-indentation nil)
+    (setq lsp-enable-snippet t)
+    (setq lsp-prefer-flymake nil)
 
-  (setq lsp-diagnostic-package :none)
+    (setq lsp-diagnostic-package :none)
 
-  (setq lsp-signature-auto-activate nil)
+    (setq lsp-signature-auto-activate nil)
 
-  ;; (define-key lsp-mode-map (kbd "C-i") 'lsp-describe-thing-at-point)
-  ;; (define-key lsp-mode-map (kbd "C-o") #'lsp-find-definition)
-    
-  (define-key lsp-mode-map (kbd "C-r r") 'lsp-ui-peek-find-references)
-  (define-key lsp-mode-map (kbd "C-r i") 'lsp-ui-peek-find-implementation)
+    ;; (define-key lsp-mode-map (kbd "C-i") 'lsp-describe-thing-at-point)
+    ;; (define-key lsp-mode-map (kbd "C-o") #'lsp-find-definition)
 
-  (define-key lsp-mode-map (kbd "C-S-SPC") 'helm-buffers-list)
+    (define-key lsp-mode-map (kbd "C-r r") 'lsp-ui-peek-find-references)
+    (define-key lsp-mode-map (kbd "C-r i") 'lsp-ui-peek-find-implementation)
 
-  (setq lsp-modeline-diagnostics-scope :project)
+    (define-key lsp-mode-map (kbd "C-S-SPC") 'helm-buffers-list)
+
+    (setq lsp-modeline-diagnostics-scope :project)
+    )
+
+  (use-package lsp-python-ms
+    :quelpa (lsp-python-ms :fetcher github :repo "emacs-lsp/lsp-python-ms")
+    :ensure t
+    :config
+    (setq lsp-python-ms-auto-install-server t)
+    ;; (setq lsp-python-ms-executable (executable-find "python-language-server"))
+    )
+
+  (use-package helm-lsp
+    :quelpa (helm-lsp :fetcher github :repo "emacs-lsp/helm-lsp")
+    :ensure t
+    :config
+    (define-key lsp-mode-map (kbd "C-x o") 'xref-find-apropos)
+    )
+
+  (use-package lsp-ui
+    :quelpa (lsp-ui :fetcher github :repo "emacs-lsp/lsp-ui")
+    :ensure t
+    :config
+    (add-hook 'lsp-mode-hook 'lsp-ui-mode)
+
+    (setq lsp-ui-doc-enable nil)
+    (setq lsp-ui-flycheck-enable t)
+    (setq lsp-ui-peek-enable nil)
+    (setq lsp-ui-sideline-enable nil)
+
+    (setq lsp-ui-doc-alignment (quote frame))
+    (setq lsp-ui-doc-delay 0.2)
+    (setq lsp-ui-doc-max-height 30)
+    (setq lsp-ui-doc-max-width 100)
+    (setq lsp-ui-doc-use-webkit nil)
+
+    (global-set-key (kbd "<C-M-return>") 'lsp-ui-imenu)
+
+    ;; (define-key python-mode-map (kbd "C-o") #'lsp-ui-peek-find-definitions)
+    )
+
+    (use-package company-lsp
+      :quelpa (company-lsp :fetcher github :repo "tigersoldier/company-lsp")
+      :ensure t
+      :config
+      (push 'company-lsp company-backends)
+      (setq company-lsp-async nil)
+      )
   )
-
-(use-package lsp-python-ms
-  :quelpa (lsp-python-ms :fetcher github :repo "emacs-lsp/lsp-python-ms")
-  :ensure t
-  :config
-  (setq lsp-python-ms-auto-install-server t)
-  ;; (setq lsp-python-ms-executable (executable-find "python-language-server"))
-  )
-
-(use-package helm-lsp
-  :quelpa (helm-lsp :fetcher github :repo "emacs-lsp/helm-lsp")
-  :ensure t
-  :config
-  (define-key python-mode-map (kbd "C-x o") 'xref-find-apropos)
-  )
-
-(use-package lsp-ui
-  :quelpa (lsp-ui :fetcher github :repo "emacs-lsp/lsp-ui")
-  :ensure t
-  :config
-  (add-hook 'lsp-mode-hook 'lsp-ui-mode)
-
-  (setq lsp-ui-doc-enable nil)
-  (setq lsp-ui-flycheck-enable t)
-  (setq lsp-ui-peek-enable nil)
-  (setq lsp-ui-sideline-enable nil)
-  
-  (setq lsp-ui-doc-alignment (quote frame))
-  (setq lsp-ui-doc-delay 0.2)
-  (setq lsp-ui-doc-max-height 30)
-  (setq lsp-ui-doc-max-width 100)
-  (setq lsp-ui-doc-use-webkit nil)
-  
-  (global-set-key (kbd "<C-M-return>") 'lsp-ui-imenu)
-  
-  ;; (define-key python-mode-map (kbd "C-o") #'lsp-ui-peek-find-definitions)
-  )
-
-;; (use-package company-lsp
-;;   :quelpa (company-lsp :fetcher github :repo "tigersoldier/company-lsp")
-;;   :ensure t
-;;   :config
-;;   (push 'company-lsp company-backends)
-;;   (setq company-lsp-async nil)
-;;   )
 
 ;; Rust
 (message "Rust")
@@ -825,12 +836,14 @@
   (setq flycheck-pylintrc (concat settings_path "configs/.pylintrc"))
   )
 
-(use-package flycheck-pos-tip
+(use-package flycheck-popup-tip
   :ensure t
   :config
   (setq flycheck-pos-tip-timeout 100000)
-  (with-eval-after-load 'flycheck
-    (flycheck-pos-tip-mode))
+  (eval-after-load 'flycheck
+  (if (display-graphic-p)
+      (flycheck-pos-tip-mode)
+    (flycheck-popup-tip-mode)))
   )
 
 (message "Web-mode")
@@ -918,6 +931,20 @@
   )
 
 (message "Python")
+(use-package python-mode
+  :ensure t
+  :config
+  (global-eldoc-mode -1)
+  (py-underscore-word-syntax-p-off)
+
+  (define-key python-mode-map (kbd "<tab>") 'python-indent-shift-right)
+  (define-key python-mode-map (kbd "<backtab>") 'python-indent-shift-left)
+  
+(add-hook 'python-mode-hook
+  (setq indent-tabs-mode nil)
+  (setq tab-width 4)
+  )
+)
 
 ;; pip install isort
 ;; https://github.com/timothycrosley/isort
@@ -929,9 +956,6 @@
   :config
   (global-set-key (kbd "C-c o") 'py-isort-buffer)
   )
-
-(define-key python-mode-map (kbd "<tab>") 'python-indent-shift-right)
-(define-key python-mode-map (kbd "<backtab>") 'python-indent-shift-left)
 
 ;; sudo apt install virtualenv
 ;; pip install virtualenvwrapper
@@ -972,29 +996,6 @@
 ;;                               "localhost" "--port" :autoport)))
 ;;   )
 
-;; (use-package auto-virtualenv
-;;   :ensure t
-;;   :config
-;;   (add-hook 'python-mode-hook 'auto-virtualenv-set-virtualenv)
-;;   (add-hook 'projectile-after-switch-project-hook 'auto-virtualenv-set-virtualenv)
-;;   (add-hook 'pyvenv-post-activate-hooks 'wcx-restart-python)
-;;   )
-
-(add-hook 'python-mode-hook
-  (setq indent-tabs-mode nil)
-  (setq tab-width 4)
-  )
-
-(pretty-hydra-define hydra-python
-  (:color blue)
-  ("IDE"
-   (
-   ("C-x i" pyimport-remove-unused)
-    ))
-  )
-
-(define-key python-mode-map (kbd "C-x b") #'hydra-python/body)
-
 ;; (use-package company-jedi
 ;;   :ensure t
 ;;   :config
@@ -1025,52 +1026,21 @@
 (use-package anaconda-mode
   :ensure t
   :config
+  (add-hook 'python-mode-hook 'anaconda-mode)
+
   (define-key python-mode-map (kbd "C-o") 'anaconda-mode-find-definitions)
   (define-key python-mode-map (kbd "C-i") 'anaconda-mode-show-doc)
-  (define-key python-mode-map (kbd "<tab>") 'anaconda-mode-complete)
+  ;; (define-key python-mode-map (kbd "<tab>") 'anaconda-mode-complete)
 
-  (add-to-list 'python-shell-extra-pythonpaths "~/.virtualenvs/gc")
-  (add-to-list 'python-shell-extra-pythonpaths "~/.virtualenvs/stream")
-
-  (defun anaconda-mode-show-doc-callback (result)
-    "Process view doc RESULT."
-    (if (> (length result) 0)
-        (if (and anaconda-mode-use-posframe-show-doc
-                 (require 'posframe nil 'noerror)
-                 (posframe-workable-p))
-            (anaconda-mode-documentation-posframe-view result)
-          (anaconda-mode-documentation-view result))
-      (pos-tip-show "No documentation available")))
-
-  (defface anaconda-pos-tip-help-header
-  '((t
-     :foreground "yellow green"
-     :bold t))
-  "Face for anaconda doc tooltip header.")
-
-  (defun anaconda-mode-documentation-view (result)
-    "Show documentation view for rpc RESULT, and return buffer."
-    (let ((pos-tip-background-color "gray25"))
-    (pos-tip-show-no-propertize
-     (with-temp-buffer
-        (let ((standard-output (current-buffer))
-              (help-xref-following t))
-          (mapc
-           (lambda (it)
-             (insert (propertize (aref it 0) 'face 'anaconda-pos-tip-help-header))
-             (insert "\n")
-             (insert (s-trim-right (aref it 1)))
-             (insert "\n\n"))
-           result)
-          (buffer-string))))
-    )
-    (pos-tip-cancel-timer)
-    )
+  (load-file (concat settings_path "anaconda-settings.el"))
   )
 
 (use-package company-anaconda
   :quelpa (company-anaconda :fetcher github :repo "pythonic-emacs/company-anaconda")
   :ensure t
+  :config
+  (eval-after-load "company"
+    '(add-to-list 'company-backends 'company-anaconda))
   )
 
 ;; Requires pyflakes to be installed.
