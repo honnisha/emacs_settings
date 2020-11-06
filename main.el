@@ -228,6 +228,7 @@
   :ensure t
   :config
   (global-eldoc-mode -1)
+  (py-underscore-word-syntax-p-off)
   )
 
 (use-package ibuffer-projectile
@@ -460,6 +461,16 @@
         company-minimum-prefix-length 3
         company-show-numbers t
         company-tooltip-align-annotations t)
+
+  (setq company-backends
+      '((;; company-keywords
+         ;; company-capf
+         company-yasnippet
+         company-anaconda
+         )
+        (company-abbrev company-dabbrev)
+        ))
+  (define-key python-mode-map (kbd "<tab>") 'company-indent-or-complete-common)
   )
 
 (message "Init lsp-mode")
@@ -468,11 +479,12 @@
   :ensure t
   :config
   (setq lsp-auto-guess-root t)
-  ;; (add-hook 'rust-mode-hook #'lsp)
+  (add-hook 'rust-mode-hook #'lsp)
 
   ;; sudo pip install 'python-language-server[all]'
   ;; (add-hook 'python-mode-hook #'lsp)
-  (setq lsp-pyls-plugins-jedi-references-enabled nil)
+
+  (setq lsp-pyls-plugins-jedi-references-enabled t)
   (setq lsp-pyls-server-command (quote ("pyls")))
 
   (setq lsp-document-highlight-delay 0.1)
@@ -487,14 +499,14 @@
   (setq lsp-diagnostic-package :none)
 
   (setq lsp-signature-auto-activate nil)
-  
-  (define-key python-mode-map (kbd "C-i") 'lsp-describe-thing-at-point)
-  ;; (define-key python-mode-map (kbd "C-o") #'lsp-find-definition)
-    
-  (define-key python-mode-map (kbd "C-r r") 'lsp-ui-peek-find-references)
-  (define-key python-mode-map (kbd "C-r i") 'lsp-ui-peek-find-implementation)
 
-  (define-key python-mode-map (kbd "<tab>") 'company-capf)
+  ;; (define-key lsp-mode-map (kbd "C-i") 'lsp-describe-thing-at-point)
+  ;; (define-key lsp-mode-map (kbd "C-o") #'lsp-find-definition)
+    
+  (define-key lsp-mode-map (kbd "C-r r") 'lsp-ui-peek-find-references)
+  (define-key lsp-mode-map (kbd "C-r i") 'lsp-ui-peek-find-implementation)
+
+  (define-key lsp-mode-map (kbd "C-S-SPC") 'helm-buffers-list)
 
   (setq lsp-modeline-diagnostics-scope :project)
   )
@@ -502,7 +514,9 @@
 (use-package lsp-python-ms
   :quelpa (lsp-python-ms :fetcher github :repo "emacs-lsp/lsp-python-ms")
   :ensure t
-  :init (setq lsp-python-ms-auto-install-server t)
+  :config
+  (setq lsp-python-ms-auto-install-server t)
+  ;; (setq lsp-python-ms-executable (executable-find "python-language-server"))
   )
 
 (use-package helm-lsp
@@ -534,6 +548,14 @@
   ;; (define-key python-mode-map (kbd "C-o") #'lsp-ui-peek-find-definitions)
   )
 
+;; (use-package company-lsp
+;;   :quelpa (company-lsp :fetcher github :repo "tigersoldier/company-lsp")
+;;   :ensure t
+;;   :config
+;;   (push 'company-lsp company-backends)
+;;   (setq company-lsp-async nil)
+;;   )
+
 ;; Rust
 (message "Rust")
 ;; cargo +nightly install racer
@@ -543,6 +565,7 @@
 ;; For windows:
 ;; rustup component add rls --toolchain stable-x86_64-pc-windows-msvc
 
+(message "rust-mode")
 (use-package rust-mode
   :ensure t
   :config
@@ -557,10 +580,6 @@
   (add-hook 'rust-mode-hook #'racer-mode)
   (add-hook 'racer-mode-hook #'eldoc-mode)
   
-  (add-hook 'racer-mode-hook #'company-mode)
-  (define-key rust-mode-map (kbd "TAB") 'company-capf)
-  (setq company-tooltip-align-annotations t)
-  
   ;; (define-key rust-mode-map (kbd "C-i") #'racer-describe-tooltip)
   (define-key rust-mode-map (kbd "C-i") #'lsp-describe-thing-at-point)
   
@@ -570,10 +589,12 @@
   (define-key rust-mode-map (kbd "C-r i") 'lsp-ui-peek-find-implementation)
   )
 
+(message "racer")
 (use-package racer
   :ensure t
   )
 
+(message "ron-mode")
 (use-package ron-mode
   :quelpa (ron-mode :fetcher github :repo "rhololkeolke/ron-mode")
   :ensure t
@@ -581,6 +602,7 @@
   (add-to-list 'auto-mode-alist '("\\.ron\\'" . ron-mode))
   )
 
+(message "cargo")
 (use-package cargo
   :ensure t
   )
@@ -665,13 +687,12 @@
   )
 
 ;; https://github.com/emacs-pe/company-racer
-(use-package company-racer
-  :ensure t
-  :config
-  (eval-after-load "company"
-    (add-to-list 'company-backends 'company-racer))
-  (define-key python-mode-map (kbd "<tab>") 'company-indent-or-complete-common)
-  )
+;; (use-package company-racer
+;;   :ensure t
+;;   :config
+;;   (eval-after-load "company"
+;;     (add-to-list 'company-backends 'company-racer))
+;;   )
 
 (use-package yascroll
   :ensure t
@@ -934,9 +955,6 @@
   ;; the environment variable `WORKON_HOME` points to the right place
   (setq venv-location "~/.virtualenvs/")
   (global-set-key (kbd "C-c a") 'venv-workon)
-  (setq venv-location '("~/.virtualenvs/py3/"
-                        "~/.virtualenvs/eblitz/"
-                        "~/.virtualenvs/stream/"))
   )
 
 ;; (use-package eglot
@@ -1005,19 +1023,49 @@
   (define-key python-mode-map (kbd "C-o") 'anaconda-mode-find-definitions)
   (define-key python-mode-map (kbd "C-i") 'anaconda-mode-show-doc)
   (define-key python-mode-map (kbd "<tab>") 'anaconda-mode-complete)
-  
-  ;; (define-key python-mode-map (kbd "C-c a") 'pythonic-activate)
 
   (add-to-list 'python-shell-extra-pythonpaths "~/.virtualenvs/gc")
   (add-to-list 'python-shell-extra-pythonpaths "~/.virtualenvs/stream")
+
+  (defun anaconda-mode-show-doc-callback (result)
+    "Process view doc RESULT."
+    (if (> (length result) 0)
+        (if (and anaconda-mode-use-posframe-show-doc
+                 (require 'posframe nil 'noerror)
+                 (posframe-workable-p))
+            (anaconda-mode-documentation-posframe-view result)
+          (anaconda-mode-documentation-view result))
+      (pos-tip-show "No documentation available")))
+
+  (defface anaconda-pos-tip-help-header
+  '((t
+     :foreground "yellow green"
+     :bold t))
+  "Face for anaconda doc tooltip header.")
+
+  (defun anaconda-mode-documentation-view (result)
+    "Show documentation view for rpc RESULT, and return buffer."
+    (let ((pos-tip-background-color "gray25"))
+    (pos-tip-show-no-propertize
+     (with-temp-buffer
+        (let ((standard-output (current-buffer))
+              (help-xref-following t))
+          (mapc
+           (lambda (it)
+             (insert (propertize (aref it 0) 'face 'anaconda-pos-tip-help-header))
+             (insert "\n")
+             (insert (s-trim-right (aref it 1)))
+             (insert "\n\n"))
+           result)
+          (buffer-string))))
+    )
+    (pos-tip-cancel-timer)
+    )
   )
 
 (use-package company-anaconda
   :quelpa (company-anaconda :fetcher github :repo "pythonic-emacs/company-anaconda")
   :ensure t
-  :config
-  (eval-after-load "company"
-    '(add-to-list 'company-backends '(company-anaconda :with company-capf)))
   )
 
 ;; Requires pyflakes to be installed.
