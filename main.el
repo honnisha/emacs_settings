@@ -863,6 +863,11 @@
   (add-hook 'sgml-mode-hook 'emmet-mode)
   (add-hook 'css-mode-hook  'emmet-mode)
   (add-hook 'web-mode-hook  'emmet-mode)
+
+  (add-hook 'css-mode-hook 'add-emmet-expand-to-smart-tab-completions)
+  (add-hook 'sgml-mode-hook 'add-emmet-expand-to-smart-tab-completions)
+  (setq emmet-preview-default nil)
+
   (define-key web-mode-map (kbd "C-o") 'emmet-expand-line)
   )
 
