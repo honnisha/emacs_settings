@@ -238,13 +238,6 @@
   :config (quelpa-use-package-activate-advice)
   )
 
-(use-package auto-complete
-  :quelpa (auto-complete :fetcher github :repo "auto-complete/auto-complete")
-  :ensure t
-  :config
-  (ac-config-default)
-  )
-
 (use-package auto-package-update
   :ensure t
   :config
