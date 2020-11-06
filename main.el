@@ -228,11 +228,30 @@
   (package-install 'use-package))
 (require 'use-package)
 
+(use-package quelpa
+  :ensure t
+  )
+
+(use-package quelpa-use-package
+  :ensure t
+  :init (setq quelpa-update-melpa-p nil)
+  :config (quelpa-use-package-activate-advice)
+  )
+
+(use-package auto-complete
+  :quelpa (auto-complete :fetcher github :repo "auto-complete/auto-complete")
+  :ensure t
+  :config
+  (ac-config-default)
+  )
+
 (use-package auto-package-update
+  :ensure t
   :config
   (setq auto-package-update-delete-old-versions t)
   (setq auto-package-update-hide-results t)
-  (auto-package-update-maybe))
+  (auto-package-update-maybe)
+  )
 
 (use-package ibuffer-projectile
   :ensure t
@@ -245,10 +264,6 @@
   )
 
 (use-package hydra
-  :ensure t
-  )
-                   
-(use-package quelpa
   :ensure t
   )
 
@@ -344,12 +359,6 @@
 ;;   :config
 ;;   (persp-mode)
 ;;   )
-
-(use-package quelpa-use-package
-  :ensure t
-  :init (setq quelpa-update-melpa-p nil)
-  :config (quelpa-use-package-activate-advice)
-  )
                    
 ;; (use-package vlfi
 ;;   :quelpa (vlfi :fetcher github :repo "m00natic/vlfi")
@@ -734,7 +743,7 @@
   (global-set-key (kbd "C-S-SPC") 'helm-buffers-list)
   (global-unset-key (kbd "C-x C-f"))
   (global-set-key (kbd "C-x C-f") 'helm-find-files)
-  ;; (global-set-key (kbd "M-x") 'helm-M-x)
+  (global-set-key (kbd "M-x") 'helm-M-x)
   (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action)
   (global-set-key (kbd "M-RET") 'helm-imenu)
   (define-key helm-map (kbd "C-h") nil)
@@ -1288,16 +1297,6 @@
   :ensure t
   :config
   (all-the-icons-ivy-setup)
-  )
-
-(use-package all-the-icons-ivy-rich
-  :ensure t
-  :init (all-the-icons-ivy-rich-mode 1)
-  )
-
-(use-package ivy-rich
-  :ensure t
-  :init (ivy-rich-mode 1)
   )
 
 ;; (use-package dashboard
