@@ -516,8 +516,6 @@
     (define-key lsp-mode-map (kbd "C-r r") 'lsp-ui-peek-find-references)
     (define-key lsp-mode-map (kbd "C-r i") 'lsp-ui-peek-find-implementation)
 
-    (define-key lsp-mode-map (kbd "C-S-SPC") 'helm-buffers-list)
-
     (setq lsp-modeline-diagnostics-scope :project)
     )
 
@@ -728,6 +726,8 @@
   :init
   (setq helm-mode t)
   :config
+  (setq bottom-buffers ())
+
   (setq helm-split-window-in-side-p t)
   ;; (global-set-key (kbd "C-x b") 'helm-buffers-list)
   ;; (global-set-key (kbd "C-x s") 'helm-grep-do-git-grep)
@@ -747,7 +747,9 @@
   (setq helm-boring-buffer-regexp-list (list
                                         (rx "*magit-") (rx "*helm") (rx "*py") (rx "*echo")
                                         (rx "*Fly") (rx "*mini") (rx "*Qua") (rx "*Neo")
-                                        (rx "*Compa") (rx "*code") (rx "*http")))
+                                        (rx "*Compa") (rx "*code") (rx "*http")
+                                        (rx "*anaco") (rx "*tip") (rx "*xwi") (rx "magit-")
+                                        (rx "*server") (rx "*which") (rx "magit")))
   )
 
 (use-package restclient
@@ -1032,7 +1034,7 @@
   (define-key python-mode-map (kbd "C-i") 'anaconda-mode-show-doc)
   ;; (define-key python-mode-map (kbd "<tab>") 'anaconda-mode-complete)
 
-  (load-file (concat settings_path "anaconda-settings.el"))
+  (load-file (concat settings_path "settings/anaconda-settings.el"))
   )
 
 (use-package company-anaconda
@@ -1427,7 +1429,7 @@
 ;; Check that module-file-suffix is not nil
 
 (message "Load functions.el")
-(load-file (concat settings_path "functions.el"))
+(load-file (concat settings_path "settings/functions.el"))
 
 ;; (message "Init so libs")
 ;; (message module-file-suffix)
@@ -1436,7 +1438,7 @@
 ;;         (progn (message module-file-suffix)
 ;;                
 ;;                (load (concat settings_path "parsers/target/debug/libparserslib.so"))
-;;                (load-file (concat settings_path "menu.el"))
+;;                (load-file (concat settings_path "settings/menu.el"))
 ;; 
 ;;                (global-set-key (kbd "C-x n f") 'frelansim-links)
 ;;                ))
