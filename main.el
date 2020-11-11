@@ -764,7 +764,7 @@
   :config
   (global-unset-key (kbd "C-M-j"))
   (global-set-key (kbd "C-M-j") 'helm-projectile-switch-project)
-  (global-set-key (kbd "C-SPC") 'helm-projectile-switch-to-buffer)
+  ;; (global-set-key (kbd "C-SPC") 'helm-projectile-switch-to-buffer)
   )
 
 (use-package projectile
@@ -832,8 +832,7 @@
   ;; (add-to-list 'flycheck-disabled-checkers 'lsp)
 
   (flycheck-add-next-checker 'python-flake8 'python-pylint)
-  (flycheck-add-next-checker 'python-pylint 'python-mypy)
-  (flycheck-add-next-checker 'python-mypy 'python-pycompile)
+  ;; (flycheck-add-next-checker 'python-pylint 'python-mypy)
 
   (setq flycheck-python-mypy-config `("mypy.ini" ,(concat settings_path "configs/mypy.ini")))
   (setq flycheck-flake8rc (concat settings_path "configs/flake8rc"))
