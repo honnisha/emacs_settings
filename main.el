@@ -7,15 +7,8 @@
 (require 'package)
 (setq package-enable-at-startup nil)
 
-;; https://emacs.stackexchange.com/a/2989
-(setq package-archives
-      '(("elpa"     . "https://elpa.gnu.org/packages/")
-        ("melpa-stable" . "https://stable.melpa.org/packages/")
-        ("melpa"        . "https://melpa.org/packages/"))
-      package-archive-priorities
-      '(("melpa-stable" . 10)
-        ("elpa"     . 5)
-        ("melpa"        . 0)))
+(setq package-archives '(("gnu" . "https://elpa.gnu.org/packages/")
+                         ("melpa" . "https://melpa.org/packages/")))
 (package-initialize)
 
 (setq package-enable-at-startup nil)
@@ -200,8 +193,8 @@
   (package-refresh-contents)
   (package-install 'use-package))
 (require 'use-package)
-;; (setq use-package-verbose t)
-;; (setq use-package-minimum-reported-time 0.001)
+(setq use-package-verbose t)
+(setq use-package-minimum-reported-time 0.001)
 
 (use-package dashboard
   :ensure t
@@ -434,7 +427,6 @@
   (global-set-key (kbd "C-M-]") 'back-button-global-backward))
 
 (use-package company
-  :quelpa (company-mode :fetcher github :repo "company-mode/company-mode")
   :ensure t
   :config
   (global-company-mode)
@@ -470,86 +462,83 @@
 
 (setq use-lsp nil)
 (if use-lsp
-  (use-package lsp-mode
-    :quelpa (lsp-mode :fetcher github :repo "emacs-lsp/lsp-mode")
-    :ensure t
-    :config
-    (setq lsp-auto-guess-root t)
-    (add-hook 'rust-mode-hook #'lsp)
+    (progn
+      (use-package lsp-mode
+	:ensure t
+	:config
+	(setq lsp-auto-guess-root t)
+	(add-hook 'rust-mode-hook #'lsp)
 
-    ;; sudo pip install 'python-language-server[all]'
-    ;; (add-hook 'python-mode-hook #'lsp)
+	;; sudo pip install 'python-language-server[all]'
+	;; (add-hook 'python-mode-hook #'lsp)
 
-    (setq lsp-pyls-plugins-jedi-references-enabled t)
-    (setq lsp-pyls-server-command (quote ("pyls")))
+	(setq lsp-pyls-plugins-jedi-references-enabled t)
+	(setq lsp-pyls-server-command (quote ("pyls")))
 
-    (setq lsp-document-highlight-delay 0.1)
-    (setq lsp-enable-semantic-highlighting t)
-    (setq lsp-enable-symbol-highlighting t)
-    (setq lsp-symbol-highlighting-skip-current t)
+	(setq lsp-document-highlight-delay 0.1)
+	(setq lsp-enable-semantic-highlighting t)
+	(setq lsp-enable-symbol-highlighting t)
+	(setq lsp-symbol-highlighting-skip-current t)
 
-    (setq lsp-enable-indentation nil)
-    (setq lsp-enable-snippet t)
-    (setq lsp-prefer-flymake nil)
+	(setq lsp-enable-indentation nil)
+	(setq lsp-enable-snippet t)
+	(setq lsp-prefer-flymake nil)
 
-    (setq lsp-diagnostic-package :none)
+	(setq lsp-diagnostic-package :none)
 
-    (setq lsp-signature-auto-activate nil)
+	(setq lsp-signature-auto-activate nil)
 
-    ;; (define-key lsp-mode-map (kbd "C-i") 'lsp-describe-thing-at-point)
-    ;; (define-key lsp-mode-map (kbd "C-o") #'lsp-find-definition)
+	;; (define-key lsp-mode-map (kbd "C-i") 'lsp-describe-thing-at-point)
+	;; (define-key lsp-mode-map (kbd "C-o") #'lsp-find-definition)
 
-    (define-key lsp-mode-map (kbd "C-r r") 'lsp-ui-peek-find-references)
-    (define-key lsp-mode-map (kbd "C-r i") 'lsp-ui-peek-find-implementation)
+	(define-key lsp-mode-map (kbd "C-r r") 'lsp-ui-peek-find-references)
+	(define-key lsp-mode-map (kbd "C-r i") 'lsp-ui-peek-find-implementation)
 
-    (setq lsp-modeline-diagnostics-scope :project)
-    )
+	(setq lsp-modeline-diagnostics-scope :project)
+	)
 
-  (use-package lsp-python-ms
-    :quelpa (lsp-python-ms :fetcher github :repo "emacs-lsp/lsp-python-ms")
-    :ensure t
-    :config
-    (setq lsp-python-ms-auto-install-server t)
-    ;; (setq lsp-python-ms-executable (executable-find "python-language-server"))
-    )
+      (use-package lsp-python-ms
+	:quelpa (lsp-python-ms :fetcher github :repo "emacs-lsp/lsp-python-ms")
+	:ensure t
+	:config
+	(setq lsp-python-ms-auto-install-server t)
+	;; (setq lsp-python-ms-executable (executable-find "python-language-server"))
+	)
 
-  (use-package helm-lsp
-    :quelpa (helm-lsp :fetcher github :repo "emacs-lsp/helm-lsp")
-    :ensure t
-    :config
-    (define-key lsp-mode-map (kbd "C-x o") 'xref-find-apropos)
-    )
+      (use-package helm-lsp
+	:ensure t
+	:config
+	(define-key lsp-mode-map (kbd "C-x o") 'xref-find-apropos)
+	)
 
-  (use-package lsp-ui
-    :quelpa (lsp-ui :fetcher github :repo "emacs-lsp/lsp-ui")
-    :ensure t
-    :config
-    (add-hook 'lsp-mode-hook 'lsp-ui-mode)
+      (use-package lsp-ui
+	:ensure t
+	:config
+	(add-hook 'lsp-mode-hook 'lsp-ui-mode)
 
-    (setq lsp-ui-doc-enable nil)
-    (setq lsp-ui-flycheck-enable t)
-    (setq lsp-ui-peek-enable nil)
-    (setq lsp-ui-sideline-enable nil)
+	(setq lsp-ui-doc-enable nil)
+	(setq lsp-ui-flycheck-enable t)
+	(setq lsp-ui-peek-enable nil)
+	(setq lsp-ui-sideline-enable nil)
 
-    (setq lsp-ui-doc-alignment (quote frame))
-    (setq lsp-ui-doc-delay 0.2)
-    (setq lsp-ui-doc-max-height 30)
-    (setq lsp-ui-doc-max-width 100)
-    (setq lsp-ui-doc-use-webkit nil)
+	(setq lsp-ui-doc-alignment (quote frame))
+	(setq lsp-ui-doc-delay 0.2)
+	(setq lsp-ui-doc-max-height 30)
+	(setq lsp-ui-doc-max-width 100)
+	(setq lsp-ui-doc-use-webkit nil)
 
-    (global-set-key (kbd "<C-M-return>") 'lsp-ui-imenu)
+	(global-set-key (kbd "<C-M-return>") 'lsp-ui-imenu)
 
-    ;; (define-key python-mode-map (kbd "C-o") #'lsp-ui-peek-find-definitions)
-    )
+	;; (define-key python-mode-map (kbd "C-o") #'lsp-ui-peek-find-definitions)
+	)
 
-    (use-package company-lsp
-      :quelpa (company-lsp :fetcher github :repo "tigersoldier/company-lsp")
-      :ensure t
-      :config
-      (push 'company-lsp company-backends)
-      (setq company-lsp-async nil)
-      )
-  )
+      (use-package company-lsp
+	:ensure t
+	:config
+	(push 'company-lsp company-backends)
+	(setq company-lsp-async nil)
+	)
+      ))
 
 ;; Rust
 ;; cargo +nightly install racer
@@ -587,7 +576,6 @@
   )
 
 (use-package ron-mode
-  :quelpa (ron-mode :fetcher github :repo "rhololkeolke/ron-mode")
   :ensure t
   :config
   (add-to-list 'auto-mode-alist '("\\.ron\\'" . ron-mode))
@@ -626,15 +614,13 @@
   (add-to-list 'auto-mode-alist '("Dockerfile\\'" . dockerfile-mode))
   )
 
-(use-package google-translate
-  :ensure t
-  :config
-  (setq google-translate-pop-up-buffer-set-focus t)
-  (setq google-translate-translation-directions-alist '(("en" . "ru")))
-  ;; (global-set-key "\C-ct" 'google-translate-smooth-translate)
-  )
-
-(add-hook 'csharp-mode-hook 'my-csharp-mode-setup t)
+;; (use-package google-translate
+;;   :ensure t
+;;   :config
+;;   (setq google-translate-pop-up-buffer-set-focus t)
+;;   (setq google-translate-translation-directions-alist '(("en" . "ru")))
+;;   ;; (global-set-key "\C-ct" 'google-translate-smooth-translate)
+;;   )
 
 (use-package dired-single
   :ensure t
@@ -794,7 +780,6 @@
   )
 
 (use-package flycheck
-  :quelpa (flycheck :fetcher github :repo "flycheck/flycheck")
   :ensure t
   :config
 
@@ -877,24 +862,24 @@
 (use-package csv-mode
   :ensure t)
 
-(use-package aweshell
-  :quelpa (aweshell :fetcher github :repo "manateelazycat/aweshell")
-  :ensure t
-  :config
-  (setq eshell-up-print-parent-dir nil)
+;;(use-package aweshell
+;;  :quelpa (aweshell :fetcher github :repo "manateelazycat/aweshell")
+;;  :ensure t
+;;  :config
+;;  (setq eshell-up-print-parent-dir nil)
+;;
+;;  (set-face-attribute 'epe-pipeline-delimiter-face nil :foreground "#4169e1")
+;;  (set-face-attribute 'epe-pipeline-user-face nil :foreground "cornflower blue")
+;;  (set-face-attribute 'epe-pipeline-host-face nil :foreground "dodger blue")
+;;  (set-face-attribute 'epe-pipeline-time-face nil :foreground "cornflower")
+;;  )
 
-  (set-face-attribute 'epe-pipeline-delimiter-face nil :foreground "#4169e1")
-  (set-face-attribute 'epe-pipeline-user-face nil :foreground "cornflower blue")
-  (set-face-attribute 'epe-pipeline-host-face nil :foreground "dodger blue")
-  (set-face-attribute 'epe-pipeline-time-face nil :foreground "cornflower")
-  )
-
-(use-package multi-term
-  :quelpa (multi-term :fetcher github :repo "manateelazycat/multi-term")
-  :ensure t
-  :config
-  (define-key term-raw-map (kbd "C-h") 'term-send-backspace)
-  )
+;; (use-package multi-term
+;;   :quelpa (multi-term :fetcher github :repo "manateelazycat/multi-term")
+;;   :ensure t
+;;   :config
+;;   (define-key term-raw-map (kbd "C-h") 'term-send-backspace)
+;;   )
 
 (if (string-equal system-type "windows-nt")
   (use-package powershell
@@ -1313,61 +1298,62 @@
   (global-set-key [(meta f3)] 'highlight-symbol-query-replace)
   )
 
-(use-package right-click-context
-  :ensure t
-  :quelpa (right-click-context :fetcher github :repo "zonuexe/right-click-context")
-  :config
-  (right-click-context-mode 1)
-  )
+;; (use-package right-click-context
+;;   :ensure t
+;;   :quelpa (right-click-context :fetcher github :repo "zonuexe/right-click-context")
+;;   :config
+;;   (right-click-context-mode 1)
+;;   )
 
 (setq org-enable nil)
 (if org-enable
-  (use-package org
-    :ensure t
-    :config
-    ;; (setq org-log-done 'time)
+    (progn
+      (use-package org
+	:ensure t
+	:config
+	;; (setq org-log-done 'time)
 
-    (define-key org-mode-map (kbd "C-c l") 'org-scontexttore-link)
-    (define-key org-mode-map (kbd "C-h") 'delete-backward-char)
-    (define-key org-mode-map (kbd "M-h") 'backward-delete-word)
+	(define-key org-mode-map (kbd "C-c l") 'org-scontexttore-link)
+	(define-key org-mode-map (kbd "C-h") 'delete-backward-char)
+	(define-key org-mode-map (kbd "M-h") 'backward-delete-word)
 
-    (define-key org-mode-map (kbd "C-c a") 'org-clock-in)
-    (define-key org-mode-map (kbd "C-c e") 'org-clock-out)
-    (define-key org-mode-map (kbd "C-c c") 'org-clock-in-last)
+	(define-key org-mode-map (kbd "C-c a") 'org-clock-in)
+	(define-key org-mode-map (kbd "C-c e") 'org-clock-out)
+	(define-key org-mode-map (kbd "C-c c") 'org-clock-in-last)
 
-    (define-key org-mode-map (kbd "C-i") 'org-shiftright)
-    (define-key org-mode-map (kbd "C-S-i") 'org-shiftleft)
+	(define-key org-mode-map (kbd "C-i") 'org-shiftright)
+	(define-key org-mode-map (kbd "C-S-i") 'org-shiftleft)
 
-    (define-key org-mode-map (kbd "C-o") 'org-metaright)
-    (define-key org-mode-map (kbd "C-S-o") 'org-metaleft)
+	(define-key org-mode-map (kbd "C-o") 'org-metaright)
+	(define-key org-mode-map (kbd "C-S-o") 'org-metaleft)
 
-    (define-key org-mode-map (kbd "<C-tab>") (lambda () (interactive) (other-window 1)))
-    (define-key org-mode-map (kbd "<C-iso-lefttab>") (lambda () (interactive) (other-window -1)))
+	(define-key org-mode-map (kbd "<C-tab>") (lambda () (interactive) (other-window 1)))
+	(define-key org-mode-map (kbd "<C-iso-lefttab>") (lambda () (interactive) (other-window -1)))
 
-    (setq org-todo-keywords
-          '((sequence "TODO" "IN" "|" "DONE")))
-    (setq org-todo-keyword-faces
-          '(("TODO" . (:foreground "dodger blue" :weight bold))
-            ("IN" . (:foreground "lawn green" :weight bold))
-            ("DONE" . (:foreground "dim gray" :weight bold))
-            ))
+	(setq org-todo-keywords
+	      '((sequence "TODO" "IN" "|" "DONE")))
+	(setq org-todo-keyword-faces
+	      '(("TODO" . (:foreground "dodger blue" :weight bold))
+		("IN" . (:foreground "lawn green" :weight bold))
+		("DONE" . (:foreground "dim gray" :weight bold))
+		))
 
-    (setq org-agenda-files (list (concat dropbox_path "org_files")))
-    (global-set-key (kbd "C-x n !") (lambda() (interactive)(find-file (concat dropbox_path "org_files/main.org"))))
-    (global-set-key (kbd "C-x n @") (lambda() (interactive)(find-file (concat dropbox_path "org_files/work.org"))))
-    (custom-set-faces '(org-link ((t (:underline "dodger blue" :foreground "dodger blue")))))
-    (add-hook 'org-mode-hook #'(lambda ()
-                                 (visual-line-mode)
-                                 (org-indent-mode)))
-    )
+	(setq org-agenda-files (list (concat dropbox_path "org_files")))
+	(global-set-key (kbd "C-x n !") (lambda() (interactive)(find-file (concat dropbox_path "org_files/main.org"))))
+	(global-set-key (kbd "C-x n @") (lambda() (interactive)(find-file (concat dropbox_path "org_files/work.org"))))
+	(custom-set-faces '(org-link ((t (:underline "dodger blue" :foreground "dodger blue")))))
+	(add-hook 'org-mode-hook #'(lambda ()
+				     (visual-line-mode)
+				     (org-indent-mode)))
+	)
 
-  (use-package org-super-agenda
-    :ensure t
-    :quelpa (org-super-agenda :fetcher github :repo "alphapapa/org-super-agenda")
-    :config
-    (org-super-agenda-mode)
-    )
-  )
+      (use-package org-super-agenda
+	:ensure t
+	:quelpa (org-super-agenda :fetcher github :repo "alphapapa/org-super-agenda")
+	:config
+	(org-super-agenda-mode)
+	)
+      ))
 
 ;;(use-package workgroups2
 ;;  :ensure t
@@ -1396,7 +1382,7 @@
 ;; Check that module-file-suffix is not nil
 
 (message "Load functions.el")
-(load-file (concat settings_path "settings/functions.elc"))
+(load-file (concat settings_path "settings/functions.el"))
 
 ;; (message "Init so libs")
 ;; (message module-file-suffix)
@@ -1411,8 +1397,6 @@
 ;;                ))
 ;;   (message "module-file-suffix is nil")
 ;;   )
-
-(define-key lisp-mode-map (kbd "C-i") 'describe-function-in-popup)
 
 (when window-system
   (set-frame-position (selected-frame) 0 0)

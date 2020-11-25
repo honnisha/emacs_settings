@@ -30,20 +30,6 @@ buffer in current window."
 (global-set-key (kbd "C-c l") 'toggle-window-dedicated)
 
 
-(defun kill-all-dired-buffers ()
-  "Kill all dired buffers."
-  (interactive)
-  (save-excursion
-    (let ((count 0))
-      (dolist (buffer (buffer-list))
-        (set-buffer buffer)
-        (when (equal major-mode 'dired-mode)
-          (setq count (1+ count))
-          (kill-buffer buffer)))
-      (message "Killed %i dired buffer(s)." count))))
-(global-set-key (kbd "C-x d") 'kill-all-dired-buffers)
-
-
 (defun reverse-input-method (input-method)
   "Build the reverse mapping of single letters from INPUT-METHOD."
   (interactive
@@ -108,22 +94,6 @@ buffer in current window."
       (goto-char (+ origin (* (length region) arg) arg)))))
 (global-set-key (kbd "C-c d") 'duplicate-current-line-or-region)
 
-(defun bury-compile-buffer-if-successful (buffer string)
- "Bury a compilation buffer if succeeded without warnings "
- (when (and
-         (buffer-live-p buffer)
-         (string-match "compilation" (buffer-name buffer))
-         (string-match "finished" string)
-         (not
-          (with-current-buffer buffer
-            (goto-char (point-min))
-            (search-forward "warning" nil t))))
-    (run-with-timer 1 nil
-                    (lambda (buf)
-                      (bury-buffer buf)
-                      (switch-to-prev-buffer (get-buffer-window buf) 'kill))
-                    buffer)))
-(add-hook 'compilation-finish-functions 'bury-compile-buffer-if-successful)
 
 (defun show-file-name ()
   "Show the full path file name in the minibuffer."
