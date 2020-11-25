@@ -19,14 +19,26 @@
 (setq inhibit-startup-screen t
       initial-buffer-choice  nil)
 
+(tool-bar-mode -1)
+(menu-bar-mode -1)
+(global-set-key [f9] 'toggle-menu-bar-mode-from-frame)
+(set-frame-parameter nil 'undecorated nil)
+
 (setq x-gtk-use-system-tooltips t)
 (setq pos-tip-background-color "gray20")
 (setq pos-tip-saved-max-width-height 100)
 
+(if (find-font (font-spec :name "Hack"))
+    (set-face-attribute 'default nil :font "Hack" :height 83)
+  (error "Install Hack font from https://github.com/source-foundry/Hack")
+  )
+
+(when window-system
+  (set-frame-position (selected-frame) 0 0)
+  (set-frame-size (selected-frame) 105 90))
+
 ;; How to overwrite text by yank in Emacs?
 (delete-selection-mode 1)
-
-(tool-bar-mode -1)
 
 (remove-hook 'kill-emacs-hook 'ac-comphist-save)
 
@@ -65,10 +77,6 @@
 (setq mouse-wheel-progressive-speed nil)
 (setq mouse-wheel-scroll-amount '(5))
 
-(menu-bar-mode -1)
-(global-set-key [f9] 'toggle-menu-bar-mode-from-frame)
-(set-frame-parameter nil 'undecorated nil)
-
 ;; How to get rid of "Loading a theme can run Lisp code. Really load? (y or n) " message?
 (set-variable 'sml/no-confirm-load-theme t)
 
@@ -95,11 +103,6 @@
 (show-paren-mode 1)
 
 (add-to-list 'completion-styles 'initials t)
-
-(if (find-font (font-spec :name "Hack"))
-    (set-face-attribute 'default nil :font "Hack" :height 83)
-  (error "Install Hack font from https://github.com/source-foundry/Hack")
-  )
 
 (electric-pair-mode 1)
 (setq electric-pair-preserve-balance nil)
@@ -220,8 +223,8 @@
   (setq dashboard-set-file-icons t)
   (setq dashboard-items '(
 			  ;;(recents . 10)
-			  (bookmarks . 20)
-			  (projects . 10)))
+			  (projects . 10)
+			  (bookmarks . 20)))
   )
 
 (use-package quelpa
@@ -242,10 +245,10 @@
 (use-package ibuffer-projectile
   :config
   (add-hook 'ibuffer-hook
-    (lambda ()
-      (ibuffer-projectile-set-filter-groups)
-      ;; (ibuffer-switch-to-saved-filter-groups "default")
-      ))
+	    (lambda ()
+	      (ibuffer-projectile-set-filter-groups)
+	      ;; (ibuffer-switch-to-saved-filter-groups "default")
+	      ))
   )
 
 (use-package hydra)
@@ -325,7 +328,7 @@
 ;;   :config
 ;;   (persp-mode)
 ;;   )
-                   
+
 ;; (use-package vlfi
 ;;   :quelpa (vlfi :fetcher github :repo "m00natic/vlfi")
 ;;   :config
@@ -409,40 +412,49 @@
   ;; (global-set-key (kbd "<M-right>") 'back-button-global-forward)
   ;; (global-set-key (kbd "<M-left>") 'back-button-global-backward)
   (global-set-key (kbd "C-M-[") 'back-button-global-forward)
-  (global-set-key (kbd "C-M-]") 'back-button-global-backward))
-
-(use-package company
-  :config
-  (global-company-mode)
-  (define-key company-active-map (kbd "C-h") 'backward-delete-char-untabify)
-  (setq company-tooltip-limit 10
-        company-idle-delay 0.00
-        company-minimum-prefix-length 3
-        company-show-numbers t
-        company-tooltip-align-annotations t)
-
-  (setq company-backends
-      '((;; company-keywords
-         ;; company-capf
-         company-yasnippet
-         company-anaconda
-         )
-        (company-abbrev company-dabbrev)
-        ))
-
-  (set-face-attribute 'company-tooltip nil
-                    :background "#0f2c57"
-                    :foreground "LightSteelBlue1"
-                    :inherit 'company-tooltip
-                    :underline nil
-                    :weight 'normal)
-  (set-face-attribute 'company-tooltip-common nil
-                      :background nil
-                      :foreground "DodgerBlue1"
-                      :inherit 'company-tooltip
-                      :underline nil
-                      :weight 'normal)
+  (global-set-key (kbd "C-M-]") 'back-button-global-backward)
+  (setq back-button-never-push-mark nil)
   )
+
+
+(setq use-company t)
+(if use-company
+    (progn
+      (use-package company
+	:config
+	(add-hook 'python-mode-hook 'company-mode)
+	(add-hook 'lisp-mode-hook 'company-mode)
+
+	(define-key company-active-map (kbd "C-h") 'backward-delete-char-untabify)
+	(define-key company-mode-map (kbd "<tab>") 'company-complete)
+	(setq company-tooltip-limit 10
+	      company-idle-delay 0.00
+	      company-minimum-prefix-length 3
+	      company-show-numbers t
+	      company-tooltip-align-annotations t)
+
+	(setq company-backends
+	      '((;; company-keywords
+		 ;; company-capf
+		 company-yasnippet
+		 company-anaconda
+		 )
+		(company-abbrev company-dabbrev)
+		))
+
+	(set-face-attribute 'company-tooltip nil
+			    :background "#0f2c57"
+			    :foreground "LightSteelBlue1"
+			    :inherit 'company-tooltip
+			    :underline nil
+			    :weight 'normal)
+	(set-face-attribute 'company-tooltip-common nil
+			    :background nil
+			    :foreground "DodgerBlue1"
+			    :inherit 'company-tooltip
+			    :underline nil
+			    :weight 'normal)
+	)))
 
 (setq use-lsp nil)
 (if use-lsp
@@ -677,21 +689,10 @@
   (global-set-key (kbd "C-x f") 'counsel-projectile-find-file)
   )
 
-;; (use-package ivy
-;;   :config
-;;   (ivy-mode 1)
-;;   (setq ivy-use-virtual-buffers t)
-;;   (global-set-key (kbd "M-x") 'counsel-M-x)
-;;   (global-set-key (kbd "<f1> f") 'counsel-describe-function)
-;;   (global-set-key (kbd "<f1> v") 'counsel-describe-variable)
-;;   (global-set-key (kbd "<f1> l") 'counsel-find-library)
-;;   (global-set-key (kbd "C-c g") 'counsel-git)
-;;   ;; (global-set-key (kbd "C-c j") 'counsel-git-grep)
-;;   ;; (global-set-key (kbd "C-c k") 'counsel-ag)
-;;   ;; (global-set-key (kbd "C-x l") 'counsel-locate)
-;;   (global-set-key (kbd "C-S-o") 'counsel-rhythmbox)
-;;   (define-key read-expression-map (kbd "C-r") 'counsel-expression-history)
-;;   )
+(use-package ivy
+  :config
+  (ivy-mode 1)
+  )
 
 (use-package expand-region
   :config
@@ -721,13 +722,11 @@
   (setq flycheck-pylintrc (concat settings_path "configs/.pylintrc"))
   )
 
-(use-package flycheck-popup-tip
+(use-package flycheck-pos-tip
   :config
-  (setq flycheck-pos-tip-timeout 100000)
-  (eval-after-load 'flycheck
-  (if (display-graphic-p)
-      (flycheck-pos-tip-mode)
-    (flycheck-popup-tip-mode)))
+  (with-eval-after-load 'flycheck
+    (flycheck-pos-tip-mode))
+  (setq flycheck-pos-tip-max-width 80)
   )
 
 (setq js-indent-level 2)
@@ -791,19 +790,38 @@
     (define-key shell-mode-map (kbd "<down>") 'comint-next-input))
   )
 
-(use-package python-mode
-  :config
-  (global-eldoc-mode -1)
-  (py-underscore-word-syntax-p-off)
+;(use-package python-mode
+;  :config
+;  (global-eldoc-mode -1)
+;  (py-underscore-word-syntax-p-off)
+;
+;  (define-key python-mode-map (kbd "<tab>") 'python-indent-shift-right)
+;  (define-key python-mode-map (kbd "<backtab>") 'python-indent-shift-left)
+;  
+;  (add-hook 'python-mode-hook
+;	    (setq indent-tabs-mode nil)
+;	    (setq tab-width 4)
+;	    )
+;  )
 
-  (define-key python-mode-map (kbd "<tab>") 'python-indent-shift-right)
-  (define-key python-mode-map (kbd "<backtab>") 'python-indent-shift-left)
-  
-(add-hook 'python-mode-hook
-  (setq indent-tabs-mode nil)
-  (setq tab-width 4)
+(use-package anaconda-mode
+  :config
+  (add-hook 'python-mode-hook 'anaconda-mode)
+
+  (define-key python-mode-map (kbd "C-o") 'anaconda-mode-find-definitions)
+  (define-key python-mode-map (kbd "C-i") 'anaconda-mode-show-doc)
+  ;; (define-key python-mode-map (kbd "<tab>") 'anaconda-mode-complete)
+
+  (load-file (concat settings_path "settings/anaconda-settings.elc"))
   )
-)
+
+(if use-company
+    (use-package company-anaconda
+      :quelpa (company-anaconda :fetcher github :repo "pythonic-emacs/company-anaconda")
+      :config
+      (eval-after-load "company"
+	'(add-to-list 'company-backends 'company-anaconda))
+      ))
 
 ;; pip install isort
 ;; https://github.com/timothycrosley/isort
@@ -877,24 +895,6 @@
 ;;       '("--virtual-env" "~/.virtualenvs/gc"
 ;;      ))
 ;;   )
-
-(use-package anaconda-mode
-  :config
-  (add-hook 'python-mode-hook 'anaconda-mode)
-
-  (define-key python-mode-map (kbd "C-o") 'anaconda-mode-find-definitions)
-  (define-key python-mode-map (kbd "C-i") 'anaconda-mode-show-doc)
-  ;; (define-key python-mode-map (kbd "<tab>") 'anaconda-mode-complete)
-
-  (load-file (concat settings_path "settings/anaconda-settings.elc"))
-  )
-
-(use-package company-anaconda
-  :quelpa (company-anaconda :fetcher github :repo "pythonic-emacs/company-anaconda")
-  :config
-  (eval-after-load "company"
-    '(add-to-list 'company-backends 'company-anaconda))
-  )
 
 ;; Requires pyflakes to be installed.
 ;; This requires pyflakes to be on PATH. Alternatively, set pyimport-pyflakes-path.
@@ -1233,10 +1233,6 @@
 ;;                ))
 ;;   (message "module-file-suffix is nil")
 ;;   )
-
-(when window-system
-  (set-frame-position (selected-frame) 0 0)
-  (set-frame-size (selected-frame) 105 90))
 
 (setq gc-cons-threshold gc-cons-threshold-original)
 
