@@ -2,6 +2,7 @@
 ;;; Commentary:
 ;;; Code:
 (message "Init main.py")
+;; byte-compile-file
 
 (require 'package)
 (setq package-enable-at-startup nil)
@@ -17,14 +18,17 @@
         ("melpa"        . 0)))
 (package-initialize)
 
+(setq package-enable-at-startup nil)
+
+(setq inhibit-startup-screen t
+      initial-buffer-choice  nil)
+
 (setq x-gtk-use-system-tooltips t)
 (setq pos-tip-background-color "gray20")
 (setq pos-tip-saved-max-width-height 100)
 
 ;; How to overwrite text by yank in Emacs?
 (delete-selection-mode 1)
-
-(setq backup-directory-alist '(("." . "~/emacs.d/backups/")))
 
 (tool-bar-mode -1)
 
@@ -39,48 +43,28 @@
 ;; This tells Emacs not to warn you about anything except problems
 (setq warning-minimum-level :emergency)
 
-(message "Inig desktop save settings")
-;; Automatically save and restore sessions
-(setq desktop-load-locked-desktop t)
-
-(setq desktop-dirname             "~/.emacs-save/"
-      desktop-base-file-name      "emacs.desktop"
-      desktop-base-lock-name      "lock"
-      desktop-path                (list desktop-dirname)
-      desktop-save                t
-      desktop-files-not-to-save   "^$"
-      desktop-load-locked-desktop t
-      desktop-auto-save-timeout   10)
-
-(unless (file-exists-p desktop-dirname) (make-directory desktop-dirname t))
-
 ;; Note that this will affect all histories, not just the shell.
 ;; Save sessions history
 (setq savehist-save-minibuffer-history 1)
 (setq savehist-additional-variables
       '(kill-ring search-ring regexp-search-ring compile-history log-edit-comment-ring)
-      savehist-file "~/.emacs-save/savehist")
+      savehist-file "~/.save/savehist")
 (savehist-mode t)
 (setq history-delete-duplicates t)
 (setq comint-input-ignoredups t)
 
 (setq
-   backup-by-copying t
-   backup-directory-alist
-    '(("~/.saves/"))
-   delete-old-versions t
-   kept-new-versions 6
-   kept-old-versions 2
-   version-control t)
+ backup-by-copying t
+ backup-directory-alist '(("." . "~/.save"))
+ delete-old-versions t
+ kept-new-versions 6
+ kept-old-versions 2
+ version-control t)
 
-(setq make-backup-files nil)
+(setq make-backup-files t)
 
 (setq auto-save-file-name-transforms
-  `(("~/.emacs-saves/" t)))
-
-(desktop-save-mode 1)
-
-(message "Init emacs settings")
+      `(("~/.saves/" t)))
 
 (setq mouse-wheel-progressive-speed nil)
 (setq mouse-wheel-scroll-amount '(5))
@@ -102,23 +86,13 @@
 
 (display-time-mode 1)
 
-;; Finally you can toggle the display of scroll bars on all frames
-(scroll-bar-mode -1)
-
 ;; if you want it for every buffer
 (global-linum-mode t)
-
-;; From Pragmatic Emacs a more concise way to kill the buffer.
-(global-set-key (kbd "C-x k") 'kill-this-buffer)
 
 ;; If you enable winner-mode, you get something akin to a stack-based
 ;; undo/redo functionality for all your window configuration changes.
 ;; By default, C-c <left> gets bound to winner-undo, while C-c <right> performs winner-redo.
 (winner-mode 1)
-(global-set-key (kbd "C-c [") `wg-undo-wconfig-change)
-(global-set-key (kbd "C-c ]") `wg-redo-wconfig-change)
-
-(global-set-key (kbd "C-=") `comment-region)
 
 (set-variable 'dov-view-continues t)
 
@@ -139,9 +113,13 @@
 
 (setq display-battery-mode 1)
 
-(global-set-key (kbd "C-c i") `linum-mode)
-
 (message "Init base hotkeys")
+
+;; From Pragmatic Emacs a more concise way to kill the buffer.
+(global-set-key (kbd "C-x k") 'kill-this-buffer)
+
+(global-set-key (kbd "C-c i") `linum-mode)
+(global-set-key (kbd "C-=") `comment-region)
 
 (global-set-key (kbd "<f2>") 'bookmark-jump)
 
@@ -217,16 +195,27 @@
 (global-set-key (kbd "<C-S-up>") 'enlarge-window)
 (global-set-key (kbd "<C-S-down>") 'shrink-window)
 
-(add-hook 'before-save-hook
-  (lambda ()
-    (untabify (point-min) (point-max))
-    ))
-
 (message "Init use-package")
 (when (not package-archive-contents)
   (package-refresh-contents)
   (package-install 'use-package))
 (require 'use-package)
+;; (setq use-package-verbose t)
+;; (setq use-package-minimum-reported-time 0.001)
+
+(use-package dashboard
+  :ensure t
+  :config
+  (dashboard-setup-startup-hook)
+  (setq dashboard-set-navigator t)
+  ;; (setq dashboard-startup-banner nil)
+  (setq dashboard-set-heading-icons t)
+  (setq dashboard-set-file-icons t)
+  (setq dashboard-items '(
+			  ;;(recents . 10)
+			  (bookmarks . 20)
+			  (projects . 10)))
+  )
 
 (use-package quelpa
   :ensure t
@@ -238,13 +227,13 @@
   :config (quelpa-use-package-activate-advice)
   )
 
-(use-package auto-package-update
-  :ensure t
-  :config
-  (setq auto-package-update-delete-old-versions t)
-  (setq auto-package-update-hide-results t)
-  (auto-package-update-maybe)
-  )
+;; (use-package auto-package-update
+;;   :ensure t
+;;   :config
+;;   (setq auto-package-update-delete-old-versions t)
+;;   (setq auto-package-update-hide-results t)
+;;   (auto-package-update-maybe)
+;;   )
 
 (use-package ibuffer-projectile
   :ensure t
@@ -264,9 +253,9 @@
   :ensure t
   )
 
-(use-package realgud
-  :ensure t
-  )
+;; (use-package realgud
+;;   :ensure t
+;;   )
 
 (use-package bui
   :ensure t
@@ -323,11 +312,11 @@
 (define-key smerge-mode-map (kbd "R") 'smerge-resolve-all)
 ;; (global-set-key (kbd "C-x b") #'hydra-smerge/body)
 
-(use-package eww
-  :ensure t
-  )
-;; (global-set-key (kbd "C-x w") (lambda() (interactive)(eww "google.com")))
-(define-key eww-mode-map (kbd "e") #'eww-browse-with-external-browser)
+;; (use-package eww
+;;   :ensure t
+;;   )
+;; ;; (global-set-key (kbd "C-x w") (lambda() (interactive)(eww "google.com")))
+;; (define-key eww-mode-map (kbd "e") #'eww-browse-with-external-browser)
 
 (pretty-hydra-define hydra-eww
   (:color blue)
@@ -343,9 +332,9 @@
 
 ;; (define-key eww-mode-map (kbd "C-x b") #'hydra-eww/body)
 
-(use-package evil
-  :ensure t
-  )
+;; (use-package evil
+;;   :ensure t
+;;   )
 
 ;; (use-package perspective
 ;;   :ensure t
@@ -378,7 +367,6 @@
 (add-hook 'perl-mode-hook       'hs-minor-mode)
 (add-hook 'sh-mode-hook         'hs-minor-mode)
 
-(message "Init magit")
 ;; Install the Git frontend Magit
 ;; git config --global status.showUntrackedFiles all
 (use-package magit
@@ -400,7 +388,6 @@
   (define-key magit-mode-map (kbd "4") 'magit-section-show-level-4-all)
   )
 
-(message "Init winum")
 (use-package winum
   :ensure t
   :config
@@ -417,7 +404,6 @@
   (global-set-key (kbd "M-8") 'winum-select-window-8)
   )
 
-(message "Init multiple-cursors")
 (use-package multiple-cursors
   :ensure t
   :config
@@ -435,7 +421,6 @@
   (global-set-key (kbd "C-c C-p") 'mc/mark-previous-word-like-this) ; choose same word previous
   )
 
-(message "Init back-button")
 (use-package back-button
   :ensure t
   :config
@@ -485,7 +470,6 @@
 
 (setq use-lsp nil)
 (if use-lsp
-  (message "Init lsp-mode")
   (use-package lsp-mode
     :quelpa (lsp-mode :fetcher github :repo "emacs-lsp/lsp-mode")
     :ensure t
@@ -568,7 +552,6 @@
   )
 
 ;; Rust
-(message "Rust")
 ;; cargo +nightly install racer
 ;; rustup toolchain add nightly
 ;; rustup component add rls rust-analysis rust-src
@@ -576,7 +559,6 @@
 ;; For windows:
 ;; rustup component add rls --toolchain stable-x86_64-pc-windows-msvc
 
-(message "rust-mode")
 (use-package rust-mode
   :ensure t
   :config
@@ -600,12 +582,10 @@
   (define-key rust-mode-map (kbd "C-r i") 'lsp-ui-peek-find-implementation)
   )
 
-(message "racer")
 (use-package racer
   :ensure t
   )
 
-(message "ron-mode")
 (use-package ron-mode
   :quelpa (ron-mode :fetcher github :repo "rhololkeolke/ron-mode")
   :ensure t
@@ -613,7 +593,6 @@
   (add-to-list 'auto-mode-alist '("\\.ron\\'" . ron-mode))
   )
 
-(message "cargo")
 (use-package cargo
   :ensure t
   )
@@ -705,12 +684,12 @@
 ;;     (add-to-list 'company-backends 'company-racer))
 ;;   )
 
-(use-package yascroll
-  :ensure t
-  :config
-  (global-yascroll-bar-mode 1)
-  (setq yascroll:delay-to-hide nil)
-  )
+;; (use-package yascroll
+;;   :ensure t
+;;   :config
+;;   (global-yascroll-bar-mode 1)
+;;   (setq yascroll:delay-to-hide nil)
+;;   )
 
 ;; (use-package flycheck-rust
 ;;   :ensure t
@@ -722,7 +701,6 @@
 ;; (use-package ess
 ;;   :ensure t)
 
-(message "Init helm")
 (use-package helm
   :ensure t
   :init
@@ -849,7 +827,6 @@
     (flycheck-popup-tip-mode)))
   )
 
-(message "Web-mode")
 (setq js-indent-level 2)
 (use-package web-mode
   :ensure t
@@ -900,7 +877,6 @@
 (use-package csv-mode
   :ensure t)
 
-(message "Shell")
 (use-package aweshell
   :quelpa (aweshell :fetcher github :repo "manateelazycat/aweshell")
   :ensure t
@@ -933,7 +909,6 @@
     (define-key shell-mode-map (kbd "<down>") 'comint-next-input))
   )
 
-(message "Python")
 (use-package python-mode
   :ensure t
   :config
@@ -1035,7 +1010,7 @@
   (define-key python-mode-map (kbd "C-i") 'anaconda-mode-show-doc)
   ;; (define-key python-mode-map (kbd "<tab>") 'anaconda-mode-complete)
 
-  (load-file (concat settings_path "settings/anaconda-settings.el"))
+  (load-file (concat settings_path "settings/anaconda-settings.elc"))
   )
 
 (use-package company-anaconda
@@ -1132,7 +1107,6 @@
 ;;         ("*Messages*" "*Completions*" "*ESS*" "*Packages*" "*log-edit-files*" "*helm-mini*" "*helm-mode-describe-variable*" "*anaconda-mode*" "*Anaconda*" "*Compile-Log*" "*grep*" "*pyls*" "*pyls::stderr*" "*rls*" "*rls::stderr*" "*eglot*" "*EGLOT*" "magit*")))
 ;;  )
 
-(message "Init centaur-tabs")
 (use-package centaur-tabs
   :ensure t
   :quelpa (centaur-tabs :fetcher github :repo "ema2159/centaur-tabs")
@@ -1192,7 +1166,6 @@
 ;; (use-package pdf-tools
 ;;   :ensure t)
 
-(message "Init undo-tree")
 (use-package undo-tree
   :ensure t
   :config
@@ -1347,50 +1320,53 @@
   (right-click-context-mode 1)
   )
 
-(use-package org
-  :ensure t
-  :config
-  ;; (setq org-log-done 'time)
+(setq org-enable nil)
+(if org-enable
+  (use-package org
+    :ensure t
+    :config
+    ;; (setq org-log-done 'time)
 
-  (define-key org-mode-map (kbd "C-c l") 'org-scontexttore-link)
-  (define-key org-mode-map (kbd "C-h") 'delete-backward-char)
-  (define-key org-mode-map (kbd "M-h") 'backward-delete-word)
+    (define-key org-mode-map (kbd "C-c l") 'org-scontexttore-link)
+    (define-key org-mode-map (kbd "C-h") 'delete-backward-char)
+    (define-key org-mode-map (kbd "M-h") 'backward-delete-word)
 
-  (define-key org-mode-map (kbd "C-c a") 'org-clock-in)
-  (define-key org-mode-map (kbd "C-c e") 'org-clock-out)
-  (define-key org-mode-map (kbd "C-c c") 'org-clock-in-last)
+    (define-key org-mode-map (kbd "C-c a") 'org-clock-in)
+    (define-key org-mode-map (kbd "C-c e") 'org-clock-out)
+    (define-key org-mode-map (kbd "C-c c") 'org-clock-in-last)
 
-  (define-key org-mode-map (kbd "C-i") 'org-shiftright)
-  (define-key org-mode-map (kbd "C-S-i") 'org-shiftleft)
+    (define-key org-mode-map (kbd "C-i") 'org-shiftright)
+    (define-key org-mode-map (kbd "C-S-i") 'org-shiftleft)
 
-  (define-key org-mode-map (kbd "C-o") 'org-metaright)
-  (define-key org-mode-map (kbd "C-S-o") 'org-metaleft)
+    (define-key org-mode-map (kbd "C-o") 'org-metaright)
+    (define-key org-mode-map (kbd "C-S-o") 'org-metaleft)
 
-  (define-key org-mode-map (kbd "<C-tab>") (lambda () (interactive) (other-window 1)))
-  (define-key org-mode-map (kbd "<C-iso-lefttab>") (lambda () (interactive) (other-window -1)))
+    (define-key org-mode-map (kbd "<C-tab>") (lambda () (interactive) (other-window 1)))
+    (define-key org-mode-map (kbd "<C-iso-lefttab>") (lambda () (interactive) (other-window -1)))
 
-  (setq org-todo-keywords
-        '((sequence "TODO" "IN" "|" "DONE")))
-  (setq org-todo-keyword-faces
-        '(("TODO" . (:foreground "dodger blue" :weight bold))
-          ("IN" . (:foreground "lawn green" :weight bold))
-          ("DONE" . (:foreground "dim gray" :weight bold))
-          ))
+    (setq org-todo-keywords
+          '((sequence "TODO" "IN" "|" "DONE")))
+    (setq org-todo-keyword-faces
+          '(("TODO" . (:foreground "dodger blue" :weight bold))
+            ("IN" . (:foreground "lawn green" :weight bold))
+            ("DONE" . (:foreground "dim gray" :weight bold))
+            ))
 
-  (setq org-agenda-files (list (concat dropbox_path "org_files")))
-  (global-set-key (kbd "C-x n !") (lambda() (interactive)(find-file (concat dropbox_path "org_files/main.org"))))
-  (global-set-key (kbd "C-x n @") (lambda() (interactive)(find-file (concat dropbox_path "org_files/work.org"))))
-  (custom-set-faces '(org-link ((t (:underline "dodger blue" :foreground "dodger blue")))))
-  (add-hook 'org-mode-hook #'(lambda ()
-                               (visual-line-mode)
-                               (org-indent-mode)))
-  )
+    (setq org-agenda-files (list (concat dropbox_path "org_files")))
+    (global-set-key (kbd "C-x n !") (lambda() (interactive)(find-file (concat dropbox_path "org_files/main.org"))))
+    (global-set-key (kbd "C-x n @") (lambda() (interactive)(find-file (concat dropbox_path "org_files/work.org"))))
+    (custom-set-faces '(org-link ((t (:underline "dodger blue" :foreground "dodger blue")))))
+    (add-hook 'org-mode-hook #'(lambda ()
+                                 (visual-line-mode)
+                                 (org-indent-mode)))
+    )
 
-(use-package org-super-agenda
-  :ensure t
-  :quelpa (org-super-agenda :fetcher github :repo "alphapapa/org-super-agenda")
-  :config
-  (org-super-agenda-mode)
+  (use-package org-super-agenda
+    :ensure t
+    :quelpa (org-super-agenda :fetcher github :repo "alphapapa/org-super-agenda")
+    :config
+    (org-super-agenda-mode)
+    )
   )
 
 ;;(use-package workgroups2
@@ -1420,7 +1396,7 @@
 ;; Check that module-file-suffix is not nil
 
 (message "Load functions.el")
-(load-file (concat settings_path "settings/functions.el"))
+(load-file (concat settings_path "settings/functions.elc"))
 
 ;; (message "Init so libs")
 ;; (message module-file-suffix)
@@ -1438,6 +1414,8 @@
 
 (define-key lisp-mode-map (kbd "C-i") 'describe-function-in-popup)
 
-(message "Read desktop")
-(call-interactively 'desktop-read t (vector "~/.emacs-save/" t))
+(when window-system
+  (set-frame-position (selected-frame) 0 0)
+  (set-frame-size (selected-frame) 105 90))
+
 (message "End main.py")
