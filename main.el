@@ -4,6 +4,9 @@
 (message "Init main.py")
 ;; byte-compile-file
 
+(setq gc-cons-threshold-original gc-cons-threshold)
+(setq gc-cons-threshold (* 1024 1024 100))
+
 (require 'package)
 (setq package-enable-at-startup nil)
 
@@ -195,9 +198,20 @@
 (require 'use-package)
 (setq use-package-verbose t)
 (setq use-package-minimum-reported-time 0.001)
+(setq use-package-always-ensure t)
 
 (use-package dashboard
-  :ensure t
+  :preface
+  (defun my/dashboard-banner ()
+    "Sets a dashboard banner including information on package initialization
+     time and garbage collections."
+    (setq dashboard-banner-logo-title
+          (format "Emacs ready in %.2f seconds with %d garbage collections."
+                  (float-time
+                   (time-subtract after-init-time before-init-time)) gcs-done)))
+  :init
+  (add-hook 'after-init-hook 'dashboard-refresh-buffer)
+  (add-hook 'dashboard-mode-hook 'my/dashboard-banner)
   :config
   (dashboard-setup-startup-hook)
   (setq dashboard-set-navigator t)
@@ -211,17 +225,14 @@
   )
 
 (use-package quelpa
-  :ensure t
   )
 
 (use-package quelpa-use-package
-  :ensure t
   :init (setq quelpa-update-melpa-p nil)
   :config (quelpa-use-package-activate-advice)
   )
 
 ;; (use-package auto-package-update
-;;   :ensure t
 ;;   :config
 ;;   (setq auto-package-update-delete-old-versions t)
 ;;   (setq auto-package-update-hide-results t)
@@ -229,7 +240,6 @@
 ;;   )
 
 (use-package ibuffer-projectile
-  :ensure t
   :config
   (add-hook 'ibuffer-hook
     (lambda ()
@@ -238,24 +248,15 @@
       ))
   )
 
-(use-package hydra
-  :ensure t
-  )
+(use-package hydra)
 
-(use-package pretty-hydra
-  :ensure t
-  )
+(use-package pretty-hydra)
 
-;; (use-package realgud
-;;   :ensure t
-;;   )
+;; (use-package realgud)
 
-(use-package bui
-  :ensure t
-  )
+;; (use-package bui)
 
 (use-package yasnippet
-  :ensure t
   :config
   (setq yas-snippet-dirs (list
                           (concat settings_path "snippets")
@@ -265,15 +266,10 @@
   )
 
 ;; https://github.com/AndreaCrotti/yasnippet-snippets
-(use-package yasnippet-snippets
-  :ensure t
-  )
+;; (use-package yasnippet-snippets
+;;   )
 
-(use-package smerge-mode
-  :ensure t
-  )
-
-;; smerge
+(use-package smerge-mode)
 
 (setq smerge-command-prefix "\C-c v")
 (pretty-hydra-define hydra-smerge
@@ -305,39 +301,33 @@
 (define-key smerge-mode-map (kbd "R") 'smerge-resolve-all)
 ;; (global-set-key (kbd "C-x b") #'hydra-smerge/body)
 
-;; (use-package eww
-;;   :ensure t
-;;   )
-;; ;; (global-set-key (kbd "C-x w") (lambda() (interactive)(eww "google.com")))
+;; (use-package eww)
+;; (global-set-key (kbd "C-x w") (lambda() (interactive)(eww "google.com")))
 ;; (define-key eww-mode-map (kbd "e") #'eww-browse-with-external-browser)
 
-(pretty-hydra-define hydra-eww
-  (:color blue)
-  ("Navigation"
-   (("p" eww-previous-url)
-    ("r" eww-forward-url)
-    ("e" eww-browse-with-external-browser)
-    ("g" eww-reload)
-    ("w" eww-copy-page-url)
-    ("v" eww-view-source)
-    ))
-  )
+;; (pretty-hydra-define hydra-eww
+;;   (:color blue)
+;;   ("Navigation"
+;;    (("p" eww-previous-url)
+;;     ("r" eww-forward-url)
+;;     ("e" eww-browse-with-external-browser)
+;;     ("g" eww-reload)
+;;     ("w" eww-copy-page-url)
+;;     ("v" eww-view-source)
+;;     ))
+;;   )
 
 ;; (define-key eww-mode-map (kbd "C-x b") #'hydra-eww/body)
 
-;; (use-package evil
-;;   :ensure t
-;;   )
+;; (use-package evil)
 
 ;; (use-package perspective
-;;   :ensure t
 ;;   :config
 ;;   (persp-mode)
 ;;   )
                    
 ;; (use-package vlfi
 ;;   :quelpa (vlfi :fetcher github :repo "m00natic/vlfi")
-;;   :ensure t
 ;;   :config
 ;;   (custom-set-variables
 ;;    '(vlf-application 'dont-ask))
@@ -355,7 +345,6 @@
 (add-hook 'ropemacs-mode-hook     'hs-minor-mode)
 (add-hook 'c-mode-common-hook   'hs-minor-mode)
 (add-hook 'emacs-lisp-mode-hook 'hs-minor-mode)
-(add-hook 'java-mode-hook       'hs-minor-mode)
 (add-hook 'lisp-mode-hook       'hs-minor-mode)
 (add-hook 'perl-mode-hook       'hs-minor-mode)
 (add-hook 'sh-mode-hook         'hs-minor-mode)
@@ -363,7 +352,6 @@
 ;; Install the Git frontend Magit
 ;; git config --global status.showUntrackedFiles all
 (use-package magit
-  :ensure t
   :config
   (global-set-key (kbd "C-c m") 'magit-status)
   (global-set-key (kbd "C-c C-m") 'magit-dispatch-popup)
@@ -382,7 +370,6 @@
   )
 
 (use-package winum
-  :ensure t
   :config
   ;; (setq winum-ignored-buffers-regexp (list (rx "*neotree*")))
   (setq window-numbering-scope 'global)
@@ -398,7 +385,6 @@
   )
 
 (use-package multiple-cursors
-  :ensure t
   :config
   ;; Multicursors
   (global-set-key (kbd "C->") 'mc/mark-next-like-this)
@@ -415,7 +401,6 @@
   )
 
 (use-package back-button
-  :ensure t
   :config
   (back-button-mode 1)
   ;; Back navigation
@@ -427,7 +412,6 @@
   (global-set-key (kbd "C-M-]") 'back-button-global-backward))
 
 (use-package company
-  :ensure t
   :config
   (global-company-mode)
   (define-key company-active-map (kbd "C-h") 'backward-delete-char-untabify)
@@ -464,7 +448,6 @@
 (if use-lsp
     (progn
       (use-package lsp-mode
-	:ensure t
 	:config
 	(setq lsp-auto-guess-root t)
 	(add-hook 'rust-mode-hook #'lsp)
@@ -499,20 +482,17 @@
 
       (use-package lsp-python-ms
 	:quelpa (lsp-python-ms :fetcher github :repo "emacs-lsp/lsp-python-ms")
-	:ensure t
 	:config
 	(setq lsp-python-ms-auto-install-server t)
 	;; (setq lsp-python-ms-executable (executable-find "python-language-server"))
 	)
 
       (use-package helm-lsp
-	:ensure t
 	:config
 	(define-key lsp-mode-map (kbd "C-x o") 'xref-find-apropos)
 	)
 
       (use-package lsp-ui
-	:ensure t
 	:config
 	(add-hook 'lsp-mode-hook 'lsp-ui-mode)
 
@@ -533,7 +513,6 @@
 	)
 
       (use-package company-lsp
-	:ensure t
 	:config
 	(push 'company-lsp company-backends)
 	(setq company-lsp-async nil)
@@ -548,97 +527,59 @@
 ;; For windows:
 ;; rustup component add rls --toolchain stable-x86_64-pc-windows-msvc
 
-(use-package rust-mode
-  :ensure t
-  :config
-  ;; cargo install racer
-  (setq racer-cmd "~/.cargo/bin/racer")
+(setq use-rust nil)
+(if use-rust
+    (progn
+      (use-package rust-mode
+	:config
+	;; cargo install racer
+	(setq racer-cmd "~/.cargo/bin/racer")
 
-  ;; rustup component add rust-src
-  ;; rustc --print sysroot /lib/rustlib/src/rust/src
-  (setq racer-rust-src-path "~/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/src")
+	;; rustup component add rust-src
+	;; rustc --print sysroot /lib/rustlib/src/rust/src
+	(setq racer-rust-src-path "~/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/src")
 
-  ;; Configure Emacs to activate racer when rust-mode starts
-  (add-hook 'rust-mode-hook #'racer-mode)
-  (add-hook 'racer-mode-hook #'eldoc-mode)
-  
-  ;; (define-key rust-mode-map (kbd "C-i") #'racer-describe-tooltip)
-  (define-key rust-mode-map (kbd "C-i") #'lsp-describe-thing-at-point)
-  
-  (define-key rust-mode-map (kbd "C-o") #'racer-find-definition)
+	;; Configure Emacs to activate racer when rust-mode starts
+	(add-hook 'rust-mode-hook #'racer-mode)
+	(add-hook 'racer-mode-hook #'eldoc-mode)
+	
+	;; (define-key rust-mode-map (kbd "C-i") #'racer-describe-tooltip)
+	(define-key rust-mode-map (kbd "C-i") #'lsp-describe-thing-at-point)
+	
+	(define-key rust-mode-map (kbd "C-o") #'racer-find-definition)
 
-  (define-key rust-mode-map (kbd "C-r r") 'lsp-ui-peek-find-references)
-  (define-key rust-mode-map (kbd "C-r i") 'lsp-ui-peek-find-implementation)
-  )
+	(define-key rust-mode-map (kbd "C-r r") 'lsp-ui-peek-find-references)
+	(define-key rust-mode-map (kbd "C-r i") 'lsp-ui-peek-find-implementation)
+	)
 
-(use-package racer
-  :ensure t
-  )
+      (use-package racer
+	)
 
-(use-package ron-mode
-  :ensure t
-  :config
-  (add-to-list 'auto-mode-alist '("\\.ron\\'" . ron-mode))
-  )
+      (use-package ron-mode
+	:config
+	(add-to-list 'auto-mode-alist '("\\.ron\\'" . ron-mode))
+	)
 
-(use-package cargo
-  :ensure t
-  )
-
-;; (use-package rainbow-delimiters
-;;   :ensure t
+      (use-package cargo
+	)
+      
+;; (use-package flycheck-rust
 ;;   :config
-;;   (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
-
-;; Smartparens is a minor mode for dealing with pairs in Emacs. 
-;; (use-package smartparens
-;;   :ensure t
-;;   :config
-;;   (smartparens-global-mode))
-
-;; (use-package bm
-;;   :ensure t
-;;   :config
-;;   (global-set-key (kbd "<C-f2>") 'bm-toggle)
-;;   (global-set-key (kbd "<f2>")   'bm-next)
-;;   (global-set-key (kbd "<S-f2>") 'bm-previous))
+;;   (with-eval-after-load 'rust-mode
+;;     (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
+;;   )
+      ))
 
 (use-package yaml-mode
-  :ensure t
   )
 
 (use-package dockerfile-mode
   :quelpa (dockerfile-mode :fetcher github :repo "spotify/dockerfile-mode")
-  :ensure t
   :config
   (add-to-list 'auto-mode-alist '("Dockerfile\\'" . dockerfile-mode))
   )
 
-;; (use-package google-translate
-;;   :ensure t
-;;   :config
-;;   (setq google-translate-pop-up-buffer-set-focus t)
-;;   (setq google-translate-translation-directions-alist '(("en" . "ru")))
-;;   ;; (global-set-key "\C-ct" 'google-translate-smooth-translate)
-;;   )
-
-(use-package dired-single
-  :ensure t
-  :config
-  (define-key dired-mode-map [return] 'dired-single-buffer)
-  (define-key dired-mode-map [mouse-1] 'dired-single-buffer-mouse)
-  (define-key dired-mode-map "^" 'dired-single-up-directory)
-  (define-key dired-mode-map (kbd "C-M-m") 'dired-single-buffer)
-  )
-
-(use-package dired-sidebar
-  :ensure t
-  :config
-  (global-set-key (kbd "C-c t") 'dired-sidebar-show-sidebar)
-  )
-
 (use-package neotree
-  :ensure t
   :config
   (setq neo-autorefresh nil)
   
@@ -664,31 +605,20 @@
 
 ;; https://github.com/emacs-pe/company-racer
 ;; (use-package company-racer
-;;   :ensure t
 ;;   :config
 ;;   (eval-after-load "company"
 ;;     (add-to-list 'company-backends 'company-racer))
 ;;   )
 
 ;; (use-package yascroll
-;;   :ensure t
 ;;   :config
 ;;   (global-yascroll-bar-mode 1)
 ;;   (setq yascroll:delay-to-hide nil)
 ;;   )
 
-;; (use-package flycheck-rust
-;;   :ensure t
-;;   :config
-;;   (with-eval-after-load 'rust-mode
-;;     (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
-;;   )
-
-;; (use-package ess
-;;   :ensure t)
+;; (use-package ess)
 
 (use-package helm
-  :ensure t
   :init
   (setq helm-mode t)
   :config
@@ -720,11 +650,9 @@
 
 (use-package restclient
   :quelpa (restclient :fetcher github :repo "pashky/restclient.el")
-  :ensure t
   )
 
 (use-package helm-projectile
-  :ensure t
   :config
   (global-unset-key (kbd "C-M-j"))
   (global-set-key (kbd "C-M-j") 'helm-projectile-switch-project)
@@ -732,12 +660,10 @@
   )
 
 (use-package projectile
-  :ensure t
   :config
   (projectile-mode t))
 
 (use-package counsel-projectile
-  :ensure t
   :config
   ;; (counsel-projectile-mode)
   ;; (global-set-key (kbd "C-x p f") 'counsel-projectile-find-file)
@@ -751,36 +677,29 @@
   (global-set-key (kbd "C-x f") 'counsel-projectile-find-file)
   )
 
-(use-package ivy
-  :ensure t
-  :config
-  (ivy-mode 1)
-  (setq ivy-use-virtual-buffers t)
-  (global-set-key "\C-s" 'swiper)
-  (global-set-key (kbd "C-c C-r") 'ivy-resume)
-  (global-set-key (kbd "<f6>") 'ivy-resume)
-  (global-set-key (kbd "M-x") 'counsel-M-x)
-  ;; (global-set-key (kbd "C-x C-f") 'counsel-find-file)
-  (global-set-key (kbd "<f1> f") 'counsel-describe-function)
-  (global-set-key (kbd "<f1> v") 'counsel-describe-variable)
-  (global-set-key (kbd "<f1> l") 'counsel-find-library)
-  (global-set-key (kbd "C-c g") 'counsel-git)
-  ;; (global-set-key (kbd "C-c j") 'counsel-git-grep)
-  ;; (global-set-key (kbd "C-c k") 'counsel-ag)
-  ;; (global-set-key (kbd "C-x l") 'counsel-locate)
-  (global-set-key (kbd "C-S-o") 'counsel-rhythmbox)
-  (define-key read-expression-map (kbd "C-r") 'counsel-expression-history)
-  )
+;; (use-package ivy
+;;   :config
+;;   (ivy-mode 1)
+;;   (setq ivy-use-virtual-buffers t)
+;;   (global-set-key (kbd "M-x") 'counsel-M-x)
+;;   (global-set-key (kbd "<f1> f") 'counsel-describe-function)
+;;   (global-set-key (kbd "<f1> v") 'counsel-describe-variable)
+;;   (global-set-key (kbd "<f1> l") 'counsel-find-library)
+;;   (global-set-key (kbd "C-c g") 'counsel-git)
+;;   ;; (global-set-key (kbd "C-c j") 'counsel-git-grep)
+;;   ;; (global-set-key (kbd "C-c k") 'counsel-ag)
+;;   ;; (global-set-key (kbd "C-x l") 'counsel-locate)
+;;   (global-set-key (kbd "C-S-o") 'counsel-rhythmbox)
+;;   (define-key read-expression-map (kbd "C-r") 'counsel-expression-history)
+;;   )
 
 (use-package expand-region
-  :ensure t
   :config
   (global-set-key (kbd "C-j") 'er/expand-region)
   (global-set-key (kbd "C-S-J") (lambda () (interactive) (er/expand-region -1)))
   )
 
 (use-package flycheck
-  :ensure t
   :config
 
   (global-flycheck-mode)
@@ -803,7 +722,6 @@
   )
 
 (use-package flycheck-popup-tip
-  :ensure t
   :config
   (setq flycheck-pos-tip-timeout 100000)
   (eval-after-load 'flycheck
@@ -814,7 +732,6 @@
 
 (setq js-indent-level 2)
 (use-package web-mode
-  :ensure t
   :config
   (setq web-mode-enable-auto-indentation nil)
 
@@ -822,21 +739,10 @@
   (add-to-list 'auto-mode-alist '("\\.vue?\\'" . web-mode))
   )
 
-(use-package yafolding
-  :ensure t
-  :config
-
-  (define-key yafolding-mode-map (kbd "<C-left>") 'yafolding-hide-element)
-  (define-key yafolding-mode-map (kbd "<C-right>") 'yafolding-show-element)
-  (define-key yafolding-mode-map (kbd "<C-up>") 'yafolding-hide-parent-element)
-  (define-key yafolding-mode-map (kbd "<C-down>") 'yafolding-toggle-all)
-  )
-
 (setq web-mode-markup-indent-offset 2)
 (setq web-mode-code-indent-offset 2)
 
 (use-package emmet-mode
-  :ensure t
   :config
   (add-hook 'sgml-mode-hook 'emmet-mode)
   (add-hook 'css-mode-hook  'emmet-mode)
@@ -849,22 +755,15 @@
   (define-key web-mode-map (kbd "C-o") 'emmet-expand-line)
   )
 
-(use-package epc
-  :ensure t)
-
 ;; sudo apt-get install sqlformat
-(use-package format-sql
-  :ensure t)
+;; (use-package format-sql)
 
-(use-package pos-tip
-  :ensure t)
+(use-package pos-tip)
 
-(use-package csv-mode
-  :ensure t)
+(use-package csv-mode)
 
 ;;(use-package aweshell
 ;;  :quelpa (aweshell :fetcher github :repo "manateelazycat/aweshell")
-;;  :ensure t
 ;;  :config
 ;;  (setq eshell-up-print-parent-dir nil)
 ;;
@@ -876,14 +775,12 @@
 
 ;; (use-package multi-term
 ;;   :quelpa (multi-term :fetcher github :repo "manateelazycat/multi-term")
-;;   :ensure t
 ;;   :config
 ;;   (define-key term-raw-map (kbd "C-h") 'term-send-backspace)
 ;;   )
 
 (if (string-equal system-type "windows-nt")
   (use-package powershell
-  :ensure t
   :config
   (global-set-key (kbd "C-x m") `powershell)
   )
@@ -895,7 +792,6 @@
   )
 
 (use-package python-mode
-  :ensure t
   :config
   (global-eldoc-mode -1)
   (py-underscore-word-syntax-p-off)
@@ -915,7 +811,6 @@
 ;; [settings]
 ;; multi_line_output=4
 (use-package py-isort
-  :ensure t
   :config
   (global-set-key (kbd "C-c o") 'py-isort-buffer)
   )
@@ -936,7 +831,6 @@
 ;; pip install 'python-language-server[all]'
 
 (use-package virtualenvwrapper
-  :ensure t
   :config
   (venv-projectile-auto-workon)
 
@@ -951,7 +845,6 @@
 
 ;; (use-package eglot
 ;;   :quelpa (eglot :fetcher github :repo "joaotavora/eglot")
-;;   :ensure t
 ;;   :config
 ;;   (add-hook 'python-mode-hook 'eglot-ensure)
 ;;   (add-to-list 'eglot-server-programs
@@ -960,7 +853,6 @@
 ;;   )
 
 ;; (use-package company-jedi
-;;   :ensure t
 ;;   :config
 ;;   (defun my/ropemacs-mode-hook ()
 ;;     (add-to-list 'company-backends 'company-jedi))
@@ -987,7 +879,6 @@
 ;;   )
 
 (use-package anaconda-mode
-  :ensure t
   :config
   (add-hook 'python-mode-hook 'anaconda-mode)
 
@@ -1000,7 +891,6 @@
 
 (use-package company-anaconda
   :quelpa (company-anaconda :fetcher github :repo "pythonic-emacs/company-anaconda")
-  :ensure t
   :config
   (eval-after-load "company"
     '(add-to-list 'company-backends 'company-anaconda))
@@ -1009,14 +899,12 @@
 ;; Requires pyflakes to be installed.
 ;; This requires pyflakes to be on PATH. Alternatively, set pyimport-pyflakes-path.
 (use-package pyimport
-  :ensure t
   :config
   ;; (define-key python-mode-map (kbd "C-x o") 'pyimport-insert-missing)
   (define-key python-mode-map (kbd "C-x i") 'pyimport-remove-unused)
   )
 
 ;; (use-package omnisharp
-;;   :ensure t
 ;;   :config
 ;;   (add-hook 'csharp-mode-hook 'omnisharp-mode)
 ;;   (eval-after-load
@@ -1049,14 +937,12 @@
 ;;     )
 
 (use-package js-auto-beautify
-  :ensure t
   :config
   (add-hook 'js2-mode-hook 'js-auto-beautify-mode)
   )
 
 ;; pip install flake8
 ;; (use-package flymake-python-pyflakes
-;;   :ensure t
 ;;   :config
 ;;   (add-hook 'python-mode-hook 'flymake-python-pyflakes-load)
 ;;   ;; (setq flymake-python-pyflakes-executable "flake8")
@@ -1064,13 +950,11 @@
 ;;   )
 
 ;; (use-package tabbar
-;;   :ensure t
 ;;   :config (tabbar-mode)
 ;;   )
 ;; 
 ;; (message "Init tabbar-ruler")
 ;; (use-package tabbar-ruler
-;;   :ensure t
 ;;   ;; :quelpa (tabbar-ruler :fetcher github :repo "mattfidler/tabbar-ruler.el")
 ;;   :config
 ;;   (setq tabbar-ruler-global-tabbar t) ; If you want tabbar
@@ -1093,7 +977,6 @@
 ;;  )
 
 (use-package centaur-tabs
-  :ensure t
   :quelpa (centaur-tabs :fetcher github :repo "ema2159/centaur-tabs")
   :config
   (centaur-tabs-mode t)
@@ -1148,17 +1031,14 @@
   (centaur-tabs-group-buffer-groups)
   )
 
-;; (use-package pdf-tools
-;;   :ensure t)
+;; (use-package pdf-tools)
 
 (use-package undo-tree
-  :ensure t
   :config
   (global-undo-tree-mode)
   )
 
 ;; (use-package multi-web-mode
-;;   :ensure t
 ;;   :config
 ;;   (setq mweb-default-major-mode 'html-mode)
 ;;   (setq mweb-tags 
@@ -1169,40 +1049,30 @@
 ;;   (multi-web-global-mode 1))
 
 ;; (use-package skewer-mode
-;;   :ensure t
 ;;   :config
 ;;   (add-hook 'js2-mode-hook 'skewer-mode)
 ;;   (add-hook 'css-mode-hook 'skewer-css-mode)
 ;;   (add-hook 'html-mode-hook 'skewer-html-mode))
 
 (use-package swiper
-  :ensure t)
-
-(use-package atomic-chrome
-  :ensure t
   :config
-  (atomic-chrome-start-server))
+  (global-set-key "\C-s" 'swiper))
+
+;; (use-package atomic-chrome
+;;   :config
+;;   (atomic-chrome-start-server))
 
 (use-package mode-icons
-  :ensure t
   :config
   (mode-icons-mode))
 
 (use-package which-key
   ;; displays available keybindings in popup
-  :ensure t
   :config
   (which-key-mode)
   )
 
-;; Let Emacs move the cursor off-screen
-(use-package scroll-restore
-  :ensure t
-  :config
-  (setq scroll-restore-mode 1))
-
 (use-package doom-themes
-  :ensure t
   :config
   (load-theme 'doom-one t) ;; or doom-dark, etc.
   (doom-themes-visual-bell-config)
@@ -1210,13 +1080,8 @@
   ;; (doom-themes-org-config)
   )
 
-(use-package fancy-battery
-  :ensure t
-  )
-
 ;; Doesnt work with emacs 27
 (use-package doom-modeline
-  :ensure t
   :quelpa (doom-modeline :fetcher github :repo "seagle0128/doom-modeline")
   :config
   (doom-modeline-mode 1)
@@ -1232,7 +1097,6 @@
 ;; $ git clone https://github.com/domtronn/all-the-icons.el.git
 ;; $ install -m 0644 -D all-the-icons.el/fonts/*.ttf -t ~/.local/share/fonts/
 (use-package all-the-icons
-  :ensure t
   :init
   (if (string-equal system-type "windows-nt")
       (setq font-dest "C:\\Windows\\Fonts")
@@ -1244,19 +1108,11 @@
   )
 
 (use-package all-the-icons-ivy
-  :ensure t
   :config
   (all-the-icons-ivy-setup)
   )
 
-;; (use-package dashboard
-;;   :ensure t
-;;   :config
-;;   (dashboard-setup-startup-hook)
-;;   )
-
 ;;(use-package solaire-mode
-;;  :ensure t
 ;;  :config
 ;;  ;; brighten buffers (that represent real files)
 ;;  (add-hook 'after-change-major-mode-hook #'turn-on-solaire-mode)
@@ -1279,27 +1135,10 @@
 ;;  )
 
 ;; (use-package linum-relative
-;;   :ensure t
 ;;   :config
 ;;   (global-set-key (kbd "C-x i") 'linum-relative-toggle))
 
-
-;; automatic and manual symbol highlighting for Emacs
-(use-package highlight-symbol
-  :ensure t
-  :config
-  (setq highlight-symbol-idle-delay 0)
-  (add-hook 'prog-mode-hook 'highlight-symbol-mode)
-  (add-hook 'text-mode-hook 'highlight-symbol-mode)
-  (global-unset-key (kbd "C-q"))
-  (global-set-key [(control f3)] 'highlight-symbol)
-  (global-set-key (kbd "C-q") 'highlight-symbol-next)
-  (global-set-key (kbd "C-S-q") 'highlight-symbol-prev)
-  (global-set-key [(meta f3)] 'highlight-symbol-query-replace)
-  )
-
 ;; (use-package right-click-context
-;;   :ensure t
 ;;   :quelpa (right-click-context :fetcher github :repo "zonuexe/right-click-context")
 ;;   :config
 ;;   (right-click-context-mode 1)
@@ -1309,7 +1148,6 @@
 (if org-enable
     (progn
       (use-package org
-	:ensure t
 	:config
 	;; (setq org-log-done 'time)
 
@@ -1348,7 +1186,6 @@
 	)
 
       (use-package org-super-agenda
-	:ensure t
 	:quelpa (org-super-agenda :fetcher github :repo "alphapapa/org-super-agenda")
 	:config
 	(org-super-agenda-mode)
@@ -1356,7 +1193,6 @@
       ))
 
 ;;(use-package workgroups2
-;;  :ensure t
 ;;  :config
 ;;  (setq wg-session-file (concat settings_path "emacsd/.emacs_workgroups"))
 ;;  (workgroups-mode 1)
@@ -1402,4 +1238,7 @@
   (set-frame-position (selected-frame) 0 0)
   (set-frame-size (selected-frame) 105 90))
 
+(setq gc-cons-threshold gc-cons-threshold-original)
+
 (message "End main.py")
+(emacs-init-time)
