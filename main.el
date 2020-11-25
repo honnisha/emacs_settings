@@ -352,6 +352,20 @@
 (add-hook 'perl-mode-hook       'hs-minor-mode)
 (add-hook 'sh-mode-hook         'hs-minor-mode)
 
+;; automatic and manual symbol highlighting for Emacs
+(use-package highlight-symbol
+  :ensure t
+  :config
+  (setq highlight-symbol-idle-delay 0)
+  (add-hook 'prog-mode-hook 'highlight-symbol-mode)
+  (add-hook 'text-mode-hook 'highlight-symbol-mode)
+  (global-unset-key (kbd "C-q"))
+  (global-set-key [(control f3)] 'highlight-symbol)
+  (global-set-key (kbd "C-q") 'highlight-symbol-next)
+  (global-set-key (kbd "C-S-q") 'highlight-symbol-prev)
+  (global-set-key [(meta f3)] 'highlight-symbol-query-replace)
+  )
+
 ;; Install the Git frontend Magit
 ;; git config --global status.showUntrackedFiles all
 (use-package magit
@@ -808,7 +822,7 @@
   :config
   (add-hook 'python-mode-hook 'anaconda-mode)
 
-  (define-key python-mode-map (kbd "C-o") 'anaconda-mode-find-definitions)
+  (define-key python-mode-map (kbd "C-o") 'anaconda-mode-find-assignments)
   (define-key python-mode-map (kbd "C-i") 'anaconda-mode-show-doc)
   ;; (define-key python-mode-map (kbd "<tab>") 'anaconda-mode-complete)
 
