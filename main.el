@@ -1220,19 +1220,6 @@
 (message "Load functions.el")
 (load-file (concat settings_path "settings/functions.el"))
 
-;; (message "Init so libs")
-;; (message module-file-suffix)
-;; (if module-file-suffix
-;;     (if (string-suffix-p module-file-suffix ".so")
-;;         (progn (message module-file-suffix)
-;;                
-;;                (load (concat settings_path "parsers/target/debug/libparserslib.so"))
-;;                (load-file (concat settings_path "settings/menu.el"))
-;; 
-;;                (global-set-key (kbd "C-x n f") 'frelansim-links)
-;;                ))
-;;   (message "module-file-suffix is nil")
-;;   )
 
 (setq gc-cons-threshold gc-cons-threshold-original)
 
