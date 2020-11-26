@@ -7,12 +7,11 @@
 (setq gc-cons-threshold-original gc-cons-threshold)
 (setq gc-cons-threshold (* 1024 1024 100))
 
+(package-initialize)
 (require 'package)
-(setq package-enable-at-startup nil)
 
 (setq package-archives '(("gnu" . "https://elpa.gnu.org/packages/")
                          ("melpa" . "https://melpa.org/packages/")))
-(package-initialize)
 
 (setq package-enable-at-startup nil)
 
@@ -29,13 +28,13 @@
 (setq pos-tip-saved-max-width-height 100)
 
 (if (find-font (font-spec :name "Hack"))
-    (set-face-attribute 'default nil :font "Hack" :height 83)
+    (set-face-attribute 'default nil :font "Hack" :height font-size)
   (error "Install Hack font from https://github.com/source-foundry/Hack")
   )
 
 (when window-system
   (set-frame-position (selected-frame) 0 0)
-  (set-frame-size (selected-frame) 105 90))
+  (set-frame-size (selected-frame) window-w window-h))
 
 ;; How to overwrite text by yank in Emacs?
 (delete-selection-mode 1)
