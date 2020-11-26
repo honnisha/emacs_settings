@@ -65,7 +65,7 @@
  backup-by-copying t
  backup-directory-alist '(("." . "~/.save"))
  delete-old-versions t
- kept-new-versions 6
+ kept-new-versions 2
  kept-old-versions 2
  version-control t)
 
@@ -359,11 +359,10 @@
   (setq highlight-symbol-idle-delay 0)
   (add-hook 'prog-mode-hook 'highlight-symbol-mode)
   (add-hook 'text-mode-hook 'highlight-symbol-mode)
+  (add-hook 'python-mode-hook 'highlight-symbol-mode)
   (global-unset-key (kbd "C-q"))
-  (global-set-key [(control f3)] 'highlight-symbol)
   (global-set-key (kbd "C-q") 'highlight-symbol-next)
   (global-set-key (kbd "C-S-q") 'highlight-symbol-prev)
-  (global-set-key [(meta f3)] 'highlight-symbol-query-replace)
   )
 
 ;; Install the Git frontend Magit
@@ -674,9 +673,7 @@
                                         (rx "*server") (rx "*which") (rx "magit")))
   )
 
-(use-package restclient
-  :quelpa (restclient :fetcher github :repo "pashky/restclient.el")
-  )
+(use-package restclient)
 
 (use-package helm-projectile
   :config
