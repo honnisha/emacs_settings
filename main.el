@@ -672,6 +672,7 @@
                                         (rx "*server") (rx "*which") (rx "magit")))
   )
 
+(use-package jq-mode)
 (use-package restclient)
 
 (use-package helm-projectile
