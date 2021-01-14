@@ -1,4 +1,4 @@
-;;; Settings --- symmary:
+;; Settings --- symmary:
 ;;; Commentary:
 ;;; Code:
 (message "Init main.py")
@@ -446,8 +446,8 @@
 	      company-tooltip-align-annotations t)
 
 	(setq company-backends
-	      '((;; company-keywords
-		 ;; company-capf
+	      '((company-keywords
+		 company-capf
 		 company-yasnippet
 		 company-anaconda
 		 )
@@ -669,11 +669,8 @@
                                         (rx "*Fly") (rx "*mini") (rx "*Qua") (rx "*Neo")
                                         (rx "*Compa") (rx "*code") (rx "*http")
                                         (rx "*anaco") (rx "*tip") (rx "*xwi") (rx "magit-")
-                                        (rx "*server") (rx "*which") (rx "magit")))
+                                        (rx "*server") (rx "*which")))
   )
-
-(use-package jq-mode)
-(use-package restclient)
 
 (use-package helm-projectile
   :config
@@ -1083,12 +1080,26 @@
   (which-key-mode)
   )
 
-(use-package doom-themes
+;; (use-package doom-themes
+;;   :config
+;;   (load-theme 'doom-one t) ;; or doom-dark, etc.
+;;   (doom-themes-visual-bell-config)
+;;   (doom-themes-neotree-config)  ; all-the-icons fonts must be installed
+;;   ;; (doom-themes-org-config)
+;;   )
+
+(use-package vscode-dark-plus-theme
   :config
-  (load-theme 'doom-one t) ;; or doom-dark, etc.
-  (doom-themes-visual-bell-config)
-  (doom-themes-neotree-config)  ; all-the-icons fonts must be installed
-  ;; (doom-themes-org-config)
+  (load-theme 'vscode-dark-plus t))
+
+(use-package vscode-icon
+  :ensure t
+  :commands (vscode-icon-for-file))
+
+(use-package highlight-indent-guides
+  :config
+  (add-hook 'prog-mode-hook 'highlight-indent-guides-mode)
+  (setq highlight-indent-guides-method 'bitmap)
   )
 
 ;; Doesnt work with emacs 27
@@ -1202,6 +1213,11 @@
 	(org-super-agenda-mode)
 	)
       ))
+
+(use-package jq-mode)
+(use-package restclient
+  :quelpa (restclient :fetcher github :repo "pashky/restclient.el")
+  )
 
 ;;(use-package workgroups2
 ;;  :config
