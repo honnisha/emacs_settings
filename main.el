@@ -683,7 +683,6 @@
                                         (rx "*server") (rx "*which")))
   )
 
-<<<<<<< HEAD
 (if ide-load
     (progn
       (use-package helm-projectile
@@ -692,14 +691,6 @@
 	(global-set-key (kbd "C-M-j") 'helm-projectile-switch-project)
 	;; (global-set-key (kbd "C-SPC") 'helm-projectile-switch-to-buffer)
 	)
-=======
-(use-package helm-projectile
-  :config
-  (global-unset-key (kbd "C-M-j"))
-  (global-set-key (kbd "C-M-j") 'helm-projectile-switch-project)
-  ;; (global-set-key (kbd "C-SPC") 'helm-projectile-switch-to-buffer)
-  )
->>>>>>> 5b546a9 (vscode theme)
 
       (use-package projectile
 	:config
