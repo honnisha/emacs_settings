@@ -4,6 +4,8 @@
 (message "Init main.py")
 ;; byte-compile-file
 
+(setq ide-load (eq (length command-line-args) 1))
+
 (setq gc-cons-threshold-original gc-cons-threshold)
 (setq gc-cons-threshold (* 1024 1024 100))
 
@@ -32,9 +34,13 @@
   (error "Install Hack font from https://github.com/source-foundry/Hack")
   )
 
-(when window-system
-  (set-frame-position (selected-frame) 0 0)
-  (set-frame-size (selected-frame) window-w window-h))
+(if ide-load
+    (progn
+      (when window-system
+	(set-frame-position (selected-frame) 0 0)
+	(set-frame-size (selected-frame) window-w window-h))
+      ))
+
 
 ;; How to overwrite text by yank in Emacs?
 (delete-selection-mode 1)
@@ -202,29 +208,30 @@
 (setq use-package-minimum-reported-time 0.001)
 (setq use-package-always-ensure t)
 
-(use-package dashboard
-  :preface
-  (defun my/dashboard-banner ()
-    "Sets a dashboard banner including information on package initialization
+(if ide-load
+    (use-package dashboard
+      :preface
+      (defun my/dashboard-banner ()
+	"Sets a dashboard banner including information on package initialization
      time and garbage collections."
-    (setq dashboard-banner-logo-title
-          (format "Emacs ready in %.2f seconds with %d garbage collections."
-                  (float-time
-                   (time-subtract after-init-time before-init-time)) gcs-done)))
-  :init
-  (add-hook 'after-init-hook 'dashboard-refresh-buffer)
-  (add-hook 'dashboard-mode-hook 'my/dashboard-banner)
-  :config
-  (dashboard-setup-startup-hook)
-  (setq dashboard-set-navigator t)
-  ;; (setq dashboard-startup-banner nil)
-  (setq dashboard-set-heading-icons t)
-  (setq dashboard-set-file-icons t)
-  (setq dashboard-items '(
-			  ;;(recents . 10)
-			  (projects . 10)
-			  (bookmarks . 20)))
-  )
+	(setq dashboard-banner-logo-title
+              (format "Emacs ready in %.2f seconds with %d garbage collections."
+                      (float-time
+                       (time-subtract after-init-time before-init-time)) gcs-done)))
+      :init
+      (add-hook 'after-init-hook 'dashboard-refresh-buffer)
+      (add-hook 'dashboard-mode-hook 'my/dashboard-banner)
+      :config
+      (dashboard-setup-startup-hook)
+      (setq dashboard-set-navigator t)
+      ;; (setq dashboard-startup-banner nil)
+      (setq dashboard-set-heading-icons t)
+      (setq dashboard-set-file-icons t)
+      (setq dashboard-items '(
+			      ;;(recents . 10)
+			      (projects . 10)
+			      (bookmarks . 20)))
+      ))
 
 (use-package quelpa
   )
@@ -241,14 +248,15 @@
 ;;   (auto-package-update-maybe)
 ;;   )
 
-(use-package ibuffer-projectile
-  :config
-  (add-hook 'ibuffer-hook
-	    (lambda ()
-	      (ibuffer-projectile-set-filter-groups)
-	      ;; (ibuffer-switch-to-saved-filter-groups "default")
-	      ))
-  )
+(if ide-load
+    (use-package ibuffer-projectile
+      :config
+      (add-hook 'ibuffer-hook
+		(lambda ()
+		  (ibuffer-projectile-set-filter-groups)
+		  ;; (ibuffer-switch-to-saved-filter-groups "default")
+		  ))
+      ))
 
 (use-package hydra)
 
@@ -364,24 +372,27 @@
   (global-set-key (kbd "C-S-q") 'highlight-symbol-prev)
   )
 
-;; Install the Git frontend Magit
-;; git config --global status.showUntrackedFiles all
-(use-package magit
-  :config
-  (global-set-key (kbd "C-c m") 'magit-status)
-  (global-set-key (kbd "C-c C-m") 'magit-dispatch-popup)
-  (global-set-key (kbd "C-x v h") 'magit-log-buffer-file)
-  (global-set-key (kbd "C-x v b") 'magit-blame)
 
-  (define-key magit-mode-map (kbd "<C-tab>") (lambda () (interactive) (other-window 1)))
-  (define-key magit-mode-map (kbd "M-1") 'winum-select-window-1)
-  (define-key magit-mode-map (kbd "M-2") 'winum-select-window-2)
-  (define-key magit-mode-map (kbd "M-3") 'winum-select-window-3)
-  (define-key magit-mode-map (kbd "M-4") 'winum-select-window-4)
-  (define-key magit-mode-map (kbd "1") 'magit-section-show-level-1-all)
-  (define-key magit-mode-map (kbd "2") 'magit-section-show-level-2-all)
-  (define-key magit-mode-map (kbd "3") 'magit-section-show-level-3-all)
-  (define-key magit-mode-map (kbd "4") 'magit-section-show-level-4-all)
+(if ide-load
+    ;; Install the Git frontend Magit
+    ;; git config --global status.showUntrackedFiles all
+    (use-package magit
+      :config
+      (global-set-key (kbd "C-c m") 'magit-status)
+      (global-set-key (kbd "C-c C-m") 'magit-dispatch-popup)
+      (global-set-key (kbd "C-x v h") 'magit-log-buffer-file)
+      (global-set-key (kbd "C-x v b") 'magit-blame)
+
+      (define-key magit-mode-map (kbd "<C-tab>") (lambda () (interactive) (other-window 1)))
+      (define-key magit-mode-map (kbd "M-1") 'winum-select-window-1)
+      (define-key magit-mode-map (kbd "M-2") 'winum-select-window-2)
+      (define-key magit-mode-map (kbd "M-3") 'winum-select-window-3)
+      (define-key magit-mode-map (kbd "M-4") 'winum-select-window-4)
+      (define-key magit-mode-map (kbd "1") 'magit-section-show-level-1-all)
+      (define-key magit-mode-map (kbd "2") 'magit-section-show-level-2-all)
+      (define-key magit-mode-map (kbd "3") 'magit-section-show-level-3-all)
+      (define-key magit-mode-map (kbd "4") 'magit-section-show-level-4-all)
+      )
   )
 
 (use-package winum
@@ -430,7 +441,7 @@
 
 
 (setq use-company t)
-(if use-company
+(if (and ide-load use-company)
     (progn
       (use-package company
 	:config
@@ -469,7 +480,7 @@
 	)))
 
 (setq use-lsp nil)
-(if use-lsp
+(if (and ide-load use-lsp)
     (progn
       (use-package lsp-mode
 	:config
@@ -552,7 +563,7 @@
 ;; rustup component add rls --toolchain stable-x86_64-pc-windows-msvc
 
 (setq use-rust nil)
-(if use-rust
+(if (and ide-load use-rust)
     (progn
       (use-package rust-mode
 	:config
@@ -587,11 +598,11 @@
       (use-package cargo
 	)
       
-;; (use-package flycheck-rust
-;;   :config
-;;   (with-eval-after-load 'rust-mode
-;;     (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
-;;   )
+      ;; (use-package flycheck-rust
+      ;;   :config
+      ;;   (with-eval-after-load 'rust-mode
+      ;;     (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
+      ;;   )
       ))
 
 (use-package yaml-mode
@@ -672,30 +683,33 @@
                                         (rx "*server") (rx "*which")))
   )
 
-(use-package helm-projectile
-  :config
-  (global-unset-key (kbd "C-M-j"))
-  (global-set-key (kbd "C-M-j") 'helm-projectile-switch-project)
-  ;; (global-set-key (kbd "C-SPC") 'helm-projectile-switch-to-buffer)
-  )
+(if ide-load
+    (progn
+      (use-package helm-projectile
+	:config
+	(global-unset-key (kbd "C-M-j"))
+	(global-set-key (kbd "C-M-j") 'helm-projectile-switch-project)
+	;; (global-set-key (kbd "C-SPC") 'helm-projectile-switch-to-buffer)
+	)
 
-(use-package projectile
-  :config
-  (projectile-mode t))
+      (use-package projectile
+	:config
+	(projectile-mode t))
 
-(use-package counsel-projectile
-  :config
-  ;; (counsel-projectile-mode)
-  ;; (global-set-key (kbd "C-x p f") 'counsel-projectile-find-file)
+      (use-package counsel-projectile
+	:config
+	;; (counsel-projectile-mode)
+	;; (global-set-key (kbd "C-x p f") 'counsel-projectile-find-file)
 
-  ;; (global-set-key (kbd "C-M-s") 'counsel-projectile-git-grep)
-  (global-set-key (kbd "C-x s")
-                  (lambda () (interactive)
-                    (counsel-git-grep nil nil "git --no-pager grep -n --no-color -I -e \"%s\" -- \"*.py\" \"*.html\"")))
-  (global-set-key (kbd "C-M-s") 'counsel-git-grep)
+	;; (global-set-key (kbd "C-M-s") 'counsel-projectile-git-grep)
+	(global-set-key (kbd "C-x s")
+			(lambda () (interactive)
+			  (counsel-git-grep nil nil "git --no-pager grep -n --no-color -I -e \"%s\" -- \"*.py\" \"*.html\"")))
+	(global-set-key (kbd "C-M-s") 'counsel-git-grep)
 
-  (global-set-key (kbd "C-x f") 'counsel-projectile-find-file)
-  )
+	(global-set-key (kbd "C-x f") 'counsel-projectile-find-file)
+	)
+      ))
 
 (use-package ivy
   :config
@@ -708,34 +722,37 @@
   (global-set-key (kbd "C-S-J") (lambda () (interactive) (er/expand-region -1)))
   )
 
-(use-package flycheck
-  :config
+(if ide-load
+    (progn
+      (use-package flycheck
+	:config
 
-  (global-flycheck-mode)
-  ;; (flycheck-julia-setup)
+	(global-flycheck-mode)
+	;; (flycheck-julia-setup)
 
-  (setq flycheck-highlighting-mode (quote symbols))
+	(setq flycheck-highlighting-mode (quote symbols))
 
-  (global-set-key (kbd "M-z") 'flycheck-previous-error)
-  (global-set-key (kbd "C-z") 'flycheck-next-error)
-  (global-set-key (kbd "C-M-z") 'flycheck-copy-errors-as-kill)
+	(global-set-key (kbd "M-z") 'flycheck-previous-error)
+	(global-set-key (kbd "C-z") 'flycheck-next-error)
+	(global-set-key (kbd "C-M-z") 'flycheck-copy-errors-as-kill)
 
-  ;; (add-to-list 'flycheck-disabled-checkers 'lsp)
+	;; (add-to-list 'flycheck-disabled-checkers 'lsp)
 
-  (flycheck-add-next-checker 'python-flake8 'python-pylint)
-  ;; (flycheck-add-next-checker 'python-pylint 'python-mypy)
+	(flycheck-add-next-checker 'python-flake8 'python-pylint)
+	;; (flycheck-add-next-checker 'python-pylint 'python-mypy)
 
-  (setq flycheck-python-mypy-config `("mypy.ini" ,(concat settings_path "configs/mypy.ini")))
-  (setq flycheck-flake8rc (concat settings_path "configs/flake8rc"))
-  (setq flycheck-pylintrc (concat settings_path "configs/.pylintrc"))
-  )
+	(setq flycheck-python-mypy-config `("mypy.ini" ,(concat settings_path "configs/mypy.ini")))
+	(setq flycheck-flake8rc (concat settings_path "configs/flake8rc"))
+	(setq flycheck-pylintrc (concat settings_path "configs/.pylintrc"))
+	)
 
-(use-package flycheck-pos-tip
-  :config
-  (with-eval-after-load 'flycheck
-    (flycheck-pos-tip-mode))
-  (setq flycheck-pos-tip-max-width 80)
-  )
+      (use-package flycheck-pos-tip
+	:config
+	(with-eval-after-load 'flycheck
+	  (flycheck-pos-tip-mode))
+	(setq flycheck-pos-tip-max-width 80)
+	)
+      ))
 
 (setq js-indent-level 2)
 (use-package web-mode
@@ -786,17 +803,18 @@
 ;;   (define-key term-raw-map (kbd "C-h") 'term-send-backspace)
 ;;   )
 
-(if (string-equal system-type "windows-nt")
-  (use-package powershell
-  :config
-  (global-set-key (kbd "C-x m") `powershell)
-  )
-  (setq shell-file-name "/bin/bash")
-  (progn
-    (global-set-key (kbd "C-x m") `shell)
-    (define-key shell-mode-map (kbd "<up>") 'comint-previous-input)
-    (define-key shell-mode-map (kbd "<down>") 'comint-next-input))
-  )
+(if ide-load
+    (if (string-equal system-type "windows-nt")
+	(use-package powershell
+	  :config
+	  (global-set-key (kbd "C-x m") `powershell)
+	  )
+      (setq shell-file-name "/bin/bash")
+      (progn
+	(global-set-key (kbd "C-x m") `shell)
+	(define-key shell-mode-map (kbd "<up>") 'comint-previous-input)
+	(define-key shell-mode-map (kbd "<down>") 'comint-next-input))
+      ))
 
 ;(use-package python-mode
 ;  :config
@@ -812,137 +830,108 @@
 ;	    )
 ;  )
 
-(use-package anaconda-mode
-  :config
-  (add-hook 'python-mode-hook 'anaconda-mode)
+(if ide-load
+    (progn
+      (use-package anaconda-mode
+	:config
+	(add-hook 'python-mode-hook 'anaconda-mode)
 
-  (define-key python-mode-map (kbd "C-o") 'anaconda-mode-find-assignments)
-  (define-key python-mode-map (kbd "C-i") 'anaconda-mode-show-doc)
-  ;; (define-key python-mode-map (kbd "<tab>") 'anaconda-mode-complete)
+	(define-key python-mode-map (kbd "C-o") 'anaconda-mode-find-assignments)
+	(define-key python-mode-map (kbd "C-i") 'anaconda-mode-show-doc)
+	;; (define-key python-mode-map (kbd "<tab>") 'anaconda-mode-complete)
 
-  (load-file (concat settings_path "settings/anaconda-settings.elc"))
-  )
+	(load-file (concat settings_path "settings/anaconda-settings.elc"))
+	)
 
-(if use-company
-    (use-package company-anaconda
-      :quelpa (company-anaconda :fetcher github :repo "pythonic-emacs/company-anaconda")
-      :config
-      (eval-after-load "company"
-	'(add-to-list 'company-backends 'company-anaconda))
+      (if use-company
+	  (use-package company-anaconda
+	    :quelpa (company-anaconda :fetcher github :repo "pythonic-emacs/company-anaconda")
+	    :config
+	    (eval-after-load "company"
+	      '(add-to-list 'company-backends 'company-anaconda))
+	    ))
+
+      ;; pip install isort
+      ;; https://github.com/timothycrosley/isort
+      ;; ~/.isort.cfg
+      ;; [settings]
+      ;; multi_line_output=4
+      (use-package py-isort
+	:config
+	(global-set-key (kbd "C-c o") 'py-isort-buffer)
+	)
+
+      ;; sudo apt install virtualenv
+      ;; pip install virtualenvwrapper
+      ;; source /usr/local/bin/virtualenvwrapper.sh
+      ;; Add this to your .bashrc / .bash_profile / .zshrc:
+      ;; # load virtualenvwrapper for python (after custom PATHs)
+      ;; source /home/user/.local/bin/virtualenvwrapper.sh
+      ;; ~/.local/bin/virtualenvwrapper.sh
+
+      ;; VIRTUALENVWRAPPER_PYTHON="$(command \which python)"
+      ;; sudo pip3 install virtualenv==20.0.23
+
+      ;; mkvirtualenv env1
+      ;; mkvirtualenv --python=python3.7 py3
+      ;; pip install 'python-language-server[all]'
+
+      (use-package virtualenvwrapper
+	:config
+	(venv-projectile-auto-workon)
+
+	(venv-initialize-interactive-shells) ;; if you want interactive shell support
+	(venv-initialize-eshell) ;; if you want eshell support
+	;; note that setting `venv-location` is not necessary if you
+	;; use the default location (`~/.virtualenvs`), or if the
+	;; the environment variable `WORKON_HOME` points to the right place
+	(setq venv-location "~/.virtualenvs/")
+	(global-set-key (kbd "C-c a") 'venv-workon)
+	)
+
+      ;; (use-package eglot
+      ;;   :quelpa (eglot :fetcher github :repo "joaotavora/eglot")
+      ;;   :config
+      ;;   (add-hook 'python-mode-hook 'eglot-ensure)
+      ;;   (add-to-list 'eglot-server-programs
+      ;;              `(python-mode . ("pyls" "-v" "--tcp" "--host"
+      ;;                               "localhost" "--port" :autoport)))
+      ;;   )
+
+      ;; (use-package company-jedi
+      ;;   :config
+      ;;   (defun my/ropemacs-mode-hook ()
+      ;;     (add-to-list 'company-backends 'company-jedi))
+      ;; 
+      ;;   (add-hook 'ropemacs-mode-hook 'my/ropemacs-mode-hook)
+      ;;   
+      ;;   ;; (add-hook 'ropemacs-mode-hook 'jedi:setup)
+      ;;   (setq jedi:complete-on-dot t)
+      ;;   
+      ;;   (define-key jedi-mode-map (kbd "C-o") 'jedi:goto-definition)
+      ;;   ;; (define-key jedi-mode-map (kbd "<tab>") 'jedi:complete)
+      ;;   (define-key jedi-mode-map (kbd "C-i") 'jedi:show-doc-in-tip)
+      ;; 
+      ;;   (add-hook 'jedi-mode-hook 'jedi-direx:setup)
+      ;;   (add-hook 'ropemacs-mode-hook 'auto-complete-mode)
+      ;;   (add-hook 'ropemacs-mode-hook 'jedi:ac-setup)
+      ;;   (setq elpy-rpc-backend "jedi")
+      ;;   (eval-after-load 'ropemacs-mode-hook
+      ;;     '(define-key jedi-mode-map (kbd "TAB") 'jedi:complete))
+      ;;   
+      ;;   (setq jedi:server-args
+      ;;       '("--virtual-env" "~/.virtualenvs/gc"
+      ;;      ))
+      ;;   )
+
+      ;; Requires pyflakes to be installed.
+      ;; This requires pyflakes to be on PATH. Alternatively, set pyimport-pyflakes-path.
+      (use-package pyimport
+	:config
+	;; (define-key python-mode-map (kbd "C-x o") 'pyimport-insert-missing)
+	(define-key python-mode-map (kbd "C-x i") 'pyimport-remove-unused)
+	)
       ))
-
-;; pip install isort
-;; https://github.com/timothycrosley/isort
-;; ~/.isort.cfg
-;; [settings]
-;; multi_line_output=4
-(use-package py-isort
-  :config
-  (global-set-key (kbd "C-c o") 'py-isort-buffer)
-  )
-
-;; sudo apt install virtualenv
-;; pip install virtualenvwrapper
-;; source /usr/local/bin/virtualenvwrapper.sh
-;; Add this to your .bashrc / .bash_profile / .zshrc:
-;; # load virtualenvwrapper for python (after custom PATHs)
-;; source /home/user/.local/bin/virtualenvwrapper.sh
-;; ~/.local/bin/virtualenvwrapper.sh
-
-;; VIRTUALENVWRAPPER_PYTHON="$(command \which python)"
-;; sudo pip3 install virtualenv==20.0.23
-
-;; mkvirtualenv env1
-;; mkvirtualenv --python=python3.7 py3
-;; pip install 'python-language-server[all]'
-
-(use-package virtualenvwrapper
-  :config
-  (venv-projectile-auto-workon)
-
-  (venv-initialize-interactive-shells) ;; if you want interactive shell support
-  (venv-initialize-eshell) ;; if you want eshell support
-  ;; note that setting `venv-location` is not necessary if you
-  ;; use the default location (`~/.virtualenvs`), or if the
-  ;; the environment variable `WORKON_HOME` points to the right place
-  (setq venv-location "~/.virtualenvs/")
-  (global-set-key (kbd "C-c a") 'venv-workon)
-  )
-
-;; (use-package eglot
-;;   :quelpa (eglot :fetcher github :repo "joaotavora/eglot")
-;;   :config
-;;   (add-hook 'python-mode-hook 'eglot-ensure)
-;;   (add-to-list 'eglot-server-programs
-;;              `(python-mode . ("pyls" "-v" "--tcp" "--host"
-;;                               "localhost" "--port" :autoport)))
-;;   )
-
-;; (use-package company-jedi
-;;   :config
-;;   (defun my/ropemacs-mode-hook ()
-;;     (add-to-list 'company-backends 'company-jedi))
-;; 
-;;   (add-hook 'ropemacs-mode-hook 'my/ropemacs-mode-hook)
-;;   
-;;   ;; (add-hook 'ropemacs-mode-hook 'jedi:setup)
-;;   (setq jedi:complete-on-dot t)
-;;   
-;;   (define-key jedi-mode-map (kbd "C-o") 'jedi:goto-definition)
-;;   ;; (define-key jedi-mode-map (kbd "<tab>") 'jedi:complete)
-;;   (define-key jedi-mode-map (kbd "C-i") 'jedi:show-doc-in-tip)
-;; 
-;;   (add-hook 'jedi-mode-hook 'jedi-direx:setup)
-;;   (add-hook 'ropemacs-mode-hook 'auto-complete-mode)
-;;   (add-hook 'ropemacs-mode-hook 'jedi:ac-setup)
-;;   (setq elpy-rpc-backend "jedi")
-;;   (eval-after-load 'ropemacs-mode-hook
-;;     '(define-key jedi-mode-map (kbd "TAB") 'jedi:complete))
-;;   
-;;   (setq jedi:server-args
-;;       '("--virtual-env" "~/.virtualenvs/gc"
-;;      ))
-;;   )
-
-;; Requires pyflakes to be installed.
-;; This requires pyflakes to be on PATH. Alternatively, set pyimport-pyflakes-path.
-(use-package pyimport
-  :config
-  ;; (define-key python-mode-map (kbd "C-x o") 'pyimport-insert-missing)
-  (define-key python-mode-map (kbd "C-x i") 'pyimport-remove-unused)
-  )
-
-;; (use-package omnisharp
-;;   :config
-;;   (add-hook 'csharp-mode-hook 'omnisharp-mode)
-;;   (eval-after-load
-;;     'company
-;;     '(add-to-list 'company-backends #'company-omnisharp))
-;; 
-;;   (defun my-csharp-mode-setup ()
-;;     (omnisharp-mode)
-;;     (company-mode)
-;;     (flycheck-mode)
-;; 
-;;     (setq indent-tabs-mode nil)
-;;     (setq c-syntactic-indentation t)
-;;     (c-set-style "ellemtel")
-;;     (setq c-basic-offset 4)
-;;     (setq truncate-lines t)
-;;     (setq tab-width 4)
-;;     (setq evil-shift-width 4)
-;; 
-;;     ;csharp-mode README.md recommends this too
-;;     ;(electric-pair-mode 1)       ;; Emacs 24
-;;     ;(electric-pair-local-mode 1) ;; Emacs 25
-;; 
-;;     (define-key omnisharp-mode-map (kbd "C-c r r") 'omnisharp-run-code-action-refactoring)
-;;     (define-key omnisharp-mode-map (kbd "C-c s") 'omnisharp-start-omnisharp-server)
-;;     (define-key omnisharp-mode-map (kbd "C-c C-c") 'recompile))
-;;     (define-key omnisharp-mode-map (kbd "C-o") 'omnisharp-go-to-definition)
-;;     (define-key omnisharp-mode-map (kbd "C-i") 'omnisharp-current-type-documentation)
-;;     ;; (define-key omnisharp-mode-map (kbd "<tab>") 'omnisharp-auto-complete)
-;;     )
 
 (use-package js-auto-beautify
   :config
@@ -988,7 +977,7 @@
   :quelpa (centaur-tabs :fetcher github :repo "ema2159/centaur-tabs")
   :config
   (centaur-tabs-mode t)
-  (setq centaur-tabs-style "chamfer")
+  (setq centaur-tabs-style "rounded")
   (setq centaur-tabs-height 20)
   (setq centaur-tabs-set-icons nil)
   (setq centaur-tabs-gray-out-icons 'buffer)
@@ -1080,21 +1069,21 @@
   (which-key-mode)
   )
 
-;; (use-package doom-themes
-;;   :config
-;;   (load-theme 'doom-one t) ;; or doom-dark, etc.
-;;   (doom-themes-visual-bell-config)
-;;   (doom-themes-neotree-config)  ; all-the-icons fonts must be installed
-;;   ;; (doom-themes-org-config)
-;;   )
-
-(use-package vscode-dark-plus-theme
+(use-package doom-themes
   :config
-  (load-theme 'vscode-dark-plus t))
+  (load-theme 'doom-one t) ;; or doom-dark, etc.
+  (doom-themes-visual-bell-config)
+  (doom-themes-neotree-config)  ; all-the-icons fonts must be installed
+  ;; (doom-themes-org-config)
+  )
 
 (use-package vscode-icon
   :ensure t
   :commands (vscode-icon-for-file))
+
+(use-package vscode-dark-plus-theme
+  :config
+  (load-theme 'vscode-dark-plus t))
 
 (use-package highlight-indent-guides
   :config
@@ -1166,7 +1155,7 @@
 ;;   (right-click-context-mode 1)
 ;;   )
 
-(setq org-enable nil)
+(setq org-enable t)
 (if org-enable
     (progn
       (use-package org
