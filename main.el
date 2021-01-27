@@ -683,6 +683,7 @@
                                         (rx "*server") (rx "*which")))
   )
 
+<<<<<<< HEAD
 (if ide-load
     (progn
       (use-package helm-projectile
@@ -691,6 +692,14 @@
 	(global-set-key (kbd "C-M-j") 'helm-projectile-switch-project)
 	;; (global-set-key (kbd "C-SPC") 'helm-projectile-switch-to-buffer)
 	)
+=======
+(use-package helm-projectile
+  :config
+  (global-unset-key (kbd "C-M-j"))
+  (global-set-key (kbd "C-M-j") 'helm-projectile-switch-project)
+  ;; (global-set-key (kbd "C-SPC") 'helm-projectile-switch-to-buffer)
+  )
+>>>>>>> 5b546a9 (vscode theme)
 
       (use-package projectile
 	:config
@@ -1069,12 +1078,26 @@
   (which-key-mode)
   )
 
-(use-package doom-themes
+;; (use-package doom-themes
+;;   :config
+;;   (load-theme 'doom-one t) ;; or doom-dark, etc.
+;;   (doom-themes-visual-bell-config)
+;;   (doom-themes-neotree-config)  ; all-the-icons fonts must be installed
+;;   ;; (doom-themes-org-config)
+;;   )
+
+(use-package vscode-dark-plus-theme
   :config
-  (load-theme 'doom-one t) ;; or doom-dark, etc.
-  (doom-themes-visual-bell-config)
-  (doom-themes-neotree-config)  ; all-the-icons fonts must be installed
-  ;; (doom-themes-org-config)
+  (load-theme 'vscode-dark-plus t))
+
+(use-package vscode-icon
+  :ensure t
+  :commands (vscode-icon-for-file))
+
+(use-package highlight-indent-guides
+  :config
+  (add-hook 'prog-mode-hook 'highlight-indent-guides-mode)
+  (setq highlight-indent-guides-method 'bitmap)
   )
 
 (use-package vscode-icon
