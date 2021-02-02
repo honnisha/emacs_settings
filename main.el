@@ -862,6 +862,7 @@
 	)
 
       ;; sudo apt install virtualenv
+      ;; yay -S python-virtualenv
       ;; pip install virtualenvwrapper
       ;; source /usr/local/bin/virtualenvwrapper.sh
       ;; Add this to your .bashrc / .bash_profile / .zshrc:
@@ -1069,13 +1070,13 @@
   (which-key-mode)
   )
 
-;; (use-package doom-themes
-;;   :config
-;;   (load-theme 'doom-one t) ;; or doom-dark, etc.
-;;   (doom-themes-visual-bell-config)
-;;   (doom-themes-neotree-config)  ; all-the-icons fonts must be installed
-;;   ;; (doom-themes-org-config)
-;;   )
+(use-package doom-themes
+  :config
+  (load-theme 'doom-one t) ;; or doom-dark, etc.
+  (doom-themes-visual-bell-config)
+  (doom-themes-neotree-config)  ; all-the-icons fonts must be installed
+  ;; (doom-themes-org-config)
+  )
 
 (use-package vscode-dark-plus-theme
   :config
