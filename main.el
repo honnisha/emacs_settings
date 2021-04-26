@@ -17,8 +17,13 @@
 
 (setq package-enable-at-startup nil)
 
+(setq make-backup-files nil)
+(setq create-lockfiles nil)
+
 (setq inhibit-startup-screen t
       initial-buffer-choice  nil)
+
+(setq-default indent-tabs-mode nil)
 
 (tool-bar-mode -1)
 (menu-bar-mode -1)
@@ -37,10 +42,9 @@
 (if ide-load
     (progn
       (when window-system
-	(set-frame-position (selected-frame) 0 0)
+	(set-frame-position (selected-frame) window-x window-y)
 	(set-frame-size (selected-frame) window-w window-h))
       ))
-
 
 ;; How to overwrite text by yank in Emacs?
 (delete-selection-mode 1)
@@ -65,19 +69,6 @@
 (savehist-mode t)
 (setq history-delete-duplicates t)
 (setq comint-input-ignoredups t)
-
-(setq
- backup-by-copying t
- backup-directory-alist '(("." . "~/.save"))
- delete-old-versions t
- kept-new-versions 2
- kept-old-versions 2
- version-control t)
-
-(setq make-backup-files t)
-
-(setq auto-save-file-name-transforms
-      `(("~/.saves/" t)))
 
 (setq mouse-wheel-progressive-speed nil)
 (setq mouse-wheel-scroll-amount '(5))
@@ -439,7 +430,6 @@
   (setq back-button-never-push-mark nil)
   )
 
-
 (setq use-company t)
 (if (and ide-load use-company)
     (progn
@@ -456,15 +446,6 @@
 	      company-show-numbers t
 	      company-tooltip-align-annotations t)
 
-	(setq company-backends
-	      '((company-keywords
-		 company-capf
-		 company-yasnippet
-		 company-anaconda
-		 )
-		(company-abbrev company-dabbrev)
-		))
-
 	(set-face-attribute 'company-tooltip nil
 			    :background "#0f2c57"
 			    :foreground "LightSteelBlue1"
@@ -477,7 +458,16 @@
 			    :inherit 'company-tooltip
 			    :underline nil
 			    :weight 'normal)
-	)))
+	(setq company-backends
+	      '((company-keywords
+		 company-capf
+		 company-yasnippet
+		 company-anaconda
+		 )
+		(company-abbrev company-dabbrev)
+		))
+	)
+      ))
 
 (setq use-lsp nil)
 (if (and ide-load use-lsp)
@@ -635,7 +625,7 @@
   ;; (global-set-key (kbd "C-t") 'neotree-toggle)
   (global-set-key (kbd "C-t") 'neotree-project-dir)
   (setq neo-window-fixed-size t)
-  (setq neo-window-width 26)
+  (setq neo-window-width 30)
   )
 
 ;; https://github.com/emacs-pe/company-racer
@@ -756,6 +746,7 @@
 
 (setq js-indent-level 2)
 (use-package web-mode
+  :quelpa (web-mode :fetcher github :repo "fxbois/web-mode")
   :config
   (setq web-mode-enable-auto-indentation nil)
 
@@ -766,9 +757,10 @@
 (setq web-mode-markup-indent-offset 2)
 (setq web-mode-code-indent-offset 2)
 
+(use-package smart-tab)
+
 (use-package emmet-mode
   :config
-  (add-hook 'sgml-mode-hook 'emmet-mode)
   (add-hook 'css-mode-hook  'emmet-mode)
   (add-hook 'web-mode-hook  'emmet-mode)
 
@@ -778,6 +770,19 @@
 
   (define-key web-mode-map (kbd "C-o") 'emmet-expand-line)
   )
+
+(defun add-emmet-expand-to-smart-tab-completions ()
+  ;; Add an entry for current major mode in
+  ;; `smart-tab-completion-functions-alist' to use
+  ;; `emmet-expand-line'.
+  (add-to-list 'smart-tab-completion-functions-alist
+               (cons major-mode #'emmet-expand-line)))
+
+(require 'emmet-mode)
+(add-hook 'sgml-mode-hook 'emmet-mode)
+(add-hook 'sgml-mode-hook 'add-emmet-expand-to-smart-tab-completions)
+(add-hook 'css-mode-hook  'emmet-mode)
+(add-hook 'css-mode-hook 'add-emmet-expand-to-smart-tab-completions)
 
 ;; sudo apt-get install sqlformat
 ;; (use-package format-sql)
@@ -836,7 +841,7 @@
 	:config
 	(add-hook 'python-mode-hook 'anaconda-mode)
 
-	(define-key python-mode-map (kbd "C-o") 'anaconda-mode-find-assignments)
+	(define-key python-mode-map (kbd "C-o") 'anaconda-mode-find-definitions)
 	(define-key python-mode-map (kbd "C-i") 'anaconda-mode-show-doc)
 	;; (define-key python-mode-map (kbd "<tab>") 'anaconda-mode-complete)
 
@@ -847,8 +852,7 @@
 	  (use-package company-anaconda
 	    :quelpa (company-anaconda :fetcher github :repo "pythonic-emacs/company-anaconda")
 	    :config
-	    (eval-after-load "company"
-	      '(add-to-list 'company-backends 'company-anaconda))
+	    (push 'company-lsp company-anaconda)
 	    ))
 
       ;; pip install isort
@@ -861,14 +865,14 @@
 	(global-set-key (kbd "C-c o") 'py-isort-buffer)
 	)
 
-      ;; sudo apt install virtualenv
       ;; yay -S python-virtualenv
+      ;; python3.7 -m ensurepip --default-pip
       ;; pip install virtualenvwrapper
       ;; source /usr/local/bin/virtualenvwrapper.sh
       ;; Add this to your .bashrc / .bash_profile / .zshrc:
       ;; # load virtualenvwrapper for python (after custom PATHs)
       ;; source /home/user/.local/bin/virtualenvwrapper.sh
-      ;; ~/.local/bin/virtualenvwrapper.sh
+      ;; source ~/.local/bin/virtualenvwrapper.sh
 
       ;; VIRTUALENVWRAPPER_PYTHON="$(command \which python)"
       ;; sudo pip3 install virtualenv==20.0.23
@@ -1070,21 +1074,32 @@
   (which-key-mode)
   )
 
+(use-package solaire-mode
+  ;; Ensure solaire-mode is running in all solaire-mode buffers
+  :hook (change-major-mode . turn-on-solaire-mode)
+  ;; ...if you use auto-revert-mode, this prevents solaire-mode from turning
+  ;; itself off every time Emacs reverts the file
+  :hook (after-revert . turn-on-solaire-mode)
+  ;; To enable solaire-mode unconditionally for certain modes:
+  :hook (ediff-prepare-buffer . solaire-mode)
+  ;; Highlight the minibuffer when it is activated:
+  :hook (minibuffer-setup . solaire-mode-in-minibuffer)
+  :config
+  ;; The bright and dark background colors are automatically swapped the first 
+  ;; time solaire-mode is activated. Namely, the backgrounds of the `default` and
+  ;; `solaire-default-face` faces are swapped. This is done because the colors 
+  ;; are usually the wrong way around. If you don't want this, you can disable it:
+  (setq solaire-mode-auto-swap-bg nil)
+
+  (solaire-global-mode +1))
+
 (use-package doom-themes
   :config
-  (load-theme 'doom-one t) ;; or doom-dark, etc.
+  (load-theme 'doom-wilmersdorf t) ;; or doom-dark, etc.
   (doom-themes-visual-bell-config)
   (doom-themes-neotree-config)  ; all-the-icons fonts must be installed
   ;; (doom-themes-org-config)
   )
-
-(use-package vscode-dark-plus-theme
-  :config
-  (load-theme 'vscode-dark-plus t))
-
-(use-package vscode-icon
-  :ensure t
-  :commands (vscode-icon-for-file))
 
 (use-package highlight-indent-guides
   :config
@@ -1092,13 +1107,13 @@
   (setq highlight-indent-guides-method 'bitmap)
   )
 
-(use-package vscode-icon
-  :ensure t
-  :commands (vscode-icon-for-file))
-
-(use-package vscode-dark-plus-theme
-  :config
-  (load-theme 'vscode-dark-plus t))
+;; (use-package vscode-icon
+;;   :ensure t
+;;   :commands (vscode-icon-for-file))
+;; 
+;; (use-package vscode-dark-plus-theme
+;;   :config
+;;   (load-theme 'vscode-dark-plus t))
 
 (use-package highlight-indent-guides
   :config
@@ -1121,7 +1136,7 @@
 
 ;; Since I just was bitten by this. Installation of the fonts is as simple as:
 ;; $ git clone https://github.com/domtronn/all-the-icons.el.git
-;; $ install -m 0644 -D all-the-icons.el/fonts/*.ttf -t ~/.local/share/fonts/
+;; $ install -m 0644 -D all-the-icons.el/fonts/*.ttf -t ~/.locaml/share/fonts/
 (use-package all-the-icons
   :init
   (if (string-equal system-type "windows-nt")
