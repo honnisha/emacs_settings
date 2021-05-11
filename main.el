@@ -4,6 +4,13 @@
 (message "Init main.py")
 ;; byte-compile-file
 
+;; (setq window-x 280)
+;; (setq window-y 0)
+;; 
+;; (setq window-h 90)
+;; (setq window-w 200)
+;; (setq font-size 90)
+
 (setq ide-load (eq (length command-line-args) 1))
 
 (setq gc-cons-threshold-original gc-cons-threshold)
@@ -19,6 +26,8 @@
 
 (setq make-backup-files nil)
 (setq create-lockfiles nil)
+(setq auto-save-file-name-transforms
+      `(("~/temp" ,temporary-file-directory t)))
 
 (setq inhibit-startup-screen t
       initial-buffer-choice  nil)
@@ -230,6 +239,16 @@
 (use-package quelpa-use-package
   :init (setq quelpa-update-melpa-p nil)
   :config (quelpa-use-package-activate-advice)
+  )
+
+(use-package tree-sitter
+  :config
+  (global-tree-sitter-mode)
+  (tree-sitter-require 'python)
+  (add-hook 'python-mode-hook #'tree-sitter-hl-mode)
+  )
+
+(use-package tree-sitter-langs
   )
 
 ;; (use-package auto-package-update
@@ -458,14 +477,11 @@
 			    :inherit 'company-tooltip
 			    :underline nil
 			    :weight 'normal)
-	(setq company-backends
-	      '((company-keywords
-		 company-capf
-		 company-yasnippet
-		 company-anaconda
-		 )
-		(company-abbrev company-dabbrev)
-		))
+	(setq company-backends '((
+                                  company-keywords
+		                  company-capf
+		                  company-yasnippet
+		                  )))
 	)
       ))
 
@@ -473,75 +489,81 @@
 (if (and ide-load use-lsp)
     (progn
       (use-package lsp-mode
-	:config
-	(setq lsp-auto-guess-root t)
-	(add-hook 'rust-mode-hook #'lsp)
+	    :config
+	    (setq lsp-auto-guess-root t)
+	    (add-hook 'rust-mode-hook #'lsp)
 
-	;; sudo pip install 'python-language-server[all]'
-	;; (add-hook 'python-mode-hook #'lsp)
+	    ;; sudo pip install 'python-language-server[all]'
+	    ;; (add-hook 'python-mode-hook #'lsp)
 
-	(setq lsp-pyls-plugins-jedi-references-enabled t)
-	(setq lsp-pyls-server-command (quote ("pyls")))
+	    (setq lsp-pyls-plugins-jedi-references-enabled t)
+	    (setq lsp-pyls-server-command (quote ("pyls")))
 
-	(setq lsp-document-highlight-delay 0.1)
-	(setq lsp-enable-semantic-highlighting t)
-	(setq lsp-enable-symbol-highlighting t)
-	(setq lsp-symbol-highlighting-skip-current t)
+	    (setq lsp-document-highlight-delay 0.1)
+	    (setq lsp-enable-semantic-highlighting t)
+	    (setq lsp-enable-symbol-highlighting t)
+	    (setq lsp-symbol-highlighting-skip-current t)
 
-	(setq lsp-enable-indentation nil)
-	(setq lsp-enable-snippet t)
-	(setq lsp-prefer-flymake nil)
+	    (setq lsp-enable-indentation nil)
+	    (setq lsp-enable-snippet t)
+	    (setq lsp-prefer-flymake nil)
 
-	(setq lsp-diagnostic-package :none)
+	    (setq lsp-diagnostic-package :none)
 
-	(setq lsp-signature-auto-activate nil)
+	    (setq lsp-signature-auto-activate nil)
 
-	;; (define-key lsp-mode-map (kbd "C-i") 'lsp-describe-thing-at-point)
-	;; (define-key lsp-mode-map (kbd "C-o") #'lsp-find-definition)
+	    ;; (define-key lsp-mode-map (kbd "C-i") 'lsp-describe-thing-at-point)
+	    ;; (define-key lsp-mode-map (kbd "C-o") #'lsp-find-definition)
 
-	(define-key lsp-mode-map (kbd "C-r r") 'lsp-ui-peek-find-references)
-	(define-key lsp-mode-map (kbd "C-r i") 'lsp-ui-peek-find-implementation)
+	    (define-key lsp-mode-map (kbd "C-r r") 'lsp-ui-peek-find-references)
+	    (define-key lsp-mode-map (kbd "C-r i") 'lsp-ui-peek-find-implementation)
 
-	(setq lsp-modeline-diagnostics-scope :project)
-	)
+	    (setq lsp-modeline-diagnostics-scope :project)
+	    )
 
-      (use-package lsp-python-ms
-	:quelpa (lsp-python-ms :fetcher github :repo "emacs-lsp/lsp-python-ms")
-	:config
-	(setq lsp-python-ms-auto-install-server t)
-	;; (setq lsp-python-ms-executable (executable-find "python-language-server"))
-	)
+      (use-package lsp-pyright
+        :ensure t
+        :hook (python-mode . (lambda ()
+                               (require 'lsp-pyright)
+                               (lsp))))
+
+      ;;(use-package lsp-python-ms
+	;;    :quelpa (lsp-python-ms :fetcher github :repo "emacs-lsp/lsp-python-ms")
+	;;    :config
+	;;    (setq lsp-python-ms-auto-install-server t)
+	;;    ;; (setq lsp-python-ms-executable (executable-find "python-language-server"))
+	;;    )
 
       (use-package helm-lsp
-	:config
-	(define-key lsp-mode-map (kbd "C-x o") 'xref-find-apropos)
-	)
+	    :config
+	    (define-key lsp-mode-map (kbd "C-x o") 'xref-find-apropos)
+	    )
 
-      (use-package lsp-ui
-	:config
-	(add-hook 'lsp-mode-hook 'lsp-ui-mode)
-
-	(setq lsp-ui-doc-enable nil)
-	(setq lsp-ui-flycheck-enable t)
-	(setq lsp-ui-peek-enable nil)
-	(setq lsp-ui-sideline-enable nil)
-
-	(setq lsp-ui-doc-alignment (quote frame))
-	(setq lsp-ui-doc-delay 0.2)
-	(setq lsp-ui-doc-max-height 30)
-	(setq lsp-ui-doc-max-width 100)
-	(setq lsp-ui-doc-use-webkit nil)
-
-	(global-set-key (kbd "<C-M-return>") 'lsp-ui-imenu)
-
-	;; (define-key python-mode-map (kbd "C-o") #'lsp-ui-peek-find-definitions)
-	)
+;;       (use-package lsp-ui
+;; 	    :config
+;; 	    (add-hook 'lsp-mode-hook 'lsp-ui-mode)
+;; 
+;; 	    (setq lsp-ui-doc-enable nil)
+;; 	    (setq lsp-ui-flycheck-enable t)
+;; 	    (setq lsp-ui-peek-enable nil)
+;; 	    (setq lsp-ui-sideline-enable nil)
+;; 
+;; 	    (setq lsp-ui-doc-alignment (quote frame))
+;; 	    (setq lsp-ui-doc-delay 0.2)
+;; 	    (setq lsp-ui-doc-max-height 30)
+;; 	    (setq lsp-ui-doc-max-width 100)
+;; 	    (setq lsp-ui-doc-use-webkit nil)
+;; 
+;; 	    (global-set-key (kbd "<C-M-return>") 'lsp-ui-imenu)
+;; 
+;; 	    ;; (define-key python-mode-map (kbd "C-o") #'lsp-ui-peek-find-definitions)
+;; 	    )
 
       (use-package company-lsp
-	:config
-	(push 'company-lsp company-backends)
-	(setq company-lsp-async nil)
-	)
+	    :config
+	    (push 'company-lsp company-backends)
+	    (setq company-lsp-async nil)
+	    )
       ))
 
 ;; Rust
@@ -556,37 +578,37 @@
 (if (and ide-load use-rust)
     (progn
       (use-package rust-mode
-	:config
-	;; cargo install racer
-	(setq racer-cmd "~/.cargo/bin/racer")
+	    :config
+	    ;; cargo install racer
+	    (setq racer-cmd "~/.cargo/bin/racer")
 
-	;; rustup component add rust-src
-	;; rustc --print sysroot /lib/rustlib/src/rust/src
-	(setq racer-rust-src-path "~/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/src")
+	    ;; rustup component add rust-src
+	    ;; rustc --print sysroot /lib/rustlib/src/rust/src
+	    (setq racer-rust-src-path "~/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/src")
 
-	;; Configure Emacs to activate racer when rust-mode starts
-	(add-hook 'rust-mode-hook #'racer-mode)
-	(add-hook 'racer-mode-hook #'eldoc-mode)
-	
-	;; (define-key rust-mode-map (kbd "C-i") #'racer-describe-tooltip)
-	(define-key rust-mode-map (kbd "C-i") #'lsp-describe-thing-at-point)
-	
-	(define-key rust-mode-map (kbd "C-o") #'racer-find-definition)
+	    ;; Configure Emacs to activate racer when rust-mode starts
+	    (add-hook 'rust-mode-hook #'racer-mode)
+	    (add-hook 'racer-mode-hook #'eldoc-mode)
+	    
+	    ;; (define-key rust-mode-map (kbd "C-i") #'racer-describe-tooltip)
+	    (define-key rust-mode-map (kbd "C-i") #'lsp-describe-thing-at-point)
+	    
+	    (define-key rust-mode-map (kbd "C-o") #'racer-find-definition)
 
-	(define-key rust-mode-map (kbd "C-r r") 'lsp-ui-peek-find-references)
-	(define-key rust-mode-map (kbd "C-r i") 'lsp-ui-peek-find-implementation)
-	)
+	    (define-key rust-mode-map (kbd "C-r r") 'lsp-ui-peek-find-references)
+	    (define-key rust-mode-map (kbd "C-r i") 'lsp-ui-peek-find-implementation)
+	    )
 
       (use-package racer
-	)
+	    )
 
       (use-package ron-mode
-	:config
-	(add-to-list 'auto-mode-alist '("\\.ron\\'" . ron-mode))
-	)
+	    :config
+	    (add-to-list 'auto-mode-alist '("\\.ron\\'" . ron-mode))
+	    )
 
       (use-package cargo
-	)
+	    )
       
       ;; (use-package flycheck-rust
       ;;   :config
@@ -632,14 +654,16 @@
 ;; (use-package company-racer
 ;;   :config
 ;;   (eval-after-load "company"
-;;     (add-to-list 'company-backends 'company-racer))
+;;     (add-to-list  'company-racer 'company-backends))
 ;;   )
 
-;; (use-package yascroll
-;;   :config
-;;   (global-yascroll-bar-mode 1)
-;;   (setq yascroll:delay-to-hide nil)
-;;   )
+(use-package yascroll
+  :quelpa (yascroll :fetcher github :repo "emacsorphanage/yascroll")
+  :config
+  (global-yascroll-bar-mode 1)
+  (setq yascroll:delay-to-hide nil)
+  (toggle-scroll-bar -1)
+  )
 
 ;; (use-package ess)
 
@@ -676,29 +700,29 @@
 (if ide-load
     (progn
       (use-package helm-projectile
-	:config
-	(global-unset-key (kbd "C-M-j"))
-	(global-set-key (kbd "C-M-j") 'helm-projectile-switch-project)
-	;; (global-set-key (kbd "C-SPC") 'helm-projectile-switch-to-buffer)
-	)
+	    :config
+	    (global-unset-key (kbd "C-M-j"))
+	    (global-set-key (kbd "C-M-j") 'helm-projectile-switch-project)
+	    ;; (global-set-key (kbd "C-SPC") 'helm-projectile-switch-to-buffer)
+	    )
 
       (use-package projectile
-	:config
-	(projectile-mode t))
+	    :config
+	    (projectile-mode t))
 
       (use-package counsel-projectile
-	:config
-	;; (counsel-projectile-mode)
-	;; (global-set-key (kbd "C-x p f") 'counsel-projectile-find-file)
+	    :config
+	    ;; (counsel-projectile-mode)
+	    ;; (global-set-key (kbd "C-x p f") 'counsel-projectile-find-file)
 
-	;; (global-set-key (kbd "C-M-s") 'counsel-projectile-git-grep)
-	(global-set-key (kbd "C-x s")
-			(lambda () (interactive)
-			  (counsel-git-grep nil nil "git --no-pager grep -n --no-color -I -e \"%s\" -- \"*.py\" \"*.html\"")))
-	(global-set-key (kbd "C-M-s") 'counsel-git-grep)
+	    ;; (global-set-key (kbd "C-M-s") 'counsel-projectile-git-grep)
+	    (global-set-key (kbd "C-x s")
+			            (lambda () (interactive)
+			              (counsel-git-grep nil nil "git --no-pager grep -n --no-color -I -e \"%s\" -- \"*.py\" \"*.html\"")))
+	    (global-set-key (kbd "C-M-s") 'counsel-git-grep)
 
-	(global-set-key (kbd "C-x f") 'counsel-projectile-find-file)
-	)
+	    (global-set-key (kbd "C-x f") 'counsel-projectile-find-file)
+	    )
       ))
 
 (use-package ivy
@@ -715,33 +739,33 @@
 (if ide-load
     (progn
       (use-package flycheck
-	:config
+	    :config
 
-	(global-flycheck-mode)
-	;; (flycheck-julia-setup)
+	    (global-flycheck-mode)
+	    ;; (flycheck-julia-setup)
 
-	(setq flycheck-highlighting-mode (quote symbols))
+	    (setq flycheck-highlighting-mode (quote symbols))
 
-	(global-set-key (kbd "M-z") 'flycheck-previous-error)
-	(global-set-key (kbd "C-z") 'flycheck-next-error)
-	(global-set-key (kbd "C-M-z") 'flycheck-copy-errors-as-kill)
+	    (global-set-key (kbd "M-z") 'flycheck-previous-error)
+	    (global-set-key (kbd "C-z") 'flycheck-next-error)
+	    (global-set-key (kbd "C-M-z") 'flycheck-copy-errors-as-kill)
 
-	;; (add-to-list 'flycheck-disabled-checkers 'lsp)
+	    ;; (add-to-list 'flycheck-disabled-checkers 'lsp)
 
-	(flycheck-add-next-checker 'python-flake8 'python-pylint)
-	;; (flycheck-add-next-checker 'python-pylint 'python-mypy)
+	    (flycheck-add-next-checker 'python-flake8 'python-pylint)
+	    ;; (flycheck-add-next-checker 'python-pylint 'python-mypy)
 
-	(setq flycheck-python-mypy-config `("mypy.ini" ,(concat settings_path "configs/mypy.ini")))
-	(setq flycheck-flake8rc (concat settings_path "configs/flake8rc"))
-	(setq flycheck-pylintrc (concat settings_path "configs/.pylintrc"))
-	)
+	    (setq flycheck-python-mypy-config `("mypy.ini" ,(concat settings_path "configs/mypy.ini")))
+	    (setq flycheck-flake8rc (concat settings_path "configs/flake8rc"))
+	    (setq flycheck-pylintrc (concat settings_path "configs/.pylintrc"))
+	    )
 
       (use-package flycheck-pos-tip
-	:config
-	(with-eval-after-load 'flycheck
-	  (flycheck-pos-tip-mode))
-	(setq flycheck-pos-tip-max-width 80)
-	)
+	    :config
+	    (with-eval-after-load 'flycheck
+	      (flycheck-pos-tip-mode))
+	    (setq flycheck-pos-tip-max-width 80)
+	    )
       ))
 
 (setq js-indent-level 2)
@@ -768,7 +792,7 @@
   (add-hook 'sgml-mode-hook 'add-emmet-expand-to-smart-tab-completions)
   (setq emmet-preview-default nil)
 
-  (define-key web-mode-map (kbd "C-o") 'emmet-expand-line)
+  (define-key web-mode-map (kbd "C-j") 'emmet-expand-line)
   )
 
 (defun add-emmet-expand-to-smart-tab-completions ()
@@ -810,32 +834,30 @@
 
 (if ide-load
     (if (string-equal system-type "windows-nt")
-	(use-package powershell
-	  :config
-	  (global-set-key (kbd "C-x m") `powershell)
-	  )
+	    (use-package powershell
+	      :config
+	      (global-set-key (kbd "C-x m") `powershell)
+	      )
       (setq shell-file-name "/bin/bash")
       (progn
-	(global-set-key (kbd "C-x m") `shell)
-	(define-key shell-mode-map (kbd "<up>") 'comint-previous-input)
-	(define-key shell-mode-map (kbd "<down>") 'comint-next-input))
+	    (global-set-key (kbd "C-x m") `shell)
+	    (define-key shell-mode-map (kbd "<up>") 'comint-previous-input)
+	    (define-key shell-mode-map (kbd "<down>") 'comint-next-input))
       ))
 
-;(use-package python-mode
-;  :config
-;  (global-eldoc-mode -1)
-;  (py-underscore-word-syntax-p-off)
-;
-;  (define-key python-mode-map (kbd "<tab>") 'python-indent-shift-right)
-;  (define-key python-mode-map (kbd "<backtab>") 'python-indent-shift-left)
-;  
-;  (add-hook 'python-mode-hook
-;	    (setq indent-tabs-mode nil)
-;	    (setq tab-width 4)
-;	    )
-;  )
+;; (use-package python-mode
+;;   :config
+;;   (global-eldoc-mode -1)
+;;   (py-underscore-word-syntax-p-off)
+;; 
+;;   (add-hook 'python-mode-hook
+;; 	        (setq indent-tabs-mode nil)
+;; 	        (setq tab-width 4)
+;; 	        )
+;;   )
 
-(if ide-load
+(setq use-anaconda t)
+(if (and ide-load use-anaconda)
     (progn
       (use-package anaconda-mode
 	:config
@@ -907,7 +929,7 @@
       ;; (use-package company-jedi
       ;;   :config
       ;;   (defun my/ropemacs-mode-hook ()
-      ;;     (add-to-list 'company-backends 'company-jedi))
+      ;;     (add-to-list 'company-jedi 'company-backends))
       ;; 
       ;;   (add-hook 'ropemacs-mode-hook 'my/ropemacs-mode-hook)
       ;;   
@@ -937,6 +959,33 @@
 	;; (define-key python-mode-map (kbd "C-x o") 'pyimport-insert-missing)
 	(define-key python-mode-map (kbd "C-x i") 'pyimport-remove-unused)
 	)
+      ))
+
+;; M-x meghanada-update-server
+(setq use-meghanada t)
+(if (and ide-load use-meghanada)
+    (progn
+      (use-package meghanada
+        :config
+	(push 'company-meghanada company-backends)
+
+        (add-hook 'java-mode-hook
+                  (lambda ()
+                    ;; meghanada-mode on
+                    (meghanada-mode t)
+                    (flycheck-mode +1)
+                    (setq c-basic-offset 2)
+                    ;; use code format
+                    (add-hook 'before-save-hook 'meghanada-code-beautify-before-save)))
+        
+        (cond
+         ((eq system-type 'windows-nt)
+          (setq meghanada-java-path (expand-file-name "bin/java.exe" (getenv "JAVA_HOME")))
+          (setq meghanada-maven-path "mvn.cmd"))
+         (t
+          (setq meghanada-java-path "java")
+          (setq meghanada-maven-path "mvn")))
+        )
       ))
 
 (use-package js-auto-beautify
