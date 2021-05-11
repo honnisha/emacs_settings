@@ -852,7 +852,8 @@
 	  (use-package company-anaconda
 	    :quelpa (company-anaconda :fetcher github :repo "pythonic-emacs/company-anaconda")
 	    :config
-	    (push 'company-lsp company-anaconda)
+	    (eval-after-load "company"
+              '(add-to-list 'company-backends 'company-anaconda))
 	    ))
 
       ;; pip install isort
@@ -1075,6 +1076,7 @@
   )
 
 (use-package solaire-mode
+  :quelpa (solaire-mode :fetcher github :repo "hlissner/emacs-solaire-mode")
   ;; Ensure solaire-mode is running in all solaire-mode buffers
   :hook (change-major-mode . turn-on-solaire-mode)
   ;; ...if you use auto-revert-mode, this prevents solaire-mode from turning
@@ -1122,11 +1124,11 @@
   )
 
 ;; Doesnt work with emacs 27
-(use-package doom-modeline
-  :quelpa (doom-modeline :fetcher github :repo "seagle0128/doom-modeline")
-  :config
-  (doom-modeline-mode 1)
-  )
+;; (use-package doom-modeline
+;;   :quelpa (doom-modeline :fetcher github :repo "seagle0128/doom-modeline")
+;;   :config
+;;   (doom-modeline-mode 1)
+;;   )
 
 ;; M-x customize-face RET auto-dim-other-buffers-face RET #333843
 ;;(use-package auto-dim-other-buffers
