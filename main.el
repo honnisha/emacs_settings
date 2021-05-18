@@ -24,6 +24,8 @@
 
 (setq package-enable-at-startup nil)
 
+(define-coding-system-alias 'utf8 'utf-8)
+
 (setq make-backup-files nil)
 (setq create-lockfiles nil)
 (setq auto-save-file-name-transforms
@@ -159,6 +161,20 @@
 ;; (setq global-whitespace-mode 1)
 (global-set-key (kbd "C-c h") `whitespace-mode)
 
+(defun delete-word (arg)
+  "Delete characters forward until encountering the end of a word.
+With argument, do this that many times."
+  (interactive "p")
+  (if (use-region-p)
+      (delete-region (region-beginning) (region-end))
+    (delete-region (point) (progn (forward-word arg) (point)))))
+
+(defun backward-delete-word (arg)
+  "Delete characters backward until encountering the end of a word.
+With argument, do this that many times."
+  (interactive "p")
+  (delete-word (- arg)))
+
 (global-set-key (kbd "C-x c") `list-colors-display)
 (global-set-key (kbd "C-h") 'backward-delete-char-untabify)
 (global-set-key (kbd "M-h") 'backward-delete-word)
@@ -233,8 +249,22 @@
 			      (bookmarks . 20)))
       ))
 
-(use-package quelpa
-  )
+(use-package quelpa)
+
+(use-package markdown-mode
+  :ensure t
+  :commands (markdown-mode gfm-mode)
+  :mode (("README\\.md\\'" . gfm-mode)
+         ("\\.md\\'" . markdown-mode)
+         ("\\.markdown\\'" . markdown-mode))
+  :init (setq markdown-command "multimarkdown"))
+
+(use-package reverse-im
+  :ensure t
+  :custom
+  (reverse-im-input-methods '("russian-computer"))
+  :config
+  (reverse-im-mode t))
 
 (use-package quelpa-use-package
   :init (setq quelpa-update-melpa-p nil)
@@ -962,7 +992,7 @@
       ))
 
 ;; M-x meghanada-update-server
-(setq use-meghanada t)
+(setq use-meghanada nil)
 (if (and ide-load use-meghanada)
     (progn
       (use-package meghanada
@@ -1081,6 +1111,8 @@
             (not (file-name-extension name)))
        )))
   (centaur-tabs-group-buffer-groups)
+  
+  (global-set-key (kbd "C-c f") 'centaur-tabs--copy-file-name-to-clipboard)
   )
 
 ;; (use-package pdf-tools)
@@ -1114,9 +1146,9 @@
 ;;   :config
 ;;   (atomic-chrome-start-server))
 
-(use-package mode-icons
-  :config
-  (mode-icons-mode))
+;; (use-package mode-icons
+;;   :config
+;;   (mode-icons-mode))
 
 (use-package which-key
   ;; displays available keybindings in popup
@@ -1285,9 +1317,7 @@
       ))
 
 (use-package jq-mode)
-(use-package restclient
-  :quelpa (restclient :fetcher github :repo "pashky/restclient.el")
-  )
+(use-package restclient)
 
 ;;(use-package workgroups2
 ;;  :config
