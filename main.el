@@ -4,12 +4,16 @@
 (message "Init main.py")
 ;; byte-compile-file
 
-;; (setq window-x 280)
+;; .emacs
+;; (setq settings_path "/home/honny/Projects/emacs_settings/")
+;; (setq dropbox_path "/home/honny/Dropbox/")
+;; 
+;; (setq window-x 150)
 ;; (setq window-y 0)
 ;; 
 ;; (setq window-h 90)
-;; (setq window-w 200)
-;; (setq font-size 90)
+;; (setq window-w 230)
+;; (load-file (concat settings_path "main.el"))
 
 (setq ide-load (eq (length command-line-args) 1))
 
@@ -17,10 +21,18 @@
 (setq gc-cons-threshold (* 1024 1024 100))
 
 (package-initialize)
+(setq package-enable-at-startup nil)
+(setq package-archives '())
 (require 'package)
 
-(setq package-archives '(("gnu" . "https://elpa.gnu.org/packages/")
-                         ("melpa" . "https://melpa.org/packages/")))
+(add-to-list 'package-archives
+             '("melpa" . "https://melpa.org/packages/") t)
+(add-to-list 'package-archives
+             '("gnu" . "http://elpa.gnu.org/packages/"))
+(add-to-list 'package-archives
+             '("org" . "http://orgmode.org/elpa/") t)
+(add-to-list 'package-archives
+             '("tromey" . "http://tromey.com/elpa/") t)
 
 (setq package-enable-at-startup nil)
 
@@ -46,7 +58,7 @@
 (setq pos-tip-saved-max-width-height 100)
 
 (if (find-font (font-spec :name "Hack"))
-    (set-face-attribute 'default nil :font "Hack" :height font-size)
+    (set-face-attribute 'default nil :font "Hack" :height 85)
   (error "Install Hack font from https://github.com/source-foundry/Hack")
   )
 
@@ -249,7 +261,42 @@ With argument, do this that many times."
 			      (bookmarks . 20)))
       ))
 
+(functionp 'module-load)
+
 (use-package quelpa)
+
+(quelpa '(svg-tag-mode :repo "rougier/svg-tag-mode"
+                       :fetcher github
+                       :files ("svg-tag-mode.el")))
+
+(use-package helm
+  :config
+  (setq helm-mode t)
+  ;; (setq bottom-buffers ())
+
+  (setq helm-split-window-in-side-p t)
+  ;; (global-set-key (kbd "C-x b") 'helm-buffers-list)
+  ;; (global-set-key (kbd "C-x s") 'helm-grep-do-git-grep)
+  (global-set-key (kbd "C-S-SPC") 'helm-buffers-list)
+  (global-unset-key (kbd "C-x C-f"))
+  (global-set-key (kbd "C-x C-f") 'helm-find-files)
+  (global-set-key (kbd "M-x") 'helm-M-x)
+  (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action)
+  (global-set-key (kbd "M-RET") 'helm-imenu)
+  (define-key helm-map (kbd "C-h") nil)
+  (global-set-key (kbd "C-x r r") #'helm-filtered-bookmarks)
+
+  (defun helm-buffers-sort-transformer@donot-sort (_ candidates _)
+    candidates)
+  (advice-add 'helm-buffers-sort-transformer :around 'helm-buffers-sort-transformer@donot-sort)
+
+  (setq helm-boring-buffer-regexp-list (list
+                                        (rx "*magit-") (rx "*helm") (rx "*py") (rx "*echo")
+                                        (rx "*Fly") (rx "*mini") (rx "*Qua") (rx "*Neo")
+                                        (rx "*Compa") (rx "*code") (rx "*http")
+                                        (rx "*anaco") (rx "*tip") (rx "*xwi") (rx "magit-")
+                                        (rx "*server") (rx "*which")))
+  )
 
 (use-package markdown-mode
   :ensure t
@@ -271,15 +318,20 @@ With argument, do this that many times."
   :config (quelpa-use-package-activate-advice)
   )
 
-(use-package tree-sitter
-  :config
-  (global-tree-sitter-mode)
-  (tree-sitter-require 'python)
-  (add-hook 'python-mode-hook #'tree-sitter-hl-mode)
-  )
+(setq use-tree-sitter nil)
+(if use-tree-sitter
+    (progn
+      (use-package tree-sitter-langs)
 
-(use-package tree-sitter-langs
-  )
+      (use-package tree-sitter
+        :config
+        (tree-sitter-require 'python)
+        (tree-sitter-require 'javascript)
+        (tree-sitter-require 'html)
+        (global-tree-sitter-mode)
+        (add-hook 'python-mode-hook #'tree-sitter-hl-mode)
+        )
+      ))
 
 ;; (use-package auto-package-update
 ;;   :config
@@ -507,11 +559,6 @@ With argument, do this that many times."
 			    :inherit 'company-tooltip
 			    :underline nil
 			    :weight 'normal)
-	(setq company-backends '((
-                                  company-keywords
-		                  company-capf
-		                  company-yasnippet
-		                  )))
 	)
       ))
 
@@ -519,37 +566,37 @@ With argument, do this that many times."
 (if (and ide-load use-lsp)
     (progn
       (use-package lsp-mode
-	    :config
-	    (setq lsp-auto-guess-root t)
-	    (add-hook 'rust-mode-hook #'lsp)
+	:config
+	(setq lsp-auto-guess-root t)
+	(add-hook 'rust-mode-hook #'lsp)
 
-	    ;; sudo pip install 'python-language-server[all]'
-	    ;; (add-hook 'python-mode-hook #'lsp)
+	;; sudo pip install 'python-language-server[all]'
+	;; (add-hook 'python-mode-hook #'lsp)
 
-	    (setq lsp-pyls-plugins-jedi-references-enabled t)
-	    (setq lsp-pyls-server-command (quote ("pyls")))
+	(setq lsp-pyls-plugins-jedi-references-enabled t)
+	(setq lsp-pyls-server-command (quote ("pyls")))
 
-	    (setq lsp-document-highlight-delay 0.1)
-	    (setq lsp-enable-semantic-highlighting t)
-	    (setq lsp-enable-symbol-highlighting t)
-	    (setq lsp-symbol-highlighting-skip-current t)
+	(setq lsp-document-highlight-delay 0.1)
+	(setq lsp-enable-semantic-highlighting t)
+	(setq lsp-enable-symbol-highlighting t)
+	(setq lsp-symbol-highlighting-skip-current t)
 
-	    (setq lsp-enable-indentation nil)
-	    (setq lsp-enable-snippet t)
-	    (setq lsp-prefer-flymake nil)
+	(setq lsp-enable-indentation nil)
+	(setq lsp-enable-snippet t)
+	(setq lsp-prefer-flymake nil)
 
-	    (setq lsp-diagnostic-package :none)
+	(setq lsp-diagnostic-package :none)
 
-	    (setq lsp-signature-auto-activate nil)
+	(setq lsp-signature-auto-activate nil)
 
-	    ;; (define-key lsp-mode-map (kbd "C-i") 'lsp-describe-thing-at-point)
-	    ;; (define-key lsp-mode-map (kbd "C-o") #'lsp-find-definition)
+	;; (define-key lsp-mode-map (kbd "C-i") 'lsp-describe-thing-at-point)
+	;; (define-key lsp-mode-map (kbd "C-o") #'lsp-find-definition)
 
-	    (define-key lsp-mode-map (kbd "C-r r") 'lsp-ui-peek-find-references)
-	    (define-key lsp-mode-map (kbd "C-r i") 'lsp-ui-peek-find-implementation)
+	(define-key lsp-mode-map (kbd "C-r r") 'lsp-ui-peek-find-references)
+	(define-key lsp-mode-map (kbd "C-r i") 'lsp-ui-peek-find-implementation)
 
-	    (setq lsp-modeline-diagnostics-scope :project)
-	    )
+	(setq lsp-modeline-diagnostics-scope :project)
+	)
 
       (use-package lsp-pyright
         :ensure t
@@ -558,42 +605,42 @@ With argument, do this that many times."
                                (lsp))))
 
       ;;(use-package lsp-python-ms
-	;;    :quelpa (lsp-python-ms :fetcher github :repo "emacs-lsp/lsp-python-ms")
-	;;    :config
-	;;    (setq lsp-python-ms-auto-install-server t)
-	;;    ;; (setq lsp-python-ms-executable (executable-find "python-language-server"))
-	;;    )
+      ;;    :quelpa (lsp-python-ms :fetcher github :repo "emacs-lsp/lsp-python-ms")
+      ;;    :config
+      ;;    (setq lsp-python-ms-auto-install-server t)
+      ;;    ;; (setq lsp-python-ms-executable (executable-find "python-language-server"))
+      ;;    )
 
       (use-package helm-lsp
-	    :config
-	    (define-key lsp-mode-map (kbd "C-x o") 'xref-find-apropos)
-	    )
+	:config
+	(define-key lsp-mode-map (kbd "C-x o") 'xref-find-apropos)
+	)
 
-;;       (use-package lsp-ui
-;; 	    :config
-;; 	    (add-hook 'lsp-mode-hook 'lsp-ui-mode)
-;; 
-;; 	    (setq lsp-ui-doc-enable nil)
-;; 	    (setq lsp-ui-flycheck-enable t)
-;; 	    (setq lsp-ui-peek-enable nil)
-;; 	    (setq lsp-ui-sideline-enable nil)
-;; 
-;; 	    (setq lsp-ui-doc-alignment (quote frame))
-;; 	    (setq lsp-ui-doc-delay 0.2)
-;; 	    (setq lsp-ui-doc-max-height 30)
-;; 	    (setq lsp-ui-doc-max-width 100)
-;; 	    (setq lsp-ui-doc-use-webkit nil)
-;; 
-;; 	    (global-set-key (kbd "<C-M-return>") 'lsp-ui-imenu)
-;; 
-;; 	    ;; (define-key python-mode-map (kbd "C-o") #'lsp-ui-peek-find-definitions)
-;; 	    )
+      ;;       (use-package lsp-ui
+      ;; 	    :config
+      ;; 	    (add-hook 'lsp-mode-hook 'lsp-ui-mode)
+      ;; 
+      ;; 	    (setq lsp-ui-doc-enable nil)
+      ;; 	    (setq lsp-ui-flycheck-enable t)
+      ;; 	    (setq lsp-ui-peek-enable nil)
+      ;; 	    (setq lsp-ui-sideline-enable nil)
+      ;; 
+      ;; 	    (setq lsp-ui-doc-alignment (quote frame))
+      ;; 	    (setq lsp-ui-doc-delay 0.2)
+      ;; 	    (setq lsp-ui-doc-max-height 30)
+      ;; 	    (setq lsp-ui-doc-max-width 100)
+      ;; 	    (setq lsp-ui-doc-use-webkit nil)
+      ;; 
+      ;; 	    (global-set-key (kbd "<C-M-return>") 'lsp-ui-imenu)
+      ;; 
+      ;; 	    ;; (define-key python-mode-map (kbd "C-o") #'lsp-ui-peek-find-definitions)
+      ;; 	    )
 
       (use-package company-lsp
-	    :config
-	    (push 'company-lsp company-backends)
-	    (setq company-lsp-async nil)
-	    )
+	:config
+	(push 'company-lsp company-backends)
+	(setq company-lsp-async nil)
+	)
       ))
 
 ;; Rust
@@ -608,37 +655,37 @@ With argument, do this that many times."
 (if (and ide-load use-rust)
     (progn
       (use-package rust-mode
-	    :config
-	    ;; cargo install racer
-	    (setq racer-cmd "~/.cargo/bin/racer")
+	:config
+	;; cargo install racer
+	(setq racer-cmd "~/.cargo/bin/racer")
 
-	    ;; rustup component add rust-src
-	    ;; rustc --print sysroot /lib/rustlib/src/rust/src
-	    (setq racer-rust-src-path "~/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/src")
+	;; rustup component add rust-src
+	;; rustc --print sysroot /lib/rustlib/src/rust/src
+	(setq racer-rust-src-path "~/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/src")
 
-	    ;; Configure Emacs to activate racer when rust-mode starts
-	    (add-hook 'rust-mode-hook #'racer-mode)
-	    (add-hook 'racer-mode-hook #'eldoc-mode)
-	    
-	    ;; (define-key rust-mode-map (kbd "C-i") #'racer-describe-tooltip)
-	    (define-key rust-mode-map (kbd "C-i") #'lsp-describe-thing-at-point)
-	    
-	    (define-key rust-mode-map (kbd "C-o") #'racer-find-definition)
+	;; Configure Emacs to activate racer when rust-mode starts
+	(add-hook 'rust-mode-hook #'racer-mode)
+	(add-hook 'racer-mode-hook #'eldoc-mode)
+	
+	;; (define-key rust-mode-map (kbd "C-i") #'racer-describe-tooltip)
+	(define-key rust-mode-map (kbd "C-i") #'lsp-describe-thing-at-point)
+	
+	(define-key rust-mode-map (kbd "C-o") #'racer-find-definition)
 
-	    (define-key rust-mode-map (kbd "C-r r") 'lsp-ui-peek-find-references)
-	    (define-key rust-mode-map (kbd "C-r i") 'lsp-ui-peek-find-implementation)
-	    )
+	(define-key rust-mode-map (kbd "C-r r") 'lsp-ui-peek-find-references)
+	(define-key rust-mode-map (kbd "C-r i") 'lsp-ui-peek-find-implementation)
+	)
 
       (use-package racer
-	    )
+	)
 
       (use-package ron-mode
-	    :config
-	    (add-to-list 'auto-mode-alist '("\\.ron\\'" . ron-mode))
-	    )
+	:config
+	(add-to-list 'auto-mode-alist '("\\.ron\\'" . ron-mode))
+	)
 
       (use-package cargo
-	    )
+	)
       
       ;; (use-package flycheck-rust
       ;;   :config
@@ -659,6 +706,8 @@ With argument, do this that many times."
 (use-package neotree
   :config
   (setq neo-autorefresh nil)
+
+  (setq neo-theme (if (display-graphic-p) 'icons 'arrow))
   
   (defun neotree-project-dir ()
     "Open NeoTree using the git root."
@@ -697,62 +746,32 @@ With argument, do this that many times."
 
 ;; (use-package ess)
 
-(use-package helm
-  :init
-  (setq helm-mode t)
-  :config
-  (setq bottom-buffers ())
-
-  (setq helm-split-window-in-side-p t)
-  ;; (global-set-key (kbd "C-x b") 'helm-buffers-list)
-  ;; (global-set-key (kbd "C-x s") 'helm-grep-do-git-grep)
-  (global-set-key (kbd "C-S-SPC") 'helm-buffers-list)
-  (global-unset-key (kbd "C-x C-f"))
-  (global-set-key (kbd "C-x C-f") 'helm-find-files)
-  (global-set-key (kbd "M-x") 'helm-M-x)
-  (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action)
-  (global-set-key (kbd "M-RET") 'helm-imenu)
-  (define-key helm-map (kbd "C-h") nil)
-  (global-set-key (kbd "C-x r r") #'helm-filtered-bookmarks)
-
-  (defun helm-buffers-sort-transformer@donot-sort (_ candidates _)
-    candidates)
-
-  (advice-add 'helm-buffers-sort-transformer :around 'helm-buffers-sort-transformer@donot-sort)
-  (setq helm-boring-buffer-regexp-list (list
-                                        (rx "*magit-") (rx "*helm") (rx "*py") (rx "*echo")
-                                        (rx "*Fly") (rx "*mini") (rx "*Qua") (rx "*Neo")
-                                        (rx "*Compa") (rx "*code") (rx "*http")
-                                        (rx "*anaco") (rx "*tip") (rx "*xwi") (rx "magit-")
-                                        (rx "*server") (rx "*which")))
-  )
-
 (if ide-load
     (progn
-      (use-package helm-projectile
-	    :config
-	    (global-unset-key (kbd "C-M-j"))
-	    (global-set-key (kbd "C-M-j") 'helm-projectile-switch-project)
-	    ;; (global-set-key (kbd "C-SPC") 'helm-projectile-switch-to-buffer)
-	    )
+      ;;(use-package helm-projectile
+      ;;:config
+      ;;(global-unset-key (kbd "C-M-j"))
+      ;;(global-set-key (kbd "C-M-j") 'helm-projectile-switch-project)
+	;;;; (global-set-key (kbd "C-SPC") 'helm-projectile-switch-to-buffer)
+      ;;)
 
       (use-package projectile
-	    :config
-	    (projectile-mode t))
+	:config
+	(projectile-mode t))
 
       (use-package counsel-projectile
-	    :config
-	    ;; (counsel-projectile-mode)
-	    ;; (global-set-key (kbd "C-x p f") 'counsel-projectile-find-file)
+	:config
+	;; (counsel-projectile-mode)
+	;; (global-set-key (kbd "C-x p f") 'counsel-projectile-find-file)
 
-	    ;; (global-set-key (kbd "C-M-s") 'counsel-projectile-git-grep)
-	    (global-set-key (kbd "C-x s")
-			            (lambda () (interactive)
-			              (counsel-git-grep nil nil "git --no-pager grep -n --no-color -I -e \"%s\" -- \"*.py\" \"*.html\"")))
-	    (global-set-key (kbd "C-M-s") 'counsel-git-grep)
+	;; (global-set-key (kbd "C-M-s") 'counsel-projectile-git-grep)
+	(global-set-key (kbd "C-x s")
+			(lambda () (interactive)
+			  (counsel-git-grep nil nil "git --no-pager grep -n --no-color -I -e \"%s\" -- \"*.py\" \"*.html\"")))
+	(global-set-key (kbd "C-M-s") 'counsel-git-grep)
 
-	    (global-set-key (kbd "C-x f") 'counsel-projectile-find-file)
-	    )
+	(global-set-key (kbd "C-x f") 'counsel-projectile-find-file)
+	)
       ))
 
 (use-package ivy
@@ -769,49 +788,74 @@ With argument, do this that many times."
 (if ide-load
     (progn
       (use-package flycheck
-	    :config
+	:config
 
-	    (global-flycheck-mode)
-	    ;; (flycheck-julia-setup)
+	(global-flycheck-mode)
+	;; (flycheck-julia-setup)
 
-	    (setq flycheck-highlighting-mode (quote symbols))
+	(setq flycheck-highlighting-mode (quote symbols))
 
-	    (global-set-key (kbd "M-z") 'flycheck-previous-error)
-	    (global-set-key (kbd "C-z") 'flycheck-next-error)
-	    (global-set-key (kbd "C-M-z") 'flycheck-copy-errors-as-kill)
+	(global-set-key (kbd "M-z") 'flycheck-previous-error)
+	(global-set-key (kbd "C-z") 'flycheck-next-error)
+	(global-set-key (kbd "C-M-z") 'flycheck-copy-errors-as-kill)
 
-	    ;; (add-to-list 'flycheck-disabled-checkers 'lsp)
+	;; (add-to-list 'flycheck-disabled-checkers 'lsp)
 
-	    (flycheck-add-next-checker 'python-flake8 'python-pylint)
-	    ;; (flycheck-add-next-checker 'python-pylint 'python-mypy)
+	(flycheck-add-next-checker 'python-flake8 'python-pylint)
+	;; (flycheck-add-next-checker 'python-pylint 'python-mypy)
 
-	    (setq flycheck-python-mypy-config `("mypy.ini" ,(concat settings_path "configs/mypy.ini")))
-	    (setq flycheck-flake8rc (concat settings_path "configs/flake8rc"))
-	    (setq flycheck-pylintrc (concat settings_path "configs/.pylintrc"))
-	    )
+	(setq flycheck-python-mypy-config `("mypy.ini" ,(concat settings_path "configs/mypy.ini")))
+	(setq flycheck-flake8rc (concat settings_path "configs/flake8rc"))
+	(setq flycheck-pylintrc (concat settings_path "configs/.pylintrc"))
+	)
 
       (use-package flycheck-pos-tip
-	    :config
-	    (with-eval-after-load 'flycheck
-	      (flycheck-pos-tip-mode))
-	    (setq flycheck-pos-tip-max-width 80)
-	    )
+	:config
+	(with-eval-after-load 'flycheck
+	  (flycheck-pos-tip-mode))
+	(setq flycheck-pos-tip-max-width 80)
+	)
       ))
 
+;; WEB
 (setq js-indent-level 2)
-(use-package web-mode
-  :quelpa (web-mode :fetcher github :repo "fxbois/web-mode")
-  :config
-  (setq web-mode-enable-auto-indentation nil)
-
-  (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
-  (add-to-list 'auto-mode-alist '("\\.vue?\\'" . web-mode))
-  )
-
 (setq web-mode-markup-indent-offset 2)
 (setq web-mode-code-indent-offset 2)
 
-(use-package smart-tab)
+(setq use-web-mode t)
+(if use-web-mode
+    (progn
+      (use-package web-mode
+        :quelpa (web-mode :fetcher github :repo "fxbois/web-mode")
+        :config
+        
+        (setq web-mode-enable-css-colorization nil)
+
+        (setq web-mode-enable-current-element-highlight nil)
+        (setq web-mode-enable-current-column-highlight nil)
+        (setq web-mode-enable-whitespace-fontification nil)
+        (setq web-mode-enable-element-tag-fontification nil)
+        (setq web-mode-enable-block-face nil)
+        (setq web-mode-enable-part-face nil)
+        
+        (setq web-mode-part-padding 0)
+        (setq web-mode-script-padding 0)
+
+        (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+        (add-to-list 'auto-mode-alist '("\\.vue?\\'" . web-mode))
+        )
+      ))
+
+(setq use-vue-mode t)
+(if use-vue-mode
+      (progn
+        (use-package vue-mode
+          :config
+          ;; (add-to-list 'auto-mode-alist '("\\.vue?\\'" . js-mode))
+          )
+        ))
+
+
 
 (use-package emmet-mode
   :config
@@ -824,13 +868,6 @@ With argument, do this that many times."
 
   (define-key web-mode-map (kbd "C-j") 'emmet-expand-line)
   )
-
-(defun add-emmet-expand-to-smart-tab-completions ()
-  ;; Add an entry for current major mode in
-  ;; `smart-tab-completion-functions-alist' to use
-  ;; `emmet-expand-line'.
-  (add-to-list 'smart-tab-completion-functions-alist
-               (cons major-mode #'emmet-expand-line)))
 
 (require 'emmet-mode)
 (add-hook 'sgml-mode-hook 'emmet-mode)
@@ -864,15 +901,15 @@ With argument, do this that many times."
 
 (if ide-load
     (if (string-equal system-type "windows-nt")
-	    (use-package powershell
-	      :config
-	      (global-set-key (kbd "C-x m") `powershell)
-	      )
+	(use-package powershell
+	  :config
+	  (global-set-key (kbd "C-x m") `powershell)
+	  )
       (setq shell-file-name "/bin/bash")
       (progn
-	    (global-set-key (kbd "C-x m") `shell)
-	    (define-key shell-mode-map (kbd "<up>") 'comint-previous-input)
-	    (define-key shell-mode-map (kbd "<down>") 'comint-next-input))
+	(global-set-key (kbd "C-x m") `shell)
+	(define-key shell-mode-map (kbd "<up>") 'comint-previous-input)
+	(define-key shell-mode-map (kbd "<down>") 'comint-next-input))
       ))
 
 ;; (use-package python-mode
@@ -903,9 +940,6 @@ With argument, do this that many times."
       (if use-company
 	  (use-package company-anaconda
 	    :quelpa (company-anaconda :fetcher github :repo "pythonic-emacs/company-anaconda")
-	    :config
-	    (eval-after-load "company"
-              '(add-to-list 'company-backends 'company-anaconda))
 	    ))
 
       ;; pip install isort
@@ -1060,6 +1094,8 @@ With argument, do this that many times."
 
 (use-package centaur-tabs
   :quelpa (centaur-tabs :fetcher github :repo "ema2159/centaur-tabs")
+  :hook
+  (neotree-mode . centaur-tabs-local-mode)
   :config
   (centaur-tabs-mode t)
   (setq centaur-tabs-style "rounded")
@@ -1122,16 +1158,6 @@ With argument, do this that many times."
   (global-undo-tree-mode)
   )
 
-;; (use-package multi-web-mode
-;;   :config
-;;   (setq mweb-default-major-mode 'html-mode)
-;;   (setq mweb-tags 
-;;      '((php-mode "<\\?php\\|<\\? \\|<\\?=" "\\?>")
-;;        (js-mode  "<script[^>]*>" "</script>")
-;;        (css-mode "<style[^>]*>" "</style>")))
-;;   (setq mweb-filename-extensions '("php" "htm" "html" "ctp" "phtml" "php4" "php5"))
-;;   (multi-web-global-mode 1))
-
 ;; (use-package skewer-mode
 ;;   :config
 ;;   (add-hook 'js2-mode-hook 'skewer-mode)
@@ -1178,10 +1204,12 @@ With argument, do this that many times."
 
 (use-package doom-themes
   :config
-  (load-theme 'doom-wilmersdorf t) ;; or doom-dark, etc.
   (doom-themes-visual-bell-config)
   (doom-themes-neotree-config)  ; all-the-icons fonts must be installed
   ;; (doom-themes-org-config)
+  ;; (load-theme 'doom-wilmersdorf t)
+  ;; (load-theme 'doom-city-lights t)
+  (load-theme 'doom-nord t)
   )
 
 (use-package highlight-indent-guides
@@ -1205,11 +1233,14 @@ With argument, do this that many times."
   )
 
 ;; Doesnt work with emacs 27
-;; (use-package doom-modeline
-;;   :quelpa (doom-modeline :fetcher github :repo "seagle0128/doom-modeline")
-;;   :config
-;;   (doom-modeline-mode 1)
-;;   )
+(fset 'battery-update #'ignore)
+(require 'battery)
+(funcall 'battery-linux-sysfs)
+(use-package doom-modeline
+  :quelpa (doom-modeline :fetcher github :repo "seagle0128/doom-modeline")
+  :config
+  (doom-modeline-mode 1)
+  )
 
 ;; M-x customize-face RET auto-dim-other-buffers-face RET #333843
 ;;(use-package auto-dim-other-buffers
@@ -1319,24 +1350,6 @@ With argument, do this that many times."
 (use-package jq-mode)
 (use-package restclient)
 
-;;(use-package workgroups2
-;;  :config
-;;  (setq wg-session-file (concat settings_path "emacsd/.emacs_workgroups"))
-;;  (workgroups-mode 1)
-;;  (setq wg-emacs-exit-save-behavior           'save)      ; Options: 'save 'ask nil
-;;  (setq wg-workgroups-mode-exit-save-behavior 'save)      ; Options: 'save 'ask nil
-;;
-;;  ;; Set your own keyboard shortcuts to reload/save/switch WGs:
-;;  ;; "s" == "Super" or "Win"-key, "S" == Shift, "C" == Control
-;;  (global-set-key (kbd "<pause>") 'wg-reload-session)
-;;  (global-set-key (kbd "C-S-<pause>") 'wg-save-session)
-;;  (global-set-key (kbd "s-z") 'wg-switch-to-workgroup)
-;;  (global-set-key (kbd "s-\\") 'wg-switch-to-previous-workgroup)
-;;  )
-
-;; Charging isplay
-;; (add-hook 'after-init-hook #'fancy-battery-mode)
-
 (autoload 'python-mode "python-mode" "Python Mode." t)
 (add-to-list 'auto-mode-alist '("\\.py\\'" . python-mode))
 (add-to-list 'interpreter-mode-alist '("python" . python-mode))
@@ -1347,6 +1360,12 @@ With argument, do this that many times."
 (message "Load functions.el")
 (load-file (concat settings_path "settings/functions.el"))
 
+(setq company-backends '((
+                          company-keywords
+		          company-capf
+		          company-yasnippet
+                          company-anaconda
+		          )))
 
 (setq gc-cons-threshold gc-cons-threshold-original)
 
