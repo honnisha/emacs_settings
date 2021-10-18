@@ -58,7 +58,7 @@
 (setq pos-tip-saved-max-width-height 100)
 
 (if (find-font (font-spec :name "Hack"))
-    (set-face-attribute 'default nil :font "Hack" :height 85)
+    (set-face-attribute 'default nil :font "Hack" :height font-size)
   (error "Install Hack font from https://github.com/source-foundry/Hack")
   )
 
