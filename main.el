@@ -59,7 +59,7 @@
 
 (if (find-font (font-spec :name "Hack"))
     (set-face-attribute 'default nil :font "Hack" :height font-size)
-  (error "Install Hack font from https://github.com/source-foundry/Hack")
+  (error "yay -S ttf-jetbrains-mono")
   )
 
 (if ide-load
@@ -862,18 +862,10 @@ With argument, do this that many times."
   (add-hook 'css-mode-hook  'emmet-mode)
   (add-hook 'web-mode-hook  'emmet-mode)
 
-  (add-hook 'css-mode-hook 'add-emmet-expand-to-smart-tab-completions)
-  (add-hook 'sgml-mode-hook 'add-emmet-expand-to-smart-tab-completions)
   (setq emmet-preview-default nil)
 
   (define-key web-mode-map (kbd "C-j") 'emmet-expand-line)
   )
-
-(require 'emmet-mode)
-(add-hook 'sgml-mode-hook 'emmet-mode)
-(add-hook 'sgml-mode-hook 'add-emmet-expand-to-smart-tab-completions)
-(add-hook 'css-mode-hook  'emmet-mode)
-(add-hook 'css-mode-hook 'add-emmet-expand-to-smart-tab-completions)
 
 ;; sudo apt-get install sqlformat
 ;; (use-package format-sql)
@@ -952,7 +944,8 @@ With argument, do this that many times."
 	(global-set-key (kbd "C-c o") 'py-isort-buffer)
 	)
 
-      ;; yay -S python-virtualenv
+      ;; yay -S python-virtualenv python37
+      ;; pacman -S python-pip
       ;; python3.7 -m ensurepip --default-pip
       ;; pip install virtualenvwrapper
       ;; source /usr/local/bin/virtualenvwrapper.sh
@@ -1182,34 +1175,15 @@ With argument, do this that many times."
   (which-key-mode)
   )
 
-(use-package solaire-mode
-  :quelpa (solaire-mode :fetcher github :repo "hlissner/emacs-solaire-mode")
-  ;; Ensure solaire-mode is running in all solaire-mode buffers
-  :hook (change-major-mode . turn-on-solaire-mode)
-  ;; ...if you use auto-revert-mode, this prevents solaire-mode from turning
-  ;; itself off every time Emacs reverts the file
-  :hook (after-revert . turn-on-solaire-mode)
-  ;; To enable solaire-mode unconditionally for certain modes:
-  :hook (ediff-prepare-buffer . solaire-mode)
-  ;; Highlight the minibuffer when it is activated:
-  :hook (minibuffer-setup . solaire-mode-in-minibuffer)
-  :config
-  ;; The bright and dark background colors are automatically swapped the first 
-  ;; time solaire-mode is activated. Namely, the backgrounds of the `default` and
-  ;; `solaire-default-face` faces are swapped. This is done because the colors 
-  ;; are usually the wrong way around. If you don't want this, you can disable it:
-  (setq solaire-mode-auto-swap-bg nil)
-
-  (solaire-global-mode +1))
-
 (use-package doom-themes
   :config
   (doom-themes-visual-bell-config)
   (doom-themes-neotree-config)  ; all-the-icons fonts must be installed
   ;; (doom-themes-org-config)
-  ;; (load-theme 'doom-wilmersdorf t)
+  (load-theme 'doom-wilmersdorf t)
   ;; (load-theme 'doom-city-lights t)
-  (load-theme 'doom-nord t)
+  ;; (load-theme 'doom-vibrant t)
+  ;; (load-theme 'doom-nord t)
   )
 
 (use-package highlight-indent-guides
@@ -1243,10 +1217,10 @@ With argument, do this that many times."
   )
 
 ;; M-x customize-face RET auto-dim-other-buffers-face RET #333843
-;;(use-package auto-dim-other-buffers
-;;  :config
-;;  (auto-dim-other-buffers-mode t)
-;;  )
+;; (use-package auto-dim-other-buffers
+;;   :config
+;;   (auto-dim-other-buffers-mode t)
+;;   )
 
 ;; Since I just was bitten by this. Installation of the fonts is as simple as:
 ;; $ git clone https://github.com/domtronn/all-the-icons.el.git
@@ -1267,27 +1241,15 @@ With argument, do this that many times."
   (all-the-icons-ivy-setup)
   )
 
-;;(use-package solaire-mode
-;;  :config
-;;  ;; brighten buffers (that represent real files)
-;;  (add-hook 'after-change-major-mode-hook #'turn-on-solaire-mode)
-;;  ;; To enable solaire-mode unconditionally for certain modes:
-;;  (add-hook 'ediff-prepare-buffer-hook #'solaire-mode)
-;;
-;;  ;; ...if you use auto-revert-mode, this prevents solaire-mode from turning
-;;  ;; itself off every time Emacs reverts the file
-;;  (add-hook 'after-revert-hook #'turn-on-solaire-mode)
-;;
-;;  ;; highlight the minibuffer when it is activated:
-;;  (add-hook 'minibuffer-setup-hook #'solaire-mode-in-minibuffer)
-;;
-;;  ;; if the bright and dark background colors are the wrong way around, use this
-;;  ;; to switch the backgrounds of the `default` and `solaire-default-face` faces.
-;;  ;; This should be used *after* you load the active theme!
-;;  ;;
-;;  ;; NOTE: This is necessary for themes in the doom-themes package!
-;;  (solaire-mode-swap-bg)
-;;  )
+(use-package solaire-mode
+  :config
+  (solaire-global-mode +1)
+  ;; (custom-set-faces
+  ;;  '(solaire-default-face ((t (:inherit default :background "#333843"))))
+  ;;  '(solaire-fringe-face ((t (:inherit fringe :background "white"))))
+  ;;  '(solaire-org-hide-face ((t (:inherit fringe :background "red"))))
+  ;;  )
+  )
 
 ;; (use-package linum-relative
 ;;   :config
