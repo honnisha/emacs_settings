@@ -68,6 +68,7 @@
 	(set-frame-position (selected-frame) window-x window-y)
 	(set-frame-size (selected-frame) window-w window-h))
       ))
+(toggle-frame-maximized)
 
 ;; How to overwrite text by yank in Emacs?
 (delete-selection-mode 1)
@@ -192,7 +193,7 @@ With argument, do this that many times."
 (global-set-key (kbd "M-h") 'backward-delete-word)
 (global-set-key (kbd "M-d") 'delete-word)
 (global-set-key (kbd "C-c r") `revert-buffer)
-;; (global-set-key (kbd "C-r") `replace-string)
+(global-set-key (kbd "C-r") `replace-string)
 
 ;; (global-set-key (kbd "C-x r r") `bookmark-jump)
 (global-set-key (kbd "C-x r s") `bookmark-set)
