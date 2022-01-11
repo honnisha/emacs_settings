@@ -270,6 +270,13 @@ With argument, do this that many times."
                        :fetcher github
                        :files ("svg-tag-mode.el")))
 
+(use-package fixed-pitch
+  :quelpa (fixed-pitch :fetcher github :repo "cstby/fixed-pitch-mode")
+  :config
+  (setq-default default-frame-alist '((font . "Helvetica-12")))
+  (setq-default cursor-type 'bar)
+  )
+
 (use-package helm
   :config
   (setq helm-mode t)
@@ -319,12 +326,16 @@ With argument, do this that many times."
   :config (quelpa-use-package-activate-advice)
   )
 
-(setq use-tree-sitter nil)
+(setq use-tree-sitter t)
 (if use-tree-sitter
     (progn
-      (use-package tree-sitter-langs)
+      (use-package tree-sitter-langs
+        :ensure t
+        :defer t
+        )
 
       (use-package tree-sitter
+        :ensure t
         :config
         (tree-sitter-require 'python)
         (tree-sitter-require 'javascript)
@@ -533,40 +544,30 @@ With argument, do this that many times."
   )
 
 (setq use-company t)
-(if (and ide-load use-company)
+(if use-company
     (progn
       (use-package company
-	:config
-	(add-hook 'python-mode-hook 'company-mode)
-	(add-hook 'lisp-mode-hook 'company-mode)
+        :quelpa (company :fetcher github :repo "company-mode/company-mode")
+        :config
+	(define-key lsp-mode-map (kbd "<tab>") 'company-complete)
+        )
 
-	(define-key company-active-map (kbd "C-h") 'backward-delete-char-untabify)
-	(define-key company-mode-map (kbd "<tab>") 'company-complete)
-	(setq company-tooltip-limit 10
-	      company-idle-delay 0.00
-	      company-minimum-prefix-length 3
-	      company-show-numbers t
-	      company-tooltip-align-annotations t)
-
-	(set-face-attribute 'company-tooltip nil
-			    :background "#0f2c57"
-			    :foreground "LightSteelBlue1"
-			    :inherit 'company-tooltip
-			    :underline nil
-			    :weight 'normal)
-	(set-face-attribute 'company-tooltip-common nil
-			    :background nil
-			    :foreground "DodgerBlue1"
-			    :inherit 'company-tooltip
-			    :underline nil
-			    :weight 'normal)
-	)
+      ;; https://github.com/sebastiencs/icons-in-terminal
+      (use-package company-box
+        :quelpa (company-box :fetcher github :repo "sebastiencs/company-box")
+        :hook (company-mode . company-box-mode)
+        :config
+        (setq company-tooltip-maximum-width 200)
+        (setq company-tooltip-minimum-width 20)
+        )
+      
       ))
 
-(setq use-lsp nil)
+(setq use-lsp t)
 (if (and ide-load use-lsp)
     (progn
       (use-package lsp-mode
+        :quelpa (lsp-mode :fetcher github :repo "emacs-lsp/lsp-mode")
 	:config
 	(setq lsp-auto-guess-root t)
 	(add-hook 'rust-mode-hook #'lsp)
@@ -591,10 +592,11 @@ With argument, do this that many times."
 	(setq lsp-signature-auto-activate nil)
 
 	;; (define-key lsp-mode-map (kbd "C-i") 'lsp-describe-thing-at-point)
-	;; (define-key lsp-mode-map (kbd "C-o") #'lsp-find-definition)
+	(define-key lsp-mode-map (kbd "C-o") 'lsp-find-definition)
 
 	(define-key lsp-mode-map (kbd "C-r r") 'lsp-ui-peek-find-references)
 	(define-key lsp-mode-map (kbd "C-r i") 'lsp-ui-peek-find-implementation)
+	(define-key lsp-mode-map (kbd "C-S-SPC") 'helm-buffers-list)
 
 	(setq lsp-modeline-diagnostics-scope :project)
 	)
@@ -611,11 +613,6 @@ With argument, do this that many times."
       ;;    (setq lsp-python-ms-auto-install-server t)
       ;;    ;; (setq lsp-python-ms-executable (executable-find "python-language-server"))
       ;;    )
-
-      (use-package helm-lsp
-	:config
-	(define-key lsp-mode-map (kbd "C-x o") 'xref-find-apropos)
-	)
 
       ;;       (use-package lsp-ui
       ;; 	    :config
@@ -637,11 +634,6 @@ With argument, do this that many times."
       ;; 	    ;; (define-key python-mode-map (kbd "C-o") #'lsp-ui-peek-find-definitions)
       ;; 	    )
 
-      (use-package company-lsp
-	:config
-	(push 'company-lsp company-backends)
-	(setq company-lsp-async nil)
-	)
       ))
 
 ;; Rust
@@ -737,13 +729,16 @@ With argument, do this that many times."
 ;;     (add-to-list  'company-racer 'company-backends))
 ;;   )
 
-(use-package yascroll
+(setq use-yascroll t)
+(if use-yascroll
+    (use-package yascroll
   :quelpa (yascroll :fetcher github :repo "emacsorphanage/yascroll")
   :config
   (global-yascroll-bar-mode 1)
   (setq yascroll:delay-to-hide nil)
   (toggle-scroll-bar -1)
   )
+ )
 
 ;; (use-package ess)
 
@@ -905,18 +900,18 @@ With argument, do this that many times."
 	(define-key shell-mode-map (kbd "<down>") 'comint-next-input))
       ))
 
-;; (use-package python-mode
-;;   :config
-;;   (global-eldoc-mode -1)
-;;   (py-underscore-word-syntax-p-off)
-;; 
-;;   (add-hook 'python-mode-hook
-;; 	        (setq indent-tabs-mode nil)
-;; 	        (setq tab-width 4)
-;; 	        )
-;;   )
+(use-package python-mode
+  :config
+  (global-eldoc-mode -1)
+  (py-underscore-word-syntax-p-off)
 
-(setq use-anaconda t)
+  (add-hook 'python-mode-hook
+	        (setq indent-tabs-mode nil)
+	        (setq tab-width 4)
+	        )
+  )
+
+(setq use-anaconda nil)
 (if (and ide-load use-anaconda)
     (progn
       (use-package anaconda-mode
@@ -1176,15 +1171,25 @@ With argument, do this that many times."
   (which-key-mode)
   )
 
+(use-package solaire-mode
+  :config
+  (solaire-global-mode +1)
+   ;; (custom-set-faces
+   ;;  '(solaire-default-face ((t (:inherit default :background "#333843"))))
+   ;;  '(solaire-fringe-face ((t (:inherit fringe :background "white"))))
+   ;;  '(solaire-org-hide-face ((t (:inherit fringe :background "red"))))
+   ;;  )
+  )
+
 (use-package doom-themes
   :config
   (doom-themes-visual-bell-config)
   (doom-themes-neotree-config)  ; all-the-icons fonts must be installed
   ;; (doom-themes-org-config)
-  (load-theme 'doom-wilmersdorf t)
+  ;; (load-theme 'doom-wilmersdorf t)
   ;; (load-theme 'doom-city-lights t)
   ;; (load-theme 'doom-vibrant t)
-  ;; (load-theme 'doom-nord t)
+  (load-theme 'doom-nord t)
   )
 
 (use-package highlight-indent-guides
@@ -1240,16 +1245,6 @@ With argument, do this that many times."
 (use-package all-the-icons-ivy
   :config
   (all-the-icons-ivy-setup)
-  )
-
-(use-package solaire-mode
-  :config
-  (solaire-global-mode +1)
-  ;; (custom-set-faces
-  ;;  '(solaire-default-face ((t (:inherit default :background "#333843"))))
-  ;;  '(solaire-fringe-face ((t (:inherit fringe :background "white"))))
-  ;;  '(solaire-org-hide-face ((t (:inherit fringe :background "red"))))
-  ;;  )
   )
 
 ;; (use-package linum-relative
@@ -1322,13 +1317,6 @@ With argument, do this that many times."
 
 (message "Load functions.el")
 (load-file (concat settings_path "settings/functions.el"))
-
-(setq company-backends '((
-                          company-keywords
-		          company-capf
-		          company-yasnippet
-                          company-anaconda
-		          )))
 
 (setq gc-cons-threshold gc-cons-threshold-original)
 
