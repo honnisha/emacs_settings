@@ -549,7 +549,6 @@ With argument, do this that many times."
       (use-package company
         :quelpa (company :fetcher github :repo "company-mode/company-mode")
         :config
-	(define-key lsp-mode-map (kbd "<tab>") 'company-complete)
         )
 
       ;; https://github.com/sebastiencs/icons-in-terminal
@@ -560,7 +559,6 @@ With argument, do this that many times."
         (setq company-tooltip-maximum-width 200)
         (setq company-tooltip-minimum-width 20)
         )
-      
       ))
 
 (setq use-lsp t)
@@ -568,6 +566,8 @@ With argument, do this that many times."
     (progn
       (use-package lsp-mode
         :quelpa (lsp-mode :fetcher github :repo "emacs-lsp/lsp-mode")
+        :custom
+        (lsp-headerline-breadcrumb-enable nil)
 	:config
 	(setq lsp-auto-guess-root t)
 	(add-hook 'rust-mode-hook #'lsp)
@@ -586,6 +586,7 @@ With argument, do this that many times."
 	(setq lsp-enable-indentation nil)
 	(setq lsp-enable-snippet t)
 	(setq lsp-prefer-flymake nil)
+        (lsp-enable-which-key-integration t)
 
 	(setq lsp-diagnostic-package :none)
 
@@ -597,6 +598,7 @@ With argument, do this that many times."
 	(define-key lsp-mode-map (kbd "C-r r") 'lsp-ui-peek-find-references)
 	(define-key lsp-mode-map (kbd "C-r i") 'lsp-ui-peek-find-implementation)
 	(define-key lsp-mode-map (kbd "C-S-SPC") 'helm-buffers-list)
+	(define-key lsp-mode-map (kbd "<tab>") 'company-complete)
 
 	(setq lsp-modeline-diagnostics-scope :project)
 	)
@@ -911,6 +913,16 @@ With argument, do this that many times."
 	        )
   )
 
+;; pip install isort
+;; https://github.com/timothycrosley/isort
+;; ~/.isort.cfg
+;; [settings]
+;; multi_line_output=4
+(use-package py-isort
+  :config
+  (global-set-key (kbd "C-c o") 'py-isort-buffer)
+  )
+
 (setq use-anaconda nil)
 (if (and ide-load use-anaconda)
     (progn
@@ -929,16 +941,6 @@ With argument, do this that many times."
 	  (use-package company-anaconda
 	    :quelpa (company-anaconda :fetcher github :repo "pythonic-emacs/company-anaconda")
 	    ))
-
-      ;; pip install isort
-      ;; https://github.com/timothycrosley/isort
-      ;; ~/.isort.cfg
-      ;; [settings]
-      ;; multi_line_output=4
-      (use-package py-isort
-	:config
-	(global-set-key (kbd "C-c o") 'py-isort-buffer)
-	)
 
       ;; yay -S python-virtualenv python37
       ;; pacman -S python-pip
