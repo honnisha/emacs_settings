@@ -15,6 +15,13 @@
 ;; (setq window-w 230)
 ;; (load-file (concat settings_path "main.el"))
 
+;; UTF-8 support
+(prefer-coding-system       'utf-8)
+(set-default-coding-systems 'utf-8)
+(set-terminal-coding-system 'utf-8)
+(set-keyboard-coding-system 'utf-8)    
+(setq x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING))
+
 (setq ide-load (eq (length command-line-args) 1))
 
 (setq gc-cons-threshold-original gc-cons-threshold)
@@ -59,7 +66,7 @@
 
 (if (find-font (font-spec :name "Hack"))
     (set-face-attribute 'default nil :font "Hack" :height font-size)
-  (error "yay -S ttf-jetbrains-mono")
+  ;; (error "yay -S ttf-jetbrains-mono")
   )
 
 (if ide-load
@@ -549,6 +556,7 @@ With argument, do this that many times."
       (use-package company
         :quelpa (company :fetcher github :repo "company-mode/company-mode")
         :config
+	(push 'company-elisp company-backends)
         )
 
       ;; https://github.com/sebastiencs/icons-in-terminal
@@ -558,7 +566,10 @@ With argument, do this that many times."
         :config
         (setq company-tooltip-maximum-width 200)
         (setq company-tooltip-minimum-width 20)
-        )
+        (setq company-box-enable-icon nil)
+        (setq company-box-scrollbar ''right)
+        (setq company-box-show-single-candidate 'when-no-other-frontend))
+      )
       ))
 
 (setq use-lsp t)
@@ -584,6 +595,7 @@ With argument, do this that many times."
 	(setq lsp-symbol-highlighting-skip-current t)
 
 	(setq lsp-enable-indentation nil)
+        (setq format-with-lsp nil)
 	(setq lsp-enable-snippet t)
 	(setq lsp-prefer-flymake nil)
         (lsp-enable-which-key-integration t)
@@ -595,8 +607,6 @@ With argument, do this that many times."
 	;; (define-key lsp-mode-map (kbd "C-i") 'lsp-describe-thing-at-point)
 	(define-key lsp-mode-map (kbd "C-o") 'lsp-find-definition)
 
-	(define-key lsp-mode-map (kbd "C-r r") 'lsp-ui-peek-find-references)
-	(define-key lsp-mode-map (kbd "C-r i") 'lsp-ui-peek-find-implementation)
 	(define-key lsp-mode-map (kbd "C-S-SPC") 'helm-buffers-list)
 	(define-key lsp-mode-map (kbd "<tab>") 'company-complete)
 
@@ -607,7 +617,11 @@ With argument, do this that many times."
         :ensure t
         :hook (python-mode . (lambda ()
                                (require 'lsp-pyright)
-                               (lsp))))
+                               (lsp)))
+	:config
+        (setq lsp-pyright-auto-import-completions t)
+        (setq lsp-pyright-auto-search-paths t)
+        )
 
       ;;(use-package lsp-python-ms
       ;;    :quelpa (lsp-python-ms :fetcher github :repo "emacs-lsp/lsp-python-ms")
@@ -616,25 +630,26 @@ With argument, do this that many times."
       ;;    ;; (setq lsp-python-ms-executable (executable-find "python-language-server"))
       ;;    )
 
-      ;;       (use-package lsp-ui
-      ;; 	    :config
-      ;; 	    (add-hook 'lsp-mode-hook 'lsp-ui-mode)
-      ;; 
-      ;; 	    (setq lsp-ui-doc-enable nil)
-      ;; 	    (setq lsp-ui-flycheck-enable t)
-      ;; 	    (setq lsp-ui-peek-enable nil)
-      ;; 	    (setq lsp-ui-sideline-enable nil)
-      ;; 
-      ;; 	    (setq lsp-ui-doc-alignment (quote frame))
-      ;; 	    (setq lsp-ui-doc-delay 0.2)
-      ;; 	    (setq lsp-ui-doc-max-height 30)
-      ;; 	    (setq lsp-ui-doc-max-width 100)
-      ;; 	    (setq lsp-ui-doc-use-webkit nil)
-      ;; 
-      ;; 	    (global-set-key (kbd "<C-M-return>") 'lsp-ui-imenu)
-      ;; 
-      ;; 	    ;; (define-key python-mode-map (kbd "C-o") #'lsp-ui-peek-find-definitions)
-      ;; 	    )
+      (use-package lsp-ui
+        :hook
+        (lsp-mode-hook 'lsp-ui-doc-mode)
+        :config
+        (setq lsp-ui-doc-enable nil)
+        (setq lsp-ui-flycheck-enable t)
+        (setq lsp-ui-peek-enable nil)
+        (setq lsp-ui-sideline-enable nil)
+        (setq lsp-ui-doc-alignment (quote frame))
+        (setq lsp-ui-doc-delay 0.2)
+        (setq lsp-ui-doc-max-height 30)
+        (setq lsp-ui-doc-max-width 100)
+        (setq lsp-ui-doc-use-webkit t)
+        (setq lsp-ui-doc-position 'at-point)
+        (define-key lsp-mode-map (kbd "C-o") 'lsp-ui-peek-find-definitions)
+        (define-key lsp-mode-map (kbd "C-i") 'lsp-ui-doc-show)
+	(define-key lsp-mode-map (kbd "C-r r") 'lsp-ui-peek-find-references)
+	(define-key lsp-mode-map (kbd "C-r i") 'lsp-ui-peek-find-implementation)
+        (define-key lsp-mode-map (kbd "<C-M-return>") 'lsp-ui-imenu)
+        )
 
       ))
 
@@ -666,9 +681,6 @@ With argument, do this that many times."
 	(define-key rust-mode-map (kbd "C-i") #'lsp-describe-thing-at-point)
 	
 	(define-key rust-mode-map (kbd "C-o") #'racer-find-definition)
-
-	(define-key rust-mode-map (kbd "C-r r") 'lsp-ui-peek-find-references)
-	(define-key rust-mode-map (kbd "C-r i") 'lsp-ui-peek-find-implementation)
 	)
 
       (use-package racer
@@ -913,6 +925,19 @@ With argument, do this that many times."
 	        )
   )
 
+(use-package virtualenvwrapper
+  :config
+  (venv-projectile-auto-workon)
+
+  (venv-initialize-interactive-shells) ;; if you want interactive shell support
+  (venv-initialize-eshell) ;; if you want eshell support
+  ;; note that setting `venv-location` is not necessary if you
+  ;; use the default location (`~/.virtualenvs`), or if the
+  ;; the environment variable `WORKON_HOME` points to the right place
+  (setq venv-location "~/.virtualenvs/")
+  (define-key python-mode-map (kbd "C-c a") 'venv-workon)
+  )
+
 ;; pip install isort
 ;; https://github.com/timothycrosley/isort
 ;; ~/.isort.cfg
@@ -958,19 +983,6 @@ With argument, do this that many times."
       ;; mkvirtualenv env1
       ;; mkvirtualenv --python=python3.7 py3
       ;; pip install 'python-language-server[all]'
-
-      (use-package virtualenvwrapper
-	:config
-	(venv-projectile-auto-workon)
-
-	(venv-initialize-interactive-shells) ;; if you want interactive shell support
-	(venv-initialize-eshell) ;; if you want eshell support
-	;; note that setting `venv-location` is not necessary if you
-	;; use the default location (`~/.virtualenvs`), or if the
-	;; the environment variable `WORKON_HOME` points to the right place
-	(setq venv-location "~/.virtualenvs/")
-	(global-set-key (kbd "C-c a") 'venv-workon)
-	)
 
       ;; (use-package eglot
       ;;   :quelpa (eglot :fetcher github :repo "joaotavora/eglot")
@@ -1087,6 +1099,8 @@ With argument, do this that many times."
   :quelpa (centaur-tabs :fetcher github :repo "ema2159/centaur-tabs")
   :hook
   (neotree-mode . centaur-tabs-local-mode)
+  (Lsp-Ui-Doc-Frame . centaur-tabs-local-mode)
+  (Async-Bytecomp-Package . centaur-tabs-local-mode)
   :config
   (centaur-tabs-mode t)
   (setq centaur-tabs-style "rounded")
@@ -1126,14 +1140,23 @@ With argument, do this that many times."
        "OrgMode")
       (t
        (centaur-tabs-get-group-name (current-buffer))))))
+
   (defun centaur-tabs-hide-tab (x)
     (let ((name (format "%s" x)))
       (or
+     ;; Current window is not dedicated window.
+       (window-dedicated-p (selected-window))
+       
+       ;; Buffer name not match below blacklist.
        (string-prefix-p "*epc" name)
        (string-prefix-p "*vc" name)
        (string-prefix-p "*helm" name)
        (string-prefix-p "*Compile-Log*" name)
-       (string-prefix-p "*lsp" name)
+       (string-prefix-p "*pyright" name)
+       (string-prefix-p "*Help" name)
+
+       (cl-search "*company" name)
+       (cl-search "*lsp" name)
        (and (string-prefix-p "magit" name)
             (not (file-name-extension name)))
        )))
