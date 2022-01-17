@@ -569,7 +569,6 @@ With argument, do this that many times."
         (setq company-box-enable-icon nil)
         (setq company-box-scrollbar ''right)
         (setq company-box-show-single-candidate 'when-no-other-frontend))
-      )
       ))
 
 (setq use-lsp t)
@@ -631,9 +630,10 @@ With argument, do this that many times."
       ;;    )
 
       (use-package lsp-ui
-        :hook
-        (lsp-mode-hook 'lsp-ui-doc-mode)
         :config
+	(add-hook 'lsp-mode-hook #'lsp-ui-mode)
+	(add-hook 'lsp-mode-hook #'lsp-ui-doc-mode)
+        
         (setq lsp-ui-doc-enable nil)
         (setq lsp-ui-flycheck-enable t)
         (setq lsp-ui-peek-enable nil)
