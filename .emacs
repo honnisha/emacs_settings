@@ -1,5 +1,5 @@
-(setq settings_path "/home/gagen/Projects/emacs_settings/")
-(setq dropbox_path "/home/gagen/Dropbox/")
+(setq settings_path "/home/honnisha/Projects/emacs_settings/")
+(setq dropbox_path "/home/honnisha/Dropbox/")
 
 (setq window-h 90)
 (setq window-w 110)

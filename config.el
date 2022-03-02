@@ -1,0 +1,495 @@
+;; (setq settings_path "/home/honnisha/Projects/emacs_settings/")
+;; (setq dropbox_path "/home/honnisha/Dropbox/")
+;; (load! (concat settings_path "config.el"))
+
+;; (setq doom-theme 'doom-wilmersdorf)
+;; (setq doom-theme 'doom-city-lights)
+;; (setq doom-theme 'doom-vibrant)
+;; (setq doom-theme 'doom-nord)
+
+(global-set-key (kbd "C-x C-n") (lambda() (interactive)(find-file (concat dropbox_path "text.org"))))
+
+(if (find-font (font-spec :name "Hack"))
+    (set-face-attribute 'default nil :font "Hack" :height 80)
+  ;; (error "yay -S ttf-jetbrains-mono")
+  )
+
+;; (toggle-frame-maximized)
+(add-to-list 'initial-frame-alist '(fullscreen . maximized))
+
+(setq auto-save-default nil)
+
+(global-set-key [f9] 'toggle-menu-bar-mode-from-frame)
+
+(setq x-gtk-use-system-tooltips t)
+
+(setq pos-tip-background-color "gray20")
+(setq pos-tip-saved-max-width-height 100)
+
+(setq bookmark-default-file (concat user-emacs-directory ".emacs-save"))
+
+;; How to overwrite text by yank in Emacs?
+(delete-selection-mode 1)
+
+(display-time-mode 1)
+
+;; From Pragmatic Emacs a more concise way to kill the buffer.
+(global-set-key (kbd "C-x k") 'kill-this-buffer)
+
+(global-set-key (kbd "<f2>") 'bookmark-jump)
+
+(global-set-key (kbd "<f2>") 'bookmark-jump)
+(global-set-key (kbd "<f3>") 'bookmark-set)
+(global-set-key (kbd "<f4>") 'bookmark-bmenu-list)
+
+;; (global-set-key (kbd "<C-M-tab>") 'next-buffer)
+;; (global-set-key (kbd "<C-M-iso-lefttab>") 'previous-buffer)
+
+(global-set-key (kbd "<C-tab>") (lambda () (interactive) (other-window 1)))
+(global-set-key (kbd "<C-iso-lefttab>") (lambda () (interactive) (other-window -1)))
+(global-set-key (kbd "<C-S-tab>") (lambda () (interactive) (other-window -1)))
+
+(global-set-key (kbd "<f10>") 'toggle-frame-fullscreen)
+
+;; Hide/Show
+;; package-list-packages
+(global-unset-key (kbd "C-x l"))
+(global-set-key (kbd "C-x l h") `hide-subtree)
+(global-set-key (kbd "C-x l s") `show-subtree)
+(global-set-key (kbd "C-x l a") `show-all)
+
+;; Open buffers list in the same frame
+;; (global-set-key "\C-x\C-b" 'buffer-menu)
+(global-unset-key "\C-x\C-b")
+(global-set-key (kbd "C-x y") `repeat-complex-command)
+
+(global-set-key (kbd "C-x C-d") (lambda() (interactive)(find-file (concat settings_path "config.el"))))
+
+(defun delete-word (arg)
+  "Delete characters forward until encountering the end of a word.
+With argument, do this that many times."
+  (interactive "p")
+  (if (use-region-p)
+      (delete-region (region-beginning) (region-end))
+    (delete-region (point) (progn (forward-word arg) (point)))))
+
+(defun backward-delete-word (arg)
+  "Delete characters backward until encountering the end of a word.
+With argument, do this that many times."
+  (interactive "p")
+  (delete-word (- arg)))
+
+(global-set-key (kbd "M-h") 'backward-delete-word)
+(global-set-key (kbd "M-d") 'delete-word)
+
+(global-set-key (kbd "C-h") 'backward-delete-char-untabify)
+(global-set-key (kbd "C-c r") `revert-buffer)
+(global-set-key (kbd "C-r") `replace-string)
+
+(global-set-key (kbd "C-x b") 'ibuffer-list-buffers)
+
+(global-unset-key (kbd "C-o"))
+(global-unset-key (kbd "C-j"))
+
+(global-set-key (kbd "C-.") `undo)
+
+(defun next-with-center (lines)
+  "Move LINES lines and center."
+  (next-line lines)
+  (recenter))
+(global-set-key (kbd "C-M-n")
+                (lambda () (interactive) (next-with-center 5)))
+(defun previous-with-center (lines)
+  "Move LINES lines and center."
+  (previous-line lines)
+  (recenter))
+(map! :leader
+      "C-M-p" #'(lambda () (interactive) (previous-with-center 5)))
+(global-set-key (kbd "C-M-p")
+                (lambda () (interactive) (previous-with-center 5)))
+
+;; Windows/frames
+(global-set-key (kbd "<C-S-right>") 'enlarge-window-horizontally)
+(global-set-key (kbd "<C-S-left>") 'shrink-window-horizontally)
+(global-set-key (kbd "<C-S-up>") 'enlarge-window)
+(global-set-key (kbd "<C-S-down>") 'shrink-window)
+
+
+(use-package! shell
+  :config
+  (global-set-key (kbd "C-x m") `shell)
+  (define-key shell-mode-map (kbd "<up>") 'comint-previous-input)
+  (define-key shell-mode-map (kbd "<down>") 'comint-next-input)
+  )
+
+(remove-hook 'doom-first-buffer-hook #'smartparens-global-mode)
+
+(use-package! back-button
+  :config
+  (back-button-mode 1)
+  ;; Back navigation
+  (global-set-key (kbd "M-n") 'back-button-local-forward)
+  (global-set-key (kbd "M-p") 'back-button-local-backward)
+  ;; (global-set-key (kbd "<M-right>") 'back-button-global-forward)
+  ;; (global-set-key (kbd "<M-left>") 'back-button-global-backward)
+  (global-set-key (kbd "C-M-[") 'back-button-global-forward)
+  (global-set-key (kbd "C-M-]") 'back-button-global-backward)
+  (setq back-button-never-push-mark nil)
+  )
+
+(use-package! ivy
+  :config
+  (setq ivy-use-virtual-buffers t)
+  (setq enable-recursive-minibuffers t)
+  (global-set-key (kbd "M-x") 'counsel-M-x)
+  (global-set-key "\C-s" 'swiper)
+  (global-set-key (kbd "C-x C-f") 'counsel-find-file)
+  (global-set-key (kbd "C-S-SPC") 'ivy-switch-buffer)
+  )
+
+(use-package! all-the-icons-ivy
+  :config
+  (all-the-icons-ivy-setup)
+  )
+
+(after! helm
+  :config
+  (map!
+   :leader
+   "C-S-SPC" #'helm-buffers-list
+   "C-x C-f" #'helm-find-files
+   ;; "M-x" #'helm-M-x
+   "M-RET" #'helm-imenu
+   )
+
+  (setq helm-mode t)
+  (setq helm-split-window-in-side-p t)
+  (defun helm-buffers-sort-transformer@donot-sort (_ candidates _)
+    candidates)
+  (advice-add 'helm-buffers-sort-transformer :around 'helm-buffers-sort-transformer@donot-sort)
+
+  (setq helm-boring-buffer-regexp-list (list
+                                        (rx "*magit-") (rx "*helm") (rx "*py") (rx "*echo")
+                                        (rx "*Fly") (rx "*mini") (rx "*Qua") (rx "*Neo")
+                                        (rx "*Compa") (rx "*code") (rx "*http")
+                                        (rx "*anaco") (rx "*tip") (rx "*xwi") (rx "magit-")
+                                        (rx "*server") (rx "*which")))
+  )
+
+(use-package! tree-sitter
+  :config
+  (tree-sitter-require 'python)
+  (tree-sitter-require 'javascript)
+  (tree-sitter-require 'html)
+  (global-tree-sitter-mode)
+  (add-hook 'python-mode-hook #'tree-sitter-hl-mode)
+  )
+
+(use-package! yasnippet
+  :config
+  (setq yas-snippet-dirs (list
+                          (concat settings_path "snippets")
+                          ))
+  (yas-global-mode 1)
+  )
+
+;; automatic and manual symbol highlighting for Emacs
+(use-package! highlight-symbol
+  :config
+  (setq highlight-symbol-idle-delay 0)
+  (add-hook 'prog-mode-hook 'highlight-symbol-mode)
+  (add-hook 'text-mode-hook 'highlight-symbol-mode)
+  (add-hook 'python-mode-hook 'highlight-symbol-mode)
+  (global-unset-key (kbd "C-q"))
+  (global-set-key (kbd "C-q") 'highlight-symbol-next)
+  (global-set-key (kbd "C-S-q") 'highlight-symbol-prev)
+  )
+
+(use-package! magit
+  :config
+  (global-set-key (kbd "C-c m") 'magit-status)
+  (global-set-key (kbd "C-x v h") 'magit-log-buffer-file)
+  (global-set-key (kbd "C-x v b") 'magit-blame)
+
+  (define-key magit-mode-map (kbd "<C-tab>") (lambda () (interactive) (other-window 1)))
+  (define-key magit-mode-map (kbd "M-1") 'winum-select-window-1)
+  (define-key magit-mode-map (kbd "M-2") 'winum-select-window-2)
+  (define-key magit-mode-map (kbd "M-3") 'winum-select-window-3)
+  (define-key magit-mode-map (kbd "M-4") 'winum-select-window-4)
+  (define-key magit-mode-map (kbd "1") 'magit-section-show-level-1-all)
+  (define-key magit-mode-map (kbd "2") 'magit-section-show-level-2-all)
+  (define-key magit-mode-map (kbd "3") 'magit-section-show-level-3-all)
+  (define-key magit-mode-map (kbd "4") 'magit-section-show-level-4-all)
+  )
+
+
+(use-package! winum
+  :config
+  ;; (setq winum-ignored-buffers-regexp (list (rx "*neotree*")))
+  (setq window-numbering-scope 'global)
+  (winum-mode)
+  (global-set-key (kbd "M-1") 'winum-select-window-1)
+  (global-set-key (kbd "M-2") 'winum-select-window-2)
+  (global-set-key (kbd "M-3") 'winum-select-window-3)
+  (global-set-key (kbd "M-4") 'winum-select-window-4)
+  (global-set-key (kbd "M-5") 'winum-select-window-5)
+  (global-set-key (kbd "M-6") 'winum-select-window-6)
+  (global-set-key (kbd "M-7") 'winum-select-window-7)
+  (global-set-key (kbd "M-8") 'winum-select-window-8)
+  )
+
+(use-package! multiple-cursors
+  :config
+  ;; Multicursors
+  (global-set-key (kbd "C->") 'mc/mark-next-like-this)
+  (global-set-key (kbd "C-с C->") 'mc/skip-to-next-like-this)
+  (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+  (global-set-key (kbd "C-с C-<") 'mc/skip-to-previous-like-this)
+  (global-set-key (kbd "<C-C-down-mouse-1>") 'mc/add-cursor-on-click)
+  (global-set-key (kbd "C-c <mouse-1>") 'mc/add-cursor-on-click)
+  (global-set-key (kbd "C-c n") 'mc/insert-numbers)
+  ;; (global-set-key (kbd "C-c l") 'mc/insert-letters)
+  ;; (global-set-key (kbd "C-c c") 'mc/edit-lines)
+  (global-set-key (kbd "C-c C-n") 'mc/mark-next-like-this-word) ; choose same word next
+  (global-set-key (kbd "C-c C-p") 'mc/mark-previous-word-like-this) ; choose same word previous
+  )
+
+;; sudo pip install 'python-language-server[all]'
+;; (add-hook 'python-mode-hook #'lsp)
+(use-package! lsp-mode
+  :custom
+  (lsp-headerline-breadcrumb-enable nil)
+  :config
+  (setq lsp-auto-guess-root t)
+  (add-hook 'rust-mode-hook #'lsp)
+
+  (setq lsp-pyls-plugins-jedi-references-enabled t)
+  ;; (setq lsp-pyls-server-command (quote ("pyls")))
+
+  (setq lsp-document-highlight-delay 0.1)
+  (setq lsp-enable-semantic-highlighting t)
+  (setq lsp-enable-symbol-highlighting t)
+  (setq lsp-symbol-highlighting-skip-current t)
+
+  (setq lsp-enable-indentation nil)
+  (setq format-with-lsp nil)
+  (setq lsp-enable-snippet t)
+  (setq lsp-prefer-flymake nil)
+  (lsp-enable-which-key-integration t)
+
+  (setq lsp-diagnostic-package :none)
+
+  (setq lsp-signature-auto-activate nil)
+
+  ;; (define-key lsp-mode-map (kbd "C-i") 'lsp-describe-thing-at-point)
+  (define-key lsp-mode-map (kbd "C-o") 'lsp-find-definition)
+
+  (define-key lsp-mode-map (kbd "C-S-SPC") 'ivy-switch-buffer)
+  (define-key lsp-mode-map (kbd "<tab>") 'company-complete)
+
+  (setq lsp-modeline-diagnostics-scope :project)
+  )
+
+(use-package! lsp-ui
+  :config
+  (add-hook 'lsp-mode-hook #'lsp-ui-mode)
+  (add-hook 'lsp-mode-hook #'lsp-ui-doc-mode)
+
+  (setq lsp-ui-doc-enable nil)
+  (setq lsp-ui-flycheck-enable t)
+  (setq lsp-ui-peek-enable nil)
+  (setq lsp-ui-sideline-enable nil)
+  (setq lsp-ui-doc-alignment (quote frame))
+  (setq lsp-ui-doc-delay 0.2)
+  (setq lsp-ui-doc-max-height 30)
+  (setq lsp-ui-doc-max-width 100)
+  (setq lsp-ui-doc-use-webkit t)
+  (setq lsp-ui-doc-position 'at-point)
+  (define-key lsp-mode-map (kbd "C-o") 'lsp-ui-peek-find-definitions)
+  (define-key lsp-mode-map (kbd "C-i") 'lsp-ui-doc-show)
+  (define-key lsp-mode-map (kbd "C-r r") 'lsp-ui-peek-find-references)
+  (define-key lsp-mode-map (kbd "C-r i") 'lsp-ui-peek-find-implementation)
+  (define-key lsp-mode-map (kbd "<C-M-return>") 'lsp-ui-imenu)
+  )
+
+(use-package! python-pylint)
+
+(use-package! lsp-pyright
+  :hook (python-mode . (lambda ()
+                         (require 'lsp-pyright)
+                         (lsp)))
+  :config
+  (setq lsp-pyright-auto-import-completions t)
+  (setq lsp-pyright-auto-search-paths t)
+  )
+
+(use-package! neotree
+  :config
+  (setq neo-autorefresh nil)
+
+  (setq neo-theme (if (display-graphic-p) 'icons 'arrow))
+
+  (defun neotree-project-dir ()
+    "Open NeoTree using the git root."
+    (interactive)
+    (let ((project-dir (projectile-project-root))
+          (file-name (buffer-file-name)))
+      (neotree-toggle)
+      (if project-dir
+          (if (neo-global--window-exists-p)
+              (progn
+                (neotree-dir project-dir)
+                (neotree-find file-name)))
+        (message "Could not find git project root."))))
+  ;; (global-set-key (kbd "<f8>") 'neotree-project-dir)
+  (global-unset-key (kbd "C-t"))
+  ;; (global-set-key (kbd "C-t") 'neotree-toggle)
+  (global-set-key (kbd "C-t") 'neotree-project-dir)
+  (setq neo-window-fixed-size t)
+  (setq neo-window-width 30)
+  )
+
+(use-package! flycheck
+  ;; flycheck-verify-setup
+  :config
+  (global-flycheck-mode)  ;; (setq flycheck-highlighting-mode (quote symbols))
+
+  (global-set-key (kbd "M-z") 'flycheck-previous-error)
+  (global-set-key (kbd "C-z") 'flycheck-next-error)
+  (global-set-key (kbd "C-M-z") 'flycheck-copy-errors-as-kill)  ;; (flycheck-add-next-checker 'python-pylint 'python-mypy)
+
+  (setq flycheck-python-mypy-config `("mypy.ini" ,(concat settings_path "configs/mypy.ini")))
+  (setq flycheck-flake8rc (concat settings_path "configs/flake8rc"))
+  (setq flycheck-pylintrc (concat settings_path "configs/.pylintrc"))
+
+  (setq-default flycheck-disabled-checkers '(python-mypy))
+  )
+
+(use-package! virtualenvwrapper
+  :config
+  (venv-projectile-auto-workon)
+
+  (venv-initialize-interactive-shells) ;; if you want interactive shell support
+  (venv-initialize-eshell) ;; if you want eshell support
+  ;; note that setting `venv-location` is not necessary if you
+  ;; use the default location (`~/.virtualenvs`), or if the
+  ;; the environment variable `WORKON_HOME` points to the right place
+  (setq venv-location "~/.virtualenvs/")
+  )
+
+;; pip install isort
+;; https://github.com/timothycrosley/isort
+;; ~/.isort.cfg
+;; [settings]
+;; multi_line_output=4
+(use-package py-isort
+  :config
+  (global-set-key (kbd "C-c o") 'py-isort-buffer)
+  )
+
+(use-package! company
+  :config
+  (push 'company-elisp company-backends)
+  )
+
+(use-package! company-box
+  :hook (company-mode . company-box-mode)
+  :config
+  (setq company-tooltip-maximum-width 200)
+  (setq company-tooltip-minimum-width 20)
+  (setq company-box-enable-icon nil)
+  (setq company-box-scrollbar ''right)
+  (setq company-box-show-single-candidate 'when-no-other-frontend)
+  )
+
+
+(use-package! centaur-tabs
+  :hook
+  (neotree-mode . centaur-tabs-local-mode)
+  (Lsp-Ui-Doc-Frame . centaur-tabs-local-mode)
+  (Async-Bytecomp-Package . centaur-tabs-local-mode)
+  :config
+  (centaur-tabs-mode t)
+  (setq centaur-tabs-style "rounded")
+  (setq centaur-tabs-height 20)
+  (setq centaur-tabs-set-icons nil)
+  (setq centaur-tabs-gray-out-icons 'buffer)
+
+  (centaur-tabs-enable-buffer-reordering)
+  (setq centaur-tabs-adjust-buffer-order t)
+
+  ;; (centaur-tabs-group-by-projectile-project)
+
+  (global-set-key (kbd "<C-M-tab>") 'centaur-tabs-forward)
+  (global-set-key (kbd "<C-M-iso-lefttab>") 'centaur-tabs-backward)
+
+  (defun centaur-tabs-buffer-groups ()
+    (list
+     (cond
+      ((memq major-mode '(
+                          magit-process-mode magit-status-mode
+                          magit-diff-mode magit-log-mode
+                          magit-file-mode magit-blob-mode
+                          magit-blame-mode))
+       "Emacs")
+      ((derived-mode-p 'emacs-lisp-mode) "Lisp")
+      ((derived-mode-p 'shell-mode) "Shell")
+      ((derived-mode-p 'eshell-mode) "Shell")
+      ((derived-mode-p 'aweshell-mode) "Shell")
+      ((derived-mode-p 'python-mode) "Python")
+      ((derived-mode-p 'web-mode) "Web")
+      ((memq major-mode '(
+                          org-mode org-agenda-clockreport-mode
+                          org-src-mode org-agenda-mode
+                          org-beamer-mode org-indent-mode
+                          org-bullets-mode org-cdlatex-mode
+                          org-agenda-log-mode diary-mode))
+       "OrgMode")
+      (t
+       (centaur-tabs-get-group-name (current-buffer))))))
+
+  (defun centaur-tabs-hide-tab (x)
+    (let ((name (format "%s" x)))
+      (or
+     ;; Current window is not dedicated window.
+       (window-dedicated-p (selected-window))
+
+       ;; Buffer name not match below blacklist.
+       (string-prefix-p "*epc" name)
+       (string-prefix-p "*vc" name)
+       (string-prefix-p "*helm" name)
+       (string-prefix-p "*Compile-Log*" name)
+       (string-prefix-p "*pyright" name)
+       (string-prefix-p "*Help" name)
+
+       (cl-search "*company" name)
+       (cl-search "*lsp" name)
+       (and (string-prefix-p "magit" name)
+            (not (file-name-extension name)))
+       )))
+  (centaur-tabs-group-buffer-groups)
+
+  (global-set-key (kbd "C-c f") 'centaur-tabs--copy-file-name-to-clipboard)
+  )
+
+(use-package! undo-tree
+  :config
+  (global-undo-tree-mode)
+  )
+
+(use-package! restclient)
+
+(use-package emmet-mode
+  :config
+  (add-hook 'css-mode-hook  'emmet-mode)
+  (add-hook 'web-mode-hook  'emmet-mode)
+
+  (setq emmet-preview-default nil)
+
+  (map!
+   :map web-mode-map
+   "C-j" #'emmet-expand-line
+   )
+  )
+
+(load! (concat settings_path "settings/functions.el"))
