@@ -7,15 +7,25 @@
 ;; (setq doom-theme 'doom-vibrant)
 ;; (setq doom-theme 'doom-nord)
 
+;; display-line
+
 (global-set-key (kbd "C-x C-n") (lambda() (interactive)(find-file (concat dropbox_path "text.org"))))
 
-(if (find-font (font-spec :name "Hack"))
-    (set-face-attribute 'default nil :font "Hack" :height 80)
-  ;; (error "yay -S ttf-jetbrains-mono")
-  )
+;;(if (find-font (font-spec :name "Hack"))
+;;    (set-face-attribute 'default nil :font "Hack" :height 80)
+;;  ;; (error "yay -S ttf-jetbrains-mono")
+;;  )
 
-;; (toggle-frame-maximized)
+(setq doom-font (font-spec :family "Hack" :size 11 :weight 'light))
+
+;; Line numbers are pretty slow all around. The performance boost of disabling
+;; them outweighs the utility of always keeping them on.
+(setq display-line-numbers-type nil)
+
+(recentf-mode nil)
+
 (add-to-list 'initial-frame-alist '(fullscreen . maximized))
+(toggle-frame-maximized)
 
 (setq auto-save-default nil)
 
@@ -114,12 +124,18 @@ With argument, do this that many times."
 (global-set-key (kbd "<C-S-up>") 'enlarge-window)
 (global-set-key (kbd "<C-S-down>") 'shrink-window)
 
-
-(use-package! shell
+(use-package! vterm
   :config
-  (global-set-key (kbd "C-x m") `shell)
-  (define-key shell-mode-map (kbd "<up>") 'comint-previous-input)
-  (define-key shell-mode-map (kbd "<down>") 'comint-next-input)
+  (add-hook 'vterm-mode  'vterm-copy-mode)
+  (global-set-key (kbd "C-x m") '+vterm/here)
+  (define-key vterm-mode-map (kbd "C-o") 'vterm-copy-mode)
+  (define-key vterm-copy-mode-map (kbd "C-o") 'vterm-copy-mode)
+  (define-key vterm-mode-map (kbd "C-y") 'vterm-yank)
+  (define-key vterm-mode-map (kbd "C-h") 'vterm-send-backspace)
+  (define-key vterm-mode-map (kbd "M-p") 'vterm-send-up)
+  (define-key vterm-mode-map (kbd "M-n") 'vterm-send-down)
+  (define-key vterm-mode-map (kbd "M-h") 'vterm-send-meta-backspace)
+  (define-key vterm-mode-map (kbd "M-w") 'kill-ring-save)
   )
 
 (remove-hook 'doom-first-buffer-hook #'smartparens-global-mode)
@@ -132,8 +148,6 @@ With argument, do this that many times."
   (global-set-key (kbd "M-p") 'back-button-local-backward)
   ;; (global-set-key (kbd "<M-right>") 'back-button-global-forward)
   ;; (global-set-key (kbd "<M-left>") 'back-button-global-backward)
-  (global-set-key (kbd "C-M-[") 'back-button-global-forward)
-  (global-set-key (kbd "C-M-]") 'back-button-global-backward)
   (setq back-button-never-push-mark nil)
   )
 
@@ -142,9 +156,17 @@ With argument, do this that many times."
   (setq ivy-use-virtual-buffers t)
   (setq enable-recursive-minibuffers t)
   (global-set-key (kbd "M-x") 'counsel-M-x)
-  (global-set-key "\C-s" 'swiper)
+  (global-set-key (kbd "C-x f") '+ivy/projectile-find-file)
+  (global-set-key "\C-s" 'swiper-isearch)
   (global-set-key (kbd "C-x C-f") 'counsel-find-file)
   (global-set-key (kbd "C-S-SPC") 'ivy-switch-buffer)
+  (global-set-key (kbd "C-M-s") 'counsel-git-grep)
+  )
+
+(use-package! ivy-rich
+  :config
+  (ivy-rich-mode 1)
+  (setcdr (assq t ivy-format-functions-alist) #'ivy-format-function-line)
   )
 
 (use-package! all-the-icons-ivy
@@ -207,7 +229,7 @@ With argument, do this that many times."
 
 (use-package! magit
   :config
-  (global-set-key (kbd "C-c m") 'magit-status)
+  (global-set-key (kbd "C-c RET") 'magit-status)
   (global-set-key (kbd "C-x v h") 'magit-log-buffer-file)
   (global-set-key (kbd "C-x v b") 'magit-blame)
 
@@ -323,6 +345,8 @@ With argument, do this that many times."
   (setq lsp-pyright-auto-search-paths t)
   )
 
+(use-package! lsp-java)
+
 (use-package! neotree
   :config
   (setq neo-autorefresh nil)
@@ -365,16 +389,19 @@ With argument, do this that many times."
   (setq-default flycheck-disabled-checkers '(python-mypy))
   )
 
-(use-package! virtualenvwrapper
-  :config
-  (venv-projectile-auto-workon)
+(after! python
+  (use-package! virtualenvwrapper
+    :config
+    (venv-projectile-auto-workon)
 
-  (venv-initialize-interactive-shells) ;; if you want interactive shell support
-  (venv-initialize-eshell) ;; if you want eshell support
-  ;; note that setting `venv-location` is not necessary if you
-  ;; use the default location (`~/.virtualenvs`), or if the
-  ;; the environment variable `WORKON_HOME` points to the right place
-  (setq venv-location "~/.virtualenvs/")
+    (venv-initialize-interactive-shells) ;; if you want interactive shell support
+    (venv-initialize-eshell) ;; if you want eshell support
+    ;; note that setting `venv-location` is not necessary if you
+    ;; use the default location (`~/.virtualenvs`), or if the
+    ;; the environment variable `WORKON_HOME` points to the right place
+    (setq venv-location "~/.virtualenvs/")
+    (define-key python-mode-map (kbd "C-c a") 'venv-workon)
+    )
   )
 
 ;; pip install isort
@@ -384,7 +411,7 @@ With argument, do this that many times."
 ;; multi_line_output=4
 (use-package py-isort
   :config
-  (global-set-key (kbd "C-c o") 'py-isort-buffer)
+  (global-set-key (kbd "C-c C-o") 'py-isort-buffer)
   )
 
 (use-package! company
@@ -436,6 +463,7 @@ With argument, do this that many times."
       ((derived-mode-p 'shell-mode) "Shell")
       ((derived-mode-p 'eshell-mode) "Shell")
       ((derived-mode-p 'aweshell-mode) "Shell")
+      ((derived-mode-p 'vterm-mode) "Shell")
       ((derived-mode-p 'python-mode) "Python")
       ((derived-mode-p 'web-mode) "Web")
       ((memq major-mode '(
@@ -490,6 +518,69 @@ With argument, do this that many times."
    :map web-mode-map
    "C-j" #'emmet-expand-line
    )
+  )
+
+(after! highlight-indent-guides
+  (setq highlight-indent-guides-method 'bitmap)
+  )
+
+(after! js2-mode
+  (setq js-indent-level 2)
+  )
+
+
+(use-package! web-mode
+  :config
+
+  (setq web-mode-enable-css-colorization nil)
+
+  (setq web-mode-enable-current-element-highlight nil)
+  (setq web-mode-enable-current-column-highlight nil)
+  (setq web-mode-enable-whitespace-fontification nil)
+  (setq web-mode-enable-element-tag-fontification nil)
+  (setq web-mode-enable-block-face nil)
+  (setq web-mode-enable-part-face nil)
+
+  (setq web-mode-part-padding 0)
+  (setq web-mode-script-padding 0)
+
+  (setq web-mode-markup-indent-offset 2)
+  (setq web-mode-code-indent-offset 2)
+
+  (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.vue?\\'" . web-mode))
+  )
+
+(use-package! page-break-lines
+  :config
+  (page-break-lines-mode)
+  )
+
+(use-package! dashboard
+  :init ;; tweak dashboard config before loading it
+  (setq dashboard-set-heading-icons t)
+  (setq dashboard-set-file-icons t)
+  (setq dashboard-startup-banner 'logo) ;; use standard emacs logo as banner
+  ;;(setq dashboard-startup-banner "~/.emacs.d/emacs-dash.png")  ;; use custom image as banner
+  (setq dashboard-items '((bookmarks . 15)
+                          (recents . 10)
+                          ;(agenda . 5)
+                          (projects . 3)
+                          ;(registers . 3)
+                          ))
+  ;; Content is not centered by default. To center, set
+  (setq dashboard-center-content t)
+  :config
+  (dashboard-setup-startup-hook)
+  (dashboard-modify-heading-icons '((recents . "file-text")
+			            (bookmarks . "book")))
+  )
+(setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
+
+(use-package! expand-region
+  :config
+  (global-set-key (kbd "C-j") 'er/expand-region)
+  (global-set-key (kbd "C-S-J") (lambda () (interactive) (er/expand-region -1)))
   )
 
 (load! (concat settings_path "settings/functions.el"))

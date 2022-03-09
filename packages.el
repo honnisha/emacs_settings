@@ -19,4 +19,13 @@
 (package! py-isort)
 (package! emmet-mode)
 (package! python-pylint)
+(package! lsp-java)
 (package! centaur-tabs :recipe (:host github :repo "ema2159/centaur-tabs"))
+
+(when (package! ivy)
+  (package! ivy-rich))
+
+(package! multi-term)
+(package! dashboard)
+(package! page-break-lines)
+(package! expand-region)
