@@ -61,6 +61,7 @@
 (set-frame-parameter nil 'undecorated nil)
 
 (setq x-gtk-use-system-tooltips t)
+
 (setq pos-tip-background-color "gray20")
 (setq pos-tip-saved-max-width-height 100)
 

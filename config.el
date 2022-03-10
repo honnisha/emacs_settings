@@ -2,6 +2,27 @@
 ;; (setq dropbox_path "/home/honnisha/Dropbox/")
 ;; (load! (concat settings_path "config.el"))
 
+; /etc/systemd/system/emacs.service
+
+; [Unit]
+; Description=Emacs text editor
+; Documentation=info:emacs man:emacs(1) https://gnu.org/software/emacs/
+; 
+; [Service]
+; Type=forking
+; ExecStart=/usr/bin/emacs --daemon
+; ExecStop=/usr/bin/emacsclient --eval "(kill-emacs)"
+; Environment=SSH_AUTH_SOCK=%t/keyring/ssh
+; Restart=always
+; KillMode=process
+; 
+; [Install]
+; WantedBy=default.target
+
+; sudo systemctl enable emacs
+; sudo systemctl start emacs
+; sudo systemctl daemon-reload
+
 ;; (setq doom-theme 'doom-wilmersdorf)
 ;; (setq doom-theme 'doom-city-lights)
 ;; (setq doom-theme 'doom-vibrant)
@@ -10,11 +31,6 @@
 ;; display-line
 
 (global-set-key (kbd "C-x C-n") (lambda() (interactive)(find-file (concat dropbox_path "text.org"))))
-
-;;(if (find-font (font-spec :name "Hack"))
-;;    (set-face-attribute 'default nil :font "Hack" :height 80)
-;;  ;; (error "yay -S ttf-jetbrains-mono")
-;;  )
 
 (setq doom-font (font-spec :family "Hack" :size 11 :weight 'light))
 
@@ -307,9 +323,13 @@ With argument, do this that many times."
   (define-key lsp-mode-map (kbd "C-o") 'lsp-find-definition)
 
   (define-key lsp-mode-map (kbd "C-S-SPC") 'ivy-switch-buffer)
-  (define-key lsp-mode-map (kbd "<tab>") 'company-complete)
 
   (setq lsp-modeline-diagnostics-scope :project)
+  )
+
+(use-package! company-lsp
+  :config
+  (push 'company-lsp company-backends)
   )
 
 (use-package! lsp-ui
@@ -318,7 +338,7 @@ With argument, do this that many times."
   (add-hook 'lsp-mode-hook #'lsp-ui-doc-mode)
 
   (setq lsp-ui-doc-enable nil)
-  (setq lsp-ui-flycheck-enable t)
+  (setq lsp-ui-flycheck-enable nil)
   (setq lsp-ui-peek-enable nil)
   (setq lsp-ui-sideline-enable nil)
   (setq lsp-ui-doc-alignment (quote frame))
@@ -373,7 +393,7 @@ With argument, do this that many times."
   (setq neo-window-width 30)
   )
 
-(use-package! flycheck
+(after! flycheck
   ;; flycheck-verify-setup
   :config
   (global-flycheck-mode)  ;; (setq flycheck-highlighting-mode (quote symbols))
@@ -414,21 +434,23 @@ With argument, do this that many times."
   (global-set-key (kbd "C-c C-o") 'py-isort-buffer)
   )
 
-(use-package! company
+(after! company
   :config
+  (setq company-idle-delay 0)
+  (setq company-minimum-prefix-length 2)
+  (setq company-quickhelp-delay 0)
+  (setq company-show-numbers 1)
+  (setq company-show-location 1)
+  (company-quickhelp-mode 1)
+
+  (define-key lsp-mode-map (kbd "<tab>") 'company-complete)
   (push 'company-elisp company-backends)
   )
 
-(use-package! company-box
-  :hook (company-mode . company-box-mode)
+(use-package! company-quickhelp
   :config
-  (setq company-tooltip-maximum-width 200)
-  (setq company-tooltip-minimum-width 20)
-  (setq company-box-enable-icon nil)
-  (setq company-box-scrollbar ''right)
-  (setq company-box-show-single-candidate 'when-no-other-frontend)
+  (company-quickhelp-mode)
   )
-
 
 (use-package! centaur-tabs
   :hook
@@ -489,6 +511,7 @@ With argument, do this that many times."
        (string-prefix-p "*Compile-Log*" name)
        (string-prefix-p "*pyright" name)
        (string-prefix-p "*Help" name)
+       (string-prefix-p "*dashboard*" name)
 
        (cl-search "*company" name)
        (cl-search "*lsp" name)
@@ -581,6 +604,13 @@ With argument, do this that many times."
   :config
   (global-set-key (kbd "C-j") 'er/expand-region)
   (global-set-key (kbd "C-S-J") (lambda () (interactive) (er/expand-region -1)))
+  )
+
+(use-package reverse-im
+  :custom
+  (reverse-im-input-methods '("russian-computer"))
+  :config
+  (reverse-im-mode t)
   )
 
 (load! (concat settings_path "settings/functions.el"))
