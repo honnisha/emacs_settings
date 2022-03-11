@@ -30,3 +30,4 @@
 (package! company-lsp)
 (package! company-quickhelp)
 (package! reverse-im)
+(package! smartparens)

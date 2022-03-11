@@ -2,27 +2,6 @@
 ;; (setq dropbox_path "/home/honnisha/Dropbox/")
 ;; (load! (concat settings_path "config.el"))
 
-; /etc/systemd/system/emacs.service
-
-; [Unit]
-; Description=Emacs text editor
-; Documentation=info:emacs man:emacs(1) https://gnu.org/software/emacs/
-; 
-; [Service]
-; Type=forking
-; ExecStart=/usr/bin/emacs --daemon
-; ExecStop=/usr/bin/emacsclient --eval "(kill-emacs)"
-; Environment=SSH_AUTH_SOCK=%t/keyring/ssh
-; Restart=always
-; KillMode=process
-; 
-; [Install]
-; WantedBy=default.target
-
-; sudo systemctl enable emacs
-; sudo systemctl start emacs
-; sudo systemctl daemon-reload
-
 ;; (setq doom-theme 'doom-wilmersdorf)
 ;; (setq doom-theme 'doom-city-lights)
 ;; (setq doom-theme 'doom-vibrant)
@@ -43,6 +22,9 @@
 (add-to-list 'initial-frame-alist '(fullscreen . maximized))
 (toggle-frame-maximized)
 
+(set-language-environment "UTF-8")
+(set-default-coding-systems 'utf-8)
+
 (setq auto-save-default nil)
 
 (global-set-key [f9] 'toggle-menu-bar-mode-from-frame)
@@ -58,6 +40,13 @@
 (delete-selection-mode 1)
 
 (display-time-mode 1)
+
+;; If you enable winner-mode, you get something akin to a stack-based
+;; undo/redo functionality for all your window configuration changes.
+;; By default, C-c <left> gets bound to winner-undo, while C-c <right> performs winner-redo.
+(winner-mode 1)
+(global-set-key (kbd "C-c <left>") 'winner-undo)
+(global-set-key (kbd "C-c <right>") 'winner-redo)
 
 ;; From Pragmatic Emacs a more concise way to kill the buffer.
 (global-set-key (kbd "C-x k") 'kill-this-buffer)
@@ -152,6 +141,7 @@ With argument, do this that many times."
   (define-key vterm-mode-map (kbd "M-n") 'vterm-send-down)
   (define-key vterm-mode-map (kbd "M-h") 'vterm-send-meta-backspace)
   (define-key vterm-mode-map (kbd "M-w") 'kill-ring-save)
+  (define-key vterm-mode-map (kbd "M-m") 'vterm-send-C-a)
   )
 
 (remove-hook 'doom-first-buffer-hook #'smartparens-global-mode)
@@ -606,11 +596,18 @@ With argument, do this that many times."
   (global-set-key (kbd "C-S-J") (lambda () (interactive) (er/expand-region -1)))
   )
 
-(use-package reverse-im
+(use-package! reverse-im
   :custom
   (reverse-im-input-methods '("russian-computer"))
   :config
   (reverse-im-mode t)
+  )
+
+(use-package! smartparens
+  :config
+  (add-hook 'python-mode-hook #'smartparens-mode)
+  (add-hook 'web-mode-hook #'smartparens-mode)
+  (add-hook 'elisp-mode-map #'smartparens-mode)
   )
 
 (load! (concat settings_path "settings/functions.el"))
