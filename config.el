@@ -25,7 +25,15 @@
 (set-language-environment "UTF-8")
 (set-default-coding-systems 'utf-8)
 
-(setq auto-save-default nil)
+;; Don't autosave files or create lock/history/backup files. We don't want
+;; copies of potentially sensitive material floating around, and we'll rely on
+;; git and our own good fortune instead. Fingers crossed!
+(setq auto-save-default nil
+      create-lockfiles nil
+      make-backup-files nil
+      ;; But have a place to store them in case we do use them...
+      auto-save-list-file-name (concat doom-cache-dir "autosave")
+      backup-directory-alist `(("." . ,(concat doom-cache-dir "backup/"))))
 
 (global-set-key [f9] 'toggle-menu-bar-mode-from-frame)
 
@@ -128,6 +136,34 @@ With argument, do this that many times."
 (global-set-key (kbd "<C-S-left>") 'shrink-window-horizontally)
 (global-set-key (kbd "<C-S-up>") 'enlarge-window)
 (global-set-key (kbd "<C-S-down>") 'shrink-window)
+
+(use-package! whitespace
+  :config
+  ; (global-whitespace-mode 1)
+  (global-set-key (kbd "C-c h") `whitespace-mode)
+  (setq whitespace-style
+        (quote (
+                face
+                trailing
+                tabs
+                empty
+                indention
+                spaces
+                space-mark
+                space-after-tab
+                space-before-tab
+                tab-mark
+                )))
+  (setq whitespace-line-column 1000)
+  (set-face-attribute 'whitespace-line nil
+                    :foreground nil
+                    :background "gray10"
+                    :weight 'bold)
+
+  (add-hook 'web-mode-hook #'whitespace-mode)
+  (add-hook 'css-mode-hook #'whitespace-mode)
+  (add-hook 'emacs-lisp-mode-hook #'whitespace-mode)
+  )
 
 (use-package! vterm
   :config
@@ -533,17 +569,24 @@ With argument, do this that many times."
    )
   )
 
-(after! highlight-indent-guides
+(use-package! highlight-indent-guides
+  :config
   (setq highlight-indent-guides-method 'bitmap)
+
+  (highlight-indent-guides-mode nil)
+  (add-hook 'python-mode-hook 'highlight-indent-guides-mode)
+  (add-hook 'emacs-lisp-mode-hook 'highlight-indent-guides-mode)
   )
 
 (after! js2-mode
+  :config
   (setq js-indent-level 2)
   )
 
-
 (use-package! web-mode
   :config
+
+  (define-key web-mode-map (kbd "C-c RET") nil)
 
   (setq web-mode-enable-css-colorization nil)
 
@@ -586,7 +629,7 @@ With argument, do this that many times."
   :config
   (dashboard-setup-startup-hook)
   (dashboard-modify-heading-icons '((recents . "file-text")
-			            (bookmarks . "book")))
+                                    (bookmarks . "book")))
   )
 (setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
 
@@ -607,7 +650,13 @@ With argument, do this that many times."
   :config
   (add-hook 'python-mode-hook #'smartparens-mode)
   (add-hook 'web-mode-hook #'smartparens-mode)
-  (add-hook 'elisp-mode-map #'smartparens-mode)
+  (add-hook 'emacs-lisp-mode-hook #'smartparens-mode)
+  (add-hook 'css-mode-hook #'smartparens-mode)
+  )
+
+(use-package! hlinum
+  :config
+  (hlinum-activate)
   )
 
 (load! (concat settings_path "settings/functions.el"))

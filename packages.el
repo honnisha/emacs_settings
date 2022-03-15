@@ -31,3 +31,5 @@
 (package! company-quickhelp)
 (package! reverse-im)
 (package! smartparens)
+(package! highlight-indent-guides)
+(package! hlinum)
