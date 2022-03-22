@@ -163,6 +163,7 @@ With argument, do this that many times."
   (add-hook 'web-mode-hook #'whitespace-mode)
   (add-hook 'css-mode-hook #'whitespace-mode)
   (add-hook 'emacs-lisp-mode-hook #'whitespace-mode)
+  (add-hook 'yaml-mode-hook #'whitespace-mode)
   )
 
 (use-package! vterm
@@ -562,11 +563,6 @@ With argument, do this that many times."
   (add-hook 'web-mode-hook  'emmet-mode)
 
   (setq emmet-preview-default nil)
-
-  (map!
-   :map web-mode-map
-   "C-j" #'emmet-expand-line
-   )
   )
 
 (use-package! highlight-indent-guides
@@ -581,11 +577,13 @@ With argument, do this that many times."
 (after! js2-mode
   :config
   (setq js-indent-level 2)
+  (add-to-list 'auto-mode-alist '("\\.js?\\'" . js2-mode))
   )
 
 (use-package! web-mode
   :config
 
+  (define-key web-mode-map (kbd "C-o") 'emmet-expand-line)
   (define-key web-mode-map (kbd "C-c RET") nil)
 
   (setq web-mode-enable-css-colorization nil)
@@ -652,11 +650,51 @@ With argument, do this that many times."
   (add-hook 'web-mode-hook #'smartparens-mode)
   (add-hook 'emacs-lisp-mode-hook #'smartparens-mode)
   (add-hook 'css-mode-hook #'smartparens-mode)
+  (add-hook 'yaml-mode-hook #'smartparens-mode)
+  (add-hook 'js2-mode #'smartparens-mode)
   )
 
 (use-package! hlinum
   :config
   (hlinum-activate)
+  )
+
+(use-package! org
+  :config
+  ;; (setq org-log-done 'time)
+
+  (define-key org-mode-map (kbd "C-c l") 'org-scontexttore-link)
+  (define-key org-mode-map (kbd "C-h") 'delete-backward-char)
+  (define-key org-mode-map (kbd "M-h") 'backward-delete-word)
+
+  (define-key org-mode-map (kbd "C-c a") 'org-clock-in)
+  (define-key org-mode-map (kbd "C-c e") 'org-clock-out)
+  (define-key org-mode-map (kbd "C-c c") 'org-clock-in-last)
+
+  (define-key org-mode-map (kbd "C-i") 'org-shiftright)
+  (define-key org-mode-map (kbd "C-S-i") 'org-shiftleft)
+
+  (define-key org-mode-map (kbd "C-o") 'org-metaright)
+  (define-key org-mode-map (kbd "C-S-o") 'org-metaleft)
+
+  (define-key org-mode-map (kbd "<C-tab>") (lambda () (interactive) (other-window 1)))
+  (define-key org-mode-map (kbd "<C-iso-lefttab>") (lambda () (interactive) (other-window -1)))
+
+  (setq org-todo-keywords
+	'((sequence "TODO" "IN" "|" "DONE")))
+  (setq org-todo-keyword-faces
+	'(("TODO" . (:foreground "dodger blue" :weight bold))
+	  ("IN" . (:foreground "lawn green" :weight bold))
+	  ("DONE" . (:foreground "dim gray" :weight bold))
+	  ))
+
+  (setq org-agenda-files (list (concat dropbox_path "org_files")))
+  (global-set-key (kbd "C-x n !") (lambda() (interactive)(find-file (concat dropbox_path "org_files/main.org"))))
+  (global-set-key (kbd "C-x n @") (lambda() (interactive)(find-file (concat dropbox_path "org_files/work.org"))))
+  (custom-set-faces '(org-link ((t (:underline "dodger blue" :foreground "dodger blue")))))
+  (add-hook 'org-mode-hook #'(lambda ()
+			       (visual-line-mode)
+			       (org-indent-mode)))
   )
 
 (load! (concat settings_path "settings/functions.el"))
