@@ -33,3 +33,4 @@
 (package! smartparens)
 (package! highlight-indent-guides)
 (package! hlinum)
+(package! yascroll :recipe (:host github :repo "emacsorphanage/yascroll"))

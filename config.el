@@ -285,6 +285,9 @@ With argument, do this that many times."
   (define-key magit-mode-map (kbd "2") 'magit-section-show-level-2-all)
   (define-key magit-mode-map (kbd "3") 'magit-section-show-level-3-all)
   (define-key magit-mode-map (kbd "4") 'magit-section-show-level-4-all)
+
+  (setq magit-display-buffer-function #'magit-display-buffer-traditional)
+  (setq projectile-switch-project-action 'magit-status)
   )
 
 
@@ -681,20 +684,27 @@ With argument, do this that many times."
   (define-key org-mode-map (kbd "<C-iso-lefttab>") (lambda () (interactive) (other-window -1)))
 
   (setq org-todo-keywords
-	'((sequence "TODO" "IN" "|" "DONE")))
+        '((sequence "TODO" "IN" "|" "DONE")))
   (setq org-todo-keyword-faces
-	'(("TODO" . (:foreground "dodger blue" :weight bold))
-	  ("IN" . (:foreground "lawn green" :weight bold))
-	  ("DONE" . (:foreground "dim gray" :weight bold))
-	  ))
+        '(("TODO" . (:foreground "dodger blue" :weight bold))
+          ("IN" . (:foreground "lawn green" :weight bold))
+          ("DONE" . (:foreground "dim gray" :weight bold))
+          ))
 
   (setq org-agenda-files (list (concat dropbox_path "org_files")))
   (global-set-key (kbd "C-x n !") (lambda() (interactive)(find-file (concat dropbox_path "org_files/main.org"))))
   (global-set-key (kbd "C-x n @") (lambda() (interactive)(find-file (concat dropbox_path "org_files/work.org"))))
   (custom-set-faces '(org-link ((t (:underline "dodger blue" :foreground "dodger blue")))))
   (add-hook 'org-mode-hook #'(lambda ()
-			       (visual-line-mode)
-			       (org-indent-mode)))
+                               (visual-line-mode)
+                               (org-indent-mode)))
+  )
+
+(use-package! yascroll
+  :config
+  (global-yascroll-bar-mode 1)
+  (setq yascroll:delay-to-hide nil)
+  (toggle-scroll-bar -1)
   )
 
 (load! (concat settings_path "settings/functions.el"))
