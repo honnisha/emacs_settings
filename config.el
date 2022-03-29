@@ -1,5 +1,3 @@
-;; (setq settings_path "/home/honnisha/Projects/emacs_settings/")
-;; (setq dropbox_path "/home/honnisha/Dropbox/")
 ;; (load! (concat settings_path "config.el"))
 
 ;; (setq doom-theme 'doom-wilmersdorf)

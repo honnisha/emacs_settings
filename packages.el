@@ -1,5 +1,3 @@
-;; (setq settings_path "/home/honnisha/Projects/emacs_settings/")
-;; (setq dropbox_path "/home/honnisha/Dropbox/")
 ;; (load-file (concat settings_path "packages.el"))
 
 (package! back-button :recipe (:host github :repo "rolandwalker/back-button"))
