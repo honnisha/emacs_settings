@@ -40,8 +40,6 @@
 (setq pos-tip-background-color "gray20")
 (setq pos-tip-saved-max-width-height 100)
 
-(setq bookmark-default-file (concat user-emacs-directory ".emacs-save"))
-
 ;; How to overwrite text by yank in Emacs?
 (delete-selection-mode 1)
 
@@ -57,8 +55,8 @@
 ;; From Pragmatic Emacs a more concise way to kill the buffer.
 (global-set-key (kbd "C-x k") 'kill-this-buffer)
 
+(setq bookmark-default-file (concat dropbox_path "emacs-bookmarks"))
 (global-set-key (kbd "<f2>") 'bookmark-jump)
-
 (global-set-key (kbd "<f2>") 'bookmark-jump)
 (global-set-key (kbd "<f3>") 'bookmark-set)
 (global-set-key (kbd "<f4>") 'bookmark-bmenu-list)
