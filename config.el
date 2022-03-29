@@ -1,11 +1,13 @@
 ;; (load! (concat settings_path "config.el"))
 
+;; sudo cp ~/Projects/emacs_settings/emacs.service /etc/systemd/system/emacs.service
+;; sudo systemctl enable emacs
+;; emacsclient -c -F "'(fullscreen . fullboth)"
+
 ;; (setq doom-theme 'doom-wilmersdorf)
 ;; (setq doom-theme 'doom-city-lights)
 ;; (setq doom-theme 'doom-vibrant)
 ;; (setq doom-theme 'doom-nord)
-
-;; display-line
 
 (global-set-key (kbd "C-x C-n") (lambda() (interactive)(find-file (concat dropbox_path "text.org"))))
 
