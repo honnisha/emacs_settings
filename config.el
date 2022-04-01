@@ -1,6 +1,7 @@
 ;; (load! (concat settings_path "config.el"))
 
 ;; sudo cp ~/Projects/emacs_settings/emacs.service /etc/systemd/system/emacs.service
+;; sudo systemctl daemon-reload
 ;; sudo systemctl enable emacs
 ;; emacsclient -c -F "'(fullscreen . fullboth)"
 
@@ -10,8 +11,6 @@
 ;; (setq doom-theme 'doom-nord)
 
 (global-set-key (kbd "C-x C-n") (lambda() (interactive)(find-file (concat dropbox_path "text.org"))))
-
-(setq doom-font (font-spec :family "Hack" :size 11 :weight 'light))
 
 ;; Line numbers are pretty slow all around. The performance boost of disabling
 ;; them outweighs the utility of always keeping them on.
@@ -588,6 +587,7 @@ With argument, do this that many times."
   (define-key web-mode-map (kbd "C-c RET") nil)
 
   (setq web-mode-enable-css-colorization nil)
+  (setq web-mode-enable-auto-indentation nil)
 
   (setq web-mode-enable-current-element-highlight nil)
   (setq web-mode-enable-current-column-highlight nil)
