@@ -8,8 +8,8 @@ Installation
 =======
 Set two variables in your settings file: `settings_path` and `dropbox_path` and load `main.el`:
 ```lisp
-(setq settings_path "/home/gagen/Projects/emacs_settings/")
-(setq dropbox_path "/home/gagen/Dropbox/")
+(setq settings_path "/home/honny/Projects/emacs_settings/")
+(setq dropbox_path "/home/honny/Dropbox/")
 
 (load-file (concat settings_path "main.el"))
 ```

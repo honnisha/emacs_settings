@@ -698,11 +698,4 @@ With argument, do this that many times."
                                (org-indent-mode)))
   )
 
-(use-package! yascroll
-  :config
-  (global-yascroll-bar-mode 1)
-  (setq yascroll:delay-to-hide nil)
-  (toggle-scroll-bar -1)
-  )
-
 (load! (concat settings_path "settings/functions.el"))
