@@ -390,6 +390,7 @@ With argument, do this that many times."
   :config
   (setq lsp-pyright-auto-import-completions t)
   (setq lsp-pyright-auto-search-paths t)
+  (setq lsp-pyright-venv-path "~/.virtualenvs/")
   )
 
 (use-package! lsp-java)
@@ -436,6 +437,7 @@ With argument, do this that many times."
   (setq-default flycheck-disabled-checkers '(python-mypy))
   )
 
+;; pip install python-flake8 mypy pylint
 (after! python
   (use-package! virtualenvwrapper
     :config
