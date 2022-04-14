@@ -700,4 +700,21 @@ With argument, do this that many times."
                                (org-indent-mode)))
   )
 
+(use-package! undo-tree
+  :init
+  (global-undo-tree-mode)
+  :custom
+  (undo-tree-visualizer-diff t)
+  (undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo")))
+  (undo-tree-visualizer-timestamps t)
+  )
+
+;; yay -S hunspell
+(use-package! flyspell-correct
+  :bind (:map flyspell-mode-map ("C-;" . flyspell-correct-wrapper))
+  )
+
+(use-package! flyspell-correct-ivy
+  )
+
 (load! (concat settings_path "settings/functions.el"))
