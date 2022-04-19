@@ -717,4 +717,8 @@ With argument, do this that many times."
 (use-package! flyspell-correct-ivy
   )
 
+;; pip install black
+(use-package! python-black
+  )
+
 (load! (concat settings_path "settings/functions.el"))

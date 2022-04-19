@@ -35,3 +35,4 @@
 (package! yascroll :recipe (:host github :repo "emacsorphanage/yascroll"))
 (package! flyspell-correct)
 (package! flyspell-correct-ivy)
+(package! python-black)
