@@ -718,7 +718,17 @@ With argument, do this that many times."
   )
 
 ;; pip install black
+;; python-black-buffer
 (use-package! python-black
+  :config
+  (setq python-black-extra-args `(
+                                 "--skip-string-normalization"
+                                 ,(concat "--config=" settings_path "configs/black.toml")
+                                 ))
+  )
+
+;; yay -S w3m
+(use-package! emacs-w3m
   )
 
 (load! (concat settings_path "settings/functions.el"))

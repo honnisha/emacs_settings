@@ -36,3 +36,4 @@
 (package! flyspell-correct)
 (package! flyspell-correct-ivy)
 (package! python-black)
+(package! emacs-w3m)

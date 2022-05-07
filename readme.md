@@ -2,7 +2,7 @@ Emacs settings
 =======
 My settings for emacs. Config for python, rust editing. Using lsp and virtualenvwrapper.</br>
 </br>
-Autor: Nikita Ivanov (Gangashman) ganagsh@gmail.com</br>
+Autor: Maria Ivanova (honnisha) ganagsh@gmail.com</br>
 
 Installation
 =======
