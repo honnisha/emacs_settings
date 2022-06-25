@@ -211,6 +211,19 @@ With argument, do this that many times."
   (global-set-key (kbd "C-S-SPC") 'consult-buffer)
   (global-set-key (kbd "C-x f") 'consult-find)
   (global-set-key (kbd "C-M-s") 'consult-grep)
+  (global-set-key (kbd "C-s") 'consult-line)
+
+  (consult-customize
+   ;; Disable preview for `consult-theme' completely.
+   consult-theme :preview-key nil
+   ;; Set preview for `consult-buffer' to key `M-.'
+   consult-buffer :preview-key (kbd "M-.")
+   ;; For `consult-line' change the prompt and specify multiple preview
+   ;; keybindings. Note that you should bind <S-up> and <S-down> in the
+   ;; `minibuffer-local-completion-map' or `vertico-map' to the commands which
+   ;; select the previous or next candidate.
+   consult-line :prompt "Search: "
+   :preview-key (list (kbd "C-o") (kbd "<S-up>")))
   )
 
 ;; Persist history over Emacs restarts. Vertico sorts by history position.
@@ -743,10 +756,6 @@ With argument, do this that many times."
                                  "--skip-string-normalization"
                                  ,(concat "--config=" settings_path "configs/black.toml")
                                  ))
-  )
-
-;; yay -S w3m
-(use-package! emacs-w3m
   )
 
 (load! (concat settings_path "settings/functions.el"))

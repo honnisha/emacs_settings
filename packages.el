@@ -24,6 +24,7 @@
 (package! vertico)
 (package! consult)
 (package! marginalia)
+(package! embark)
 
 (package! multi-term)
 (package! dashboard)
