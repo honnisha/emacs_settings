@@ -10,7 +10,6 @@
 (package! virtualenvwrapper)
 (package! lsp-ui)
 (package! undo-tree)
-(package! all-the-icons-ivy)
 (package! restclient)
 (package! py-isort)
 (package! emmet-mode)
@@ -18,8 +17,13 @@
 (package! lsp-java)
 (package! centaur-tabs :recipe (:host github :repo "ema2159/centaur-tabs"))
 
-(when (package! ivy)
-  (package! ivy-rich))
+(package! ivy :disable t)
+(package! helm :disable t)
+(package! ido :disable t)
+
+(package! vertico)
+(package! consult)
+(package! marginalia)
 
 (package! multi-term)
 (package! dashboard)
@@ -34,6 +38,5 @@
 (package! undo-tree)
 (package! yascroll :recipe (:host github :repo "emacsorphanage/yascroll"))
 (package! flyspell-correct)
-(package! flyspell-correct-ivy)
 (package! python-black)
 (package! emacs-w3m)

@@ -58,6 +58,7 @@
 
 (setq bookmark-default-file (concat dropbox_path "emacs-bookmarks"))
 (global-set-key (kbd "<f2>") 'bookmark-jump)
+(global-unset-key (kbd "<f2>"))
 (global-set-key (kbd "<f2>") 'bookmark-jump)
 (global-set-key (kbd "<f3>") 'bookmark-set)
 (global-set-key (kbd "<f4>") 'bookmark-bmenu-list)
@@ -191,11 +192,36 @@ With argument, do this that many times."
   (setq back-button-never-push-mark nil)
   )
 
-(use-package! ivy
+(use-package! vertico
+  :init
+  (vertico-mode)
+  :config
+  (vertico-mouse-mode)
+  )
+
+(use-package! marginalia
+  :init
+  (marginalia-mode)
+  )
+
+(use-package! consult
+  :config
+  (setq completion-styles '(substring basic))
+
+  (global-set-key (kbd "C-S-SPC") 'consult-buffer)
+  (global-set-key (kbd "C-x f") 'consult-find)
+  (global-set-key (kbd "C-M-s") 'consult-grep)
+  )
+
+;; Persist history over Emacs restarts. Vertico sorts by history position.
+(use-package! savehist
+  :init
+  (savehist-mode))
+
+(after! ivy
   :config
   (setq ivy-use-virtual-buffers t)
   (setq enable-recursive-minibuffers t)
-  (global-set-key (kbd "M-x") 'counsel-M-x)
   (global-set-key (kbd "C-x f") '+ivy/projectile-find-file)
   (global-set-key "\C-s" 'swiper-isearch)
   (global-set-key (kbd "C-x C-f") 'counsel-find-file)
@@ -203,13 +229,7 @@ With argument, do this that many times."
   (global-set-key (kbd "C-M-s") 'counsel-git-grep)
   )
 
-(use-package! ivy-rich
-  :config
-  (ivy-rich-mode 1)
-  (setcdr (assq t ivy-format-functions-alist) #'ivy-format-function-line)
-  )
-
-(use-package! all-the-icons-ivy
+(after! all-the-icons-ivy
   :config
   (all-the-icons-ivy-setup)
   )
@@ -270,6 +290,7 @@ With argument, do this that many times."
 (use-package! magit
   :config
   (global-set-key (kbd "C-c RET") 'magit-status)
+  (global-set-key (kbd "C-c m") 'magit-status)
   (global-set-key (kbd "C-x v h") 'magit-log-buffer-file)
   (global-set-key (kbd "C-x v b") 'magit-blame)
 
@@ -349,7 +370,7 @@ With argument, do this that many times."
   ;; (define-key lsp-mode-map (kbd "C-i") 'lsp-describe-thing-at-point)
   (define-key lsp-mode-map (kbd "C-o") 'lsp-find-definition)
 
-  (define-key lsp-mode-map (kbd "C-S-SPC") 'ivy-switch-buffer)
+  ;; (define-key lsp-mode-map (kbd "C-S-SPC") 'ivy-switch-buffer)
 
   (setq lsp-modeline-diagnostics-scope :project)
   )
@@ -712,9 +733,6 @@ With argument, do this that many times."
 ;; yay -S hunspell
 (use-package! flyspell-correct
   :bind (:map flyspell-mode-map ("C-;" . flyspell-correct-wrapper))
-  )
-
-(use-package! flyspell-correct-ivy
   )
 
 ;; pip install black
