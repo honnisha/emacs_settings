@@ -196,7 +196,11 @@ With argument, do this that many times."
   :init
   (vertico-mode)
   :config
-  (vertico-mouse-mode)
+  )
+
+(use-package! all-the-icons-completion
+  :init
+  (all-the-icons-completion-mode)
   )
 
 (use-package! marginalia
@@ -213,9 +217,13 @@ With argument, do this that many times."
   (global-set-key (kbd "C-M-s") 'consult-grep)
   (global-set-key (kbd "C-s") 'consult-line)
 
+  (setq consult-preview-max-count 20)
+  (setq consult-preview-max-count 20)
+
   (consult-customize
    ;; Disable preview for `consult-theme' completely.
-   consult-theme :preview-key nil
+   ;;consult-theme :preview-key nil
+   preview-key '(:debounce 0.2 any)
    ;; Set preview for `consult-buffer' to key `M-.'
    consult-buffer :preview-key (kbd "M-.")
    ;; For `consult-line' change the prompt and specify multiple preview
@@ -384,6 +392,7 @@ With argument, do this that many times."
   (define-key lsp-mode-map (kbd "C-o") 'lsp-find-definition)
 
   ;; (define-key lsp-mode-map (kbd "C-S-SPC") 'ivy-switch-buffer)
+  (define-key lsp-mode-map (kbd "C-S-SPC") 'consult-buffer)
 
   (setq lsp-modeline-diagnostics-scope :project)
   )

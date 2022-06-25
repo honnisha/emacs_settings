@@ -22,6 +22,7 @@
 (package! ido :disable t)
 
 (package! vertico)
+(package! all-the-icons-completion)
 (package! consult)
 (package! marginalia)
 (package! embark)
