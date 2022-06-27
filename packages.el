@@ -26,6 +26,7 @@
 (package! consult)
 (package! marginalia)
 (package! embark)
+(package! orderless)
 
 (package! multi-term)
 (package! dashboard)

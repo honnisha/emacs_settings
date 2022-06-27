@@ -201,6 +201,14 @@ With argument, do this that many times."
 (use-package! all-the-icons-completion
   :init
   (all-the-icons-completion-mode)
+  (vertico-mouse-mode)
+
+  (setq completion-styles '(basic substring partial-completion flex))
+  (setq read-file-name-completion-ignore-case t
+      read-buffer-completion-ignore-case t
+      completion-ignore-case t)
+  (setq vertico-resize nil)
+  (setq vertico-count 30)
   )
 
 (use-package! marginalia
@@ -215,7 +223,7 @@ With argument, do this that many times."
   (global-set-key (kbd "C-S-SPC") 'consult-buffer)
   (global-set-key (kbd "C-x f") 'consult-find)
   (global-set-key (kbd "C-M-s") 'consult-grep)
-  (global-set-key (kbd "C-s") 'consult-line)
+  ;; (global-set-key (kbd "C-s") 'consult-line)
 
   (setq consult-preview-max-count 20)
   (setq consult-preview-max-count 20)
@@ -234,17 +242,27 @@ With argument, do this that many times."
    :preview-key (list (kbd "C-o") (kbd "<S-up>")))
   )
 
+(use-package! orderless
+  :custom
+  (completion-styles '(orderless basic))
+  (completion-category-overrides '((file (styles basic partial-completion))))
+  )
+
 ;; Persist history over Emacs restarts. Vertico sorts by history position.
 (use-package! savehist
   :init
   (savehist-mode))
+
+(after! swiper
+  :config
+  (global-set-key "\C-s" 'swiper-isearch)
+  )
 
 (after! ivy
   :config
   (setq ivy-use-virtual-buffers t)
   (setq enable-recursive-minibuffers t)
   (global-set-key (kbd "C-x f") '+ivy/projectile-find-file)
-  (global-set-key "\C-s" 'swiper-isearch)
   (global-set-key (kbd "C-x C-f") 'counsel-find-file)
   (global-set-key (kbd "C-S-SPC") 'ivy-switch-buffer)
   (global-set-key (kbd "C-M-s") 'counsel-git-grep)
@@ -390,6 +408,7 @@ With argument, do this that many times."
 
   ;; (define-key lsp-mode-map (kbd "C-i") 'lsp-describe-thing-at-point)
   (define-key lsp-mode-map (kbd "C-o") 'lsp-find-definition)
+  (define-key lsp-mode-map (kbd "C-S-SPC") 'consult-buffer)
 
   ;; (define-key lsp-mode-map (kbd "C-S-SPC") 'ivy-switch-buffer)
   (define-key lsp-mode-map (kbd "C-S-SPC") 'consult-buffer)
@@ -539,7 +558,7 @@ With argument, do this that many times."
   (centaur-tabs-enable-buffer-reordering)
   (setq centaur-tabs-adjust-buffer-order t)
 
-  ;; (centaur-tabs-group-by-projectile-project)
+  (centaur-tabs-group-by-projectile-project)
 
   (global-set-key (kbd "<C-M-tab>") 'centaur-tabs-forward)
   (global-set-key (kbd "<C-M-iso-lefttab>") 'centaur-tabs-backward)
