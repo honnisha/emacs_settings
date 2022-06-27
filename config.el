@@ -196,19 +196,18 @@ With argument, do this that many times."
   :init
   (vertico-mode)
   :config
-  )
-
-(use-package! all-the-icons-completion
-  :init
-  (all-the-icons-completion-mode)
-  (vertico-mouse-mode)
-
   (setq completion-styles '(basic substring partial-completion flex))
   (setq read-file-name-completion-ignore-case t
       read-buffer-completion-ignore-case t
       completion-ignore-case t)
   (setq vertico-resize nil)
   (setq vertico-count 30)
+  )
+
+(use-package! all-the-icons-completion
+  :init
+  (all-the-icons-completion-mode)
+  (add-hook 'marginalia-mode-hook #'all-the-icons-completion-marginalia-setup)
   )
 
 (use-package! marginalia
@@ -225,21 +224,17 @@ With argument, do this that many times."
   (global-set-key (kbd "C-M-s") 'consult-grep)
   ;; (global-set-key (kbd "C-s") 'consult-line)
 
-  (setq consult-preview-max-count 20)
-  (setq consult-preview-max-count 20)
-
   (consult-customize
    ;; Disable preview for `consult-theme' completely.
-   ;;consult-theme :preview-key nil
-   preview-key '(:debounce 0.2 any)
+   consult-theme :preview-key nil
    ;; Set preview for `consult-buffer' to key `M-.'
-   consult-buffer :preview-key (kbd "M-.")
+   consult-buffer :preview-key (kbd "C-o")
    ;; For `consult-line' change the prompt and specify multiple preview
    ;; keybindings. Note that you should bind <S-up> and <S-down> in the
    ;; `minibuffer-local-completion-map' or `vertico-map' to the commands which
    ;; select the previous or next candidate.
    consult-line :prompt "Search: "
-   :preview-key (list (kbd "C-o") (kbd "<S-up>")))
+   :preview-key (list (kbd "<S-down>") (kbd "<S-up>")))
   )
 
 (use-package! orderless
