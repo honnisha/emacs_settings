@@ -550,8 +550,7 @@ With argument, do this that many times."
   (setq centaur-tabs-set-icons nil)
   (setq centaur-tabs-gray-out-icons 'buffer)
 
-  (centaur-tabs-enable-buffer-reordering)
-  (setq centaur-tabs-adjust-buffer-order t)
+  (setq centaur-tabs-adjust-buffer-order nil)
 
   (global-set-key (kbd "<C-M-tab>") 'centaur-tabs-forward)
   (global-set-key (kbd "<C-M-iso-lefttab>") 'centaur-tabs-backward)
