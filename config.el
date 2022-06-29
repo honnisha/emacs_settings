@@ -229,12 +229,13 @@ With argument, do this that many times."
    consult-theme :preview-key nil
    ;; Set preview for `consult-buffer' to key `M-.'
    consult-buffer :preview-key (kbd "C-o")
+   consult-grep :preview-key (kbd "C-o")
    ;; For `consult-line' change the prompt and specify multiple preview
    ;; keybindings. Note that you should bind <S-up> and <S-down> in the
    ;; `minibuffer-local-completion-map' or `vertico-map' to the commands which
    ;; select the previous or next candidate.
-   consult-line :prompt "Search: "
-   :preview-key (kbd "C-o"))
+   consult-line :preview-key '(:debounce 0.2 any)
+   )
   )
 
 (use-package! orderless
