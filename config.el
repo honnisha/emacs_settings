@@ -222,7 +222,7 @@ With argument, do this that many times."
   (global-set-key (kbd "C-S-SPC") 'consult-buffer)
   (global-set-key (kbd "C-x f") 'consult-find)
   (global-set-key (kbd "C-M-s") 'consult-grep)
-  ;; (global-set-key (kbd "C-s") 'consult-line)
+  (global-set-key (kbd "C-s") 'consult-line)
 
   (consult-customize
    ;; Disable preview for `consult-theme' completely.
@@ -234,7 +234,7 @@ With argument, do this that many times."
    ;; `minibuffer-local-completion-map' or `vertico-map' to the commands which
    ;; select the previous or next candidate.
    consult-line :prompt "Search: "
-   :preview-key (list (kbd "<S-down>") (kbd "<S-up>")))
+   :preview-key (kbd "C-o"))
   )
 
 (use-package! orderless
@@ -553,8 +553,6 @@ With argument, do this that many times."
   (centaur-tabs-enable-buffer-reordering)
   (setq centaur-tabs-adjust-buffer-order t)
 
-  (centaur-tabs-group-by-projectile-project)
-
   (global-set-key (kbd "<C-M-tab>") 'centaur-tabs-forward)
   (global-set-key (kbd "<C-M-iso-lefttab>") 'centaur-tabs-backward)
 
@@ -607,6 +605,8 @@ With argument, do this that many times."
   (centaur-tabs-group-buffer-groups)
 
   (global-set-key (kbd "C-c f") 'centaur-tabs--copy-file-name-to-clipboard)
+
+  (centaur-tabs-group-by-projectile-project)
   )
 
 (use-package! undo-tree
