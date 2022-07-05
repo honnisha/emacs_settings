@@ -234,7 +234,7 @@ With argument, do this that many times."
    ;; keybindings. Note that you should bind <S-up> and <S-down> in the
    ;; `minibuffer-local-completion-map' or `vertico-map' to the commands which
    ;; select the previous or next candidate.
-   consult-line :preview-key '(:debounce 0.2 any)
+   consult-line :preview-key '(:debounce 0.0 any)
    )
   )
 
