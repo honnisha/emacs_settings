@@ -41,6 +41,21 @@
 (setq pos-tip-background-color "gray20")
 (setq pos-tip-saved-max-width-height 100)
 
+;; Whether display icons in the mode-line.
+;; While using the server mode in GUI, should set the value explicitly.
+(setq doom-modeline-icon t)
+
+;; Whether display the icon for `major-mode'. It respects `doom-modeline-icon'.
+(setq doom-modeline-major-mode-icon t)
+
+;; Whether display the colorful icon for `major-mode'.
+;; It respects `all-the-icons-color-icons'.
+(setq doom-modeline-major-mode-color-icon t)
+
+;; Whether display the modification icon for the buffer.
+;; It respects `doom-modeline-icon' and `doom-modeline-buffer-state-icon'.
+(setq doom-modeline-buffer-modification-icon t)
+
 ;; How to overwrite text by yank in Emacs?
 (delete-selection-mode 1)
 
@@ -410,6 +425,8 @@ With argument, do this that many times."
   (define-key lsp-mode-map (kbd "C-S-SPC") 'consult-buffer)
 
   (setq lsp-modeline-diagnostics-scope :project)
+
+  (setq lsp-enable-file-watchers nil)
   )
 
 (use-package! company-lsp
