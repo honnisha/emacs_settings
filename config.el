@@ -192,6 +192,7 @@ With argument, do this that many times."
   (define-key vterm-mode-map (kbd "M-h") 'vterm-send-meta-backspace)
   (define-key vterm-mode-map (kbd "M-w") 'kill-ring-save)
   (define-key vterm-mode-map (kbd "M-m") 'vterm-send-C-a)
+  (define-key vterm-mode-map (kbd "C-c l") 'vterm-clear)
   )
 
 (remove-hook 'doom-first-buffer-hook #'smartparens-global-mode)
@@ -217,6 +218,7 @@ With argument, do this that many times."
       completion-ignore-case t)
   (setq vertico-resize nil)
   (setq vertico-count 30)
+  (setq vertico-cycle t)
   )
 
 (use-package! all-the-icons-completion
@@ -238,6 +240,22 @@ With argument, do this that many times."
   (global-set-key (kbd "C-x f") 'consult-find)
   (global-set-key (kbd "C-M-s") 'consult-grep)
   (global-set-key (kbd "C-s") 'consult-line)
+
+  (after! consult
+    (defadvice! org-show-entry-consult-a (fn &rest args)
+      :around #'consult-line
+      :around #'consult-org-heading
+      :around #'consult--grep
+      (when-let ((pos (apply fn args)))
+        (org-fold-reveal '(4)))))
+
+  (after! consult
+    (defadvice! org-show-entry-consult-a (fn &rest args)
+      :around #'consult-line
+      :around #'consult-org-heading
+      :around #'consult--grep
+      (when-let ((pos (apply fn args)))
+        (progn (org-fold-reveal '(4)) (org-fold-show-entry)))))
 
   (consult-customize
    ;; Disable preview for `consult-theme' completely.
