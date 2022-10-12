@@ -43,3 +43,6 @@
 (package! flyspell-correct)
 (package! python-black)
 (package! emacs-w3m)
+(package! origami)
+
+(package! telega)

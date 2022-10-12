@@ -18,6 +18,9 @@
 
 (recentf-mode nil)
 
+(set-fontset-font "fontset-default" 'cyrillic "Hack")
+(set-fontset-font "fontset-default" 'greek "Hack")
+
 (add-to-list 'initial-frame-alist '(fullscreen . maximized))
 (toggle-frame-maximized)
 
@@ -179,6 +182,12 @@ With argument, do this that many times."
   (add-hook 'yaml-mode-hook #'whitespace-mode)
   )
 
+;; yay -S telegram-tdlib
+(use-package telega
+  :commands (telega)
+  :defer t
+  )
+
 (use-package! vterm
   :config
   (add-hook 'vterm-mode  'vterm-copy-mode)
@@ -238,7 +247,8 @@ With argument, do this that many times."
 
   (global-set-key (kbd "C-S-SPC") 'consult-buffer)
   (global-set-key (kbd "C-x f") 'consult-find)
-  (global-set-key (kbd "C-M-s") 'consult-grep)
+  ;; (global-set-key (kbd "C-M-s") 'consult-grep)
+  (global-set-key (kbd "C-M-s") 'consult-ripgrep)
   (global-set-key (kbd "C-s") 'consult-line)
 
   (after! consult
@@ -267,8 +277,14 @@ With argument, do this that many times."
    ;; keybindings. Note that you should bind <S-up> and <S-down> in the
    ;; `minibuffer-local-completion-map' or `vertico-map' to the commands which
    ;; select the previous or next candidate.
+   consult-ripgrep :preview-key (kbd "C-o")
    consult-line :preview-key '(:debounce 0.0 any)
    )
+  )
+
+(use-package! origami
+  :config
+  (add-hook 'yaml-mode-hook 'origami-mode)
   )
 
 (use-package! orderless
@@ -757,6 +773,8 @@ With argument, do this that many times."
 (use-package! org
   :config
   ;; (setq org-log-done 'time)
+
+  (setq org-support-shift-select t)
 
   (define-key org-mode-map (kbd "C-c l") 'org-scontexttore-link)
   (define-key org-mode-map (kbd "C-h") 'delete-backward-char)
