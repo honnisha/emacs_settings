@@ -188,6 +188,7 @@ With argument, do this that many times."
   :defer t
   )
 
+;; yay -S cmake-git
 (use-package! vterm
   :config
   (add-hook 'vterm-mode  'vterm-copy-mode)
