@@ -343,6 +343,7 @@ With argument, do this that many times."
                                         (rx "*server") (rx "*which")))
   )
 
+;; yay -S tree-sitter
 (use-package! tree-sitter
   :config
   (tree-sitter-require 'python)
@@ -547,7 +548,7 @@ With argument, do this that many times."
   (setq-default flycheck-disabled-checkers '(python-mypy))
   )
 
-;; pip install python-flake8 mypy pylint
+;; pip install flake8 mypy pylint isort
 (after! python
   (use-package! virtualenvwrapper
     :config
@@ -563,7 +564,6 @@ With argument, do this that many times."
     )
   )
 
-;; pip install isort
 ;; https://github.com/timothycrosley/isort
 ;; ~/.isort.cfg
 ;; [settings]
