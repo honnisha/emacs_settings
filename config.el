@@ -392,6 +392,16 @@ With argument, do this that many times."
   (define-key magit-mode-map (kbd "3") 'magit-section-show-level-3-all)
   (define-key magit-mode-map (kbd "4") 'magit-section-show-level-4-all)
 
+  (define-key smerge-mode-map (kbd "<down>") 'smerge-next)
+  (define-key smerge-mode-map (kbd "n") 'smerge-next)
+  (define-key smerge-mode-map (kbd "<up>") 'smerge-prev)
+  (define-key smerge-mode-map (kbd "p") 'smerge-prev)
+  (define-key smerge-mode-map (kbd "с") 'smerge-keep-current)
+  (define-key smerge-mode-map (kbd "m") 'smerge-keep-mine)
+  (define-key smerge-mode-map (kbd "o") 'smerge-keep-other)
+  (define-key smerge-mode-map (kbd "r") 'smerge-resolve)
+  (define-key smerge-mode-map (kbd "R") 'smerge-resolve-all)
+
   (setq magit-display-buffer-function #'magit-display-buffer-traditional)
   (setq projectile-switch-project-action 'magit-status)
   )
