@@ -393,9 +393,7 @@ With argument, do this that many times."
   (define-key magit-mode-map (kbd "4") 'magit-section-show-level-4-all)
 
   (define-key smerge-mode-map (kbd "<down>") 'smerge-next)
-  (define-key smerge-mode-map (kbd "n") 'smerge-next)
   (define-key smerge-mode-map (kbd "<up>") 'smerge-prev)
-  (define-key smerge-mode-map (kbd "p") 'smerge-prev)
   (define-key smerge-mode-map (kbd "с") 'smerge-keep-current)
   (define-key smerge-mode-map (kbd "m") 'smerge-keep-mine)
   (define-key smerge-mode-map (kbd "o") 'smerge-keep-other)
