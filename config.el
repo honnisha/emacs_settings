@@ -268,6 +268,8 @@ With argument, do this that many times."
       (when-let ((pos (apply fn args)))
         (progn (org-fold-reveal '(4)) (org-fold-show-entry)))))
 
+  (use-package! consult-lsp)
+
   (consult-customize
    ;; Disable preview for `consult-theme' completely.
    consult-theme :preview-key nil
@@ -548,7 +550,17 @@ With argument, do this that many times."
   (setq-default flycheck-disabled-checkers '(python-mypy))
   )
 
-;; pip install flake8 mypy pylint isort
+;; pip install flake8 mypy pylint isort virtualenvwrapper virtualenv==20.0.23 "python-lsp-server[all]" setuptools
+;; yay -S python-virtualenv python-psycopg2
+;; python3.10 -m ensurepip --default-pip
+;;
+;; Add this to your .bashrc / .bash_profile / .zshrc:
+;; # load virtualenvwrapper for python (after custom PATHs)
+;; source ~/.local/bin/virtualenvwrapper.sh
+
+;; VIRTUALENVWRAPPER_PYTHON="$(command \which python)"3
+
+;; mkvirtualenv --python=python3.10 py3
 (after! python
   (use-package! virtualenvwrapper
     :config
@@ -644,6 +656,7 @@ With argument, do this that many times."
        (string-prefix-p "*epc" name)
        (string-prefix-p "*vc" name)
        (string-prefix-p "*helm" name)
+       (string-prefix-p "*vterm" name)
        (string-prefix-p "*Compile-Log*" name)
        (string-prefix-p "*pyright" name)
        (string-prefix-p "*Help" name)

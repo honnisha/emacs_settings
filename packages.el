@@ -24,6 +24,7 @@
 (package! vertico)
 (package! all-the-icons-completion)
 (package! consult)
+(package! consult-lsp)
 (package! marginalia)
 (package! embark)
 (package! orderless)
