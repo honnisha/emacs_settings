@@ -268,8 +268,6 @@ With argument, do this that many times."
       (when-let ((pos (apply fn args)))
         (progn (org-fold-reveal '(4)) (org-fold-show-entry)))))
 
-  (use-package! consult-lsp)
-
   (consult-customize
    ;; Disable preview for `consult-theme' completely.
    consult-theme :preview-key nil
@@ -351,6 +349,7 @@ With argument, do this that many times."
   (tree-sitter-require 'python)
   (tree-sitter-require 'javascript)
   (tree-sitter-require 'html)
+  (tree-sitter-require 'rust)
   (global-tree-sitter-mode)
   (add-hook 'python-mode-hook #'tree-sitter-hl-mode)
   )
@@ -516,6 +515,8 @@ With argument, do this that many times."
 
 (use-package! lsp-java)
 
+(use-package! rust-mode)
+
 (use-package! neotree
   :config
   (setq neo-autorefresh nil)
@@ -664,7 +665,6 @@ With argument, do this that many times."
        (string-prefix-p "*epc" name)
        (string-prefix-p "*vc" name)
        (string-prefix-p "*helm" name)
-       (string-prefix-p "*vterm" name)
        (string-prefix-p "*Compile-Log*" name)
        (string-prefix-p "*pyright" name)
        (string-prefix-p "*Help" name)

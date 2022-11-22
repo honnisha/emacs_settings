@@ -15,6 +15,7 @@
 (package! emmet-mode)
 (package! python-pylint)
 (package! lsp-java)
+(package! rust-mode)
 (package! centaur-tabs :recipe (:host github :repo "ema2159/centaur-tabs"))
 
 (package! ivy :disable t)
@@ -24,7 +25,6 @@
 (package! vertico)
 (package! all-the-icons-completion)
 (package! consult)
-(package! consult-lsp)
 (package! marginalia)
 (package! embark)
 (package! orderless)
