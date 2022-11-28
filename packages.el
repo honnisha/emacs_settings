@@ -16,6 +16,7 @@
 (package! python-pylint)
 (package! lsp-java)
 (package! rust-mode)
+(package! flycheck-rust)
 (package! centaur-tabs :recipe (:host github :repo "ema2159/centaur-tabs"))
 
 (package! ivy :disable t)

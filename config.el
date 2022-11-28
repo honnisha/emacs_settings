@@ -354,6 +354,8 @@ With argument, do this that many times."
   (add-hook 'python-mode-hook #'tree-sitter-hl-mode)
   )
 
+(use-package! tree-sitter-langs)
+
 (use-package! yasnippet
   :config
   (setq yas-snippet-dirs (list
@@ -513,9 +515,59 @@ With argument, do this that many times."
   (setq lsp-pyright-venv-path "~/.virtualenvs/")
   )
 
+(defvar python-mode-map)
+
+;; https://github.com/timothycrosley/isort
+;; ~/.isort.cfg
+;; [settings]
+;; multi_line_output=4
+(after! python
+  (use-package py-isort
+    :config
+    (define-key python-mode-map (kbd "C-c C-o") 'py-isort-buffer)
+    )
+  )
+
+;; pip install flake8 mypy pylint isort virtualenvwrapper virtualenv==20.0.23 "python-lsp-server[all]" setuptools
+;; yay -S python-virtualenv python-psycopg2
+;; python3.10 -m ensurepip --default-pip
+;;
+;; Add this to your .bashrc / .bash_profile / .zshrc:
+;; # load virtualenvwrapper for python (after custom PATHs)
+;; source ~/.local/bin/virtualenvwrapper.sh
+
+;; VIRTUALENVWRAPPER_PYTHON="$(command \which python)"3
+
+;; mkvirtualenv --python=python3.10 py3
+(after! python
+  (use-package! virtualenvwrapper
+    :config
+    (venv-projectile-auto-workon)
+
+    (venv-initialize-interactive-shells) ;; if you want interactive shell support
+    (venv-initialize-eshell) ;; if you want eshell support
+    ;; note that setting `venv-location` is not necessary if you
+    ;; use the default location (`~/.virtualenvs`), or if the
+    ;; the environment variable `WORKON_HOME` points to the right place
+    (setq venv-location "~/.virtualenvs/")
+    (define-key python-mode-map (kbd "C-c a") 'venv-workon)
+    )
+  )
+
 (use-package! lsp-java)
 
-(use-package! rust-mode)
+(use-package! rust-mode
+  :config
+  (define-key rust-mode-map (kbd "C-c C-o") 'rust-format-buffer)
+  )
+
+(use-package! rust-cargo)
+
+;; PATH=$PATH:~/.cargo/bin/cargo
+(use-package! flycheck-rust
+  :config
+  (add-hook 'flycheck-mode-hook #'flycheck-rust-setup)
+  )
 
 (use-package! neotree
   :config
@@ -557,41 +609,6 @@ With argument, do this that many times."
   (setq flycheck-pylintrc (concat settings_path "configs/.pylintrc"))
 
   (setq-default flycheck-disabled-checkers '(python-mypy))
-  )
-
-;; pip install flake8 mypy pylint isort virtualenvwrapper virtualenv==20.0.23 "python-lsp-server[all]" setuptools
-;; yay -S python-virtualenv python-psycopg2
-;; python3.10 -m ensurepip --default-pip
-;;
-;; Add this to your .bashrc / .bash_profile / .zshrc:
-;; # load virtualenvwrapper for python (after custom PATHs)
-;; source ~/.local/bin/virtualenvwrapper.sh
-
-;; VIRTUALENVWRAPPER_PYTHON="$(command \which python)"3
-
-;; mkvirtualenv --python=python3.10 py3
-(after! python
-  (use-package! virtualenvwrapper
-    :config
-    (venv-projectile-auto-workon)
-
-    (venv-initialize-interactive-shells) ;; if you want interactive shell support
-    (venv-initialize-eshell) ;; if you want eshell support
-    ;; note that setting `venv-location` is not necessary if you
-    ;; use the default location (`~/.virtualenvs`), or if the
-    ;; the environment variable `WORKON_HOME` points to the right place
-    (setq venv-location "~/.virtualenvs/")
-    (define-key python-mode-map (kbd "C-c a") 'venv-workon)
-    )
-  )
-
-;; https://github.com/timothycrosley/isort
-;; ~/.isort.cfg
-;; [settings]
-;; multi_line_output=4
-(use-package py-isort
-  :config
-  (global-set-key (kbd "C-c C-o") 'py-isort-buffer)
   )
 
 (after! company
