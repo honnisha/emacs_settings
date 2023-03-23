@@ -272,13 +272,13 @@ With argument, do this that many times."
    ;; Disable preview for `consult-theme' completely.
    consult-theme :preview-key nil
    ;; Set preview for `consult-buffer' to key `M-.'
-   consult-buffer :preview-key (kbd "C-o")
-   consult-grep :preview-key (kbd "C-o")
+   consult-buffer :preview-key "C-o"
+   consult-grep :preview-key "C-o"
    ;; For `consult-line' change the prompt and specify multiple preview
    ;; keybindings. Note that you should bind <S-up> and <S-down> in the
    ;; `minibuffer-local-completion-map' or `vertico-map' to the commands which
    ;; select the previous or next candidate.
-   consult-ripgrep :preview-key (kbd "C-o")
+   consult-ripgrep :preview-key "C-o"
    consult-line :preview-key '(:debounce 0.0 any)
    )
   )
@@ -350,7 +350,7 @@ With argument, do this that many times."
   (tree-sitter-require 'javascript)
   (tree-sitter-require 'html)
   (tree-sitter-require 'rust)
-  (global-tree-sitter-mode)
+  ;; (global-tree-sitter-mode)
   (add-hook 'python-mode-hook #'tree-sitter-hl-mode)
   )
 
@@ -468,9 +468,6 @@ With argument, do this that many times."
   (define-key lsp-mode-map (kbd "C-o") 'lsp-find-definition)
   (define-key lsp-mode-map (kbd "C-S-SPC") 'consult-buffer)
 
-  ;; (define-key lsp-mode-map (kbd "C-S-SPC") 'ivy-switch-buffer)
-  (define-key lsp-mode-map (kbd "C-S-SPC") 'consult-buffer)
-
   (setq lsp-modeline-diagnostics-scope :project)
 
   (setq lsp-enable-file-watchers nil)
@@ -528,7 +525,7 @@ With argument, do this that many times."
     )
   )
 
-;; pip install flake8 mypy pylint isort virtualenvwrapper virtualenv==20.0.23 "python-lsp-server[all]" setuptools
+;; pip install flake8 mypy pylint isort virtualenvwrapper virtualenv==20.0.23 "python-lsp-server[all]" setuptools pipenv
 ;; yay -S python-virtualenv python-psycopg2
 ;; python3.10 -m ensurepip --default-pip
 ;;
@@ -554,7 +551,11 @@ With argument, do this that many times."
     )
   )
 
-(use-package! lsp-java)
+(use-package! lsp-java
+  :config
+  (add-hook 'java-mode-hook 'lsp)
+  (define-key java-mode-map (kbd "C-c C-o") 'lsp-java-organize-imports)
+  )
 
 (use-package! rust-mode
   :config

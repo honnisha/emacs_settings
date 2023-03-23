@@ -1,8 +1,8 @@
 ;; (load-file (concat settings_path "packages.el"))
 
 (package! back-button :recipe (:host github :repo "rolandwalker/back-button"))
-(package! tree-sitter-langs)
 (package! tree-sitter)
+(package! tree-sitter-langs)
 (package! highlight-symbol :recipe (:host github :repo "nschum/highlight-symbol.el"))
 (package! winum :recipe (:host github :repo "deb0ch/emacs-winum"))
 (package! flycheck)
