@@ -437,79 +437,101 @@ With argument, do this that many times."
   (global-set-key (kbd "C-c C-p") 'mc/mark-previous-word-like-this) ; choose same word previous
   )
 
+;; 1 - lsp-mode
+;; 2 - lsp-bridge
+(setq lsp-type 1)
+
 ;; sudo pip install 'python-language-server[all]'
-;; (add-hook 'python-mode-hook #'lsp)
-(use-package! lsp-mode
-  :custom
-  (lsp-headerline-breadcrumb-enable nil)
-  :config
-  (setq lsp-auto-guess-root t)
-  (add-hook 'rust-mode-hook #'lsp)
+(if (eq lsp-type 1)
+  (progn
+    (use-package! lsp-mode
+      :custom
+      (lsp-headerline-breadcrumb-enable nil)
+      :config
+      (setq lsp-auto-guess-root t)
+      (add-hook 'rust-mode-hook #'lsp)
+      (add-hook 'python-mode-hook #'lsp)
 
-  (setq lsp-pyls-plugins-jedi-references-enabled t)
-  ;; (setq lsp-pyls-server-command (quote ("pyls")))
+      (setq lsp-pyls-plugins-jedi-references-enabled t)
+      ;; (setq lsp-pyls-server-command (quote ("pyls")))
 
-  (setq lsp-document-highlight-delay 0.1)
-  (setq lsp-enable-semantic-highlighting t)
-  (setq lsp-enable-symbol-highlighting t)
-  (setq lsp-symbol-highlighting-skip-current t)
+      (setq lsp-document-highlight-delay 0.1)
+      (setq lsp-enable-semantic-highlighting t)
+      (setq lsp-enable-symbol-highlighting t)
+      (setq lsp-symbol-highlighting-skip-current t)
 
-  (setq lsp-enable-indentation nil)
-  (setq format-with-lsp nil)
-  (setq lsp-enable-snippet t)
-  (setq lsp-prefer-flymake nil)
-  (lsp-enable-which-key-integration t)
+      (setq lsp-enable-indentation nil)
+      (setq format-with-lsp nil)
+      (setq lsp-enable-snippet t)
+      (setq lsp-prefer-flymake nil)
+      (lsp-enable-which-key-integration t)
 
-  (setq lsp-diagnostic-package :none)
+      (setq lsp-signature-auto-activate nil)
 
-  (setq lsp-signature-auto-activate nil)
+      (setq lsp-diagnostics-provider nil)
 
-  ;; (define-key lsp-mode-map (kbd "C-i") 'lsp-describe-thing-at-point)
-  (define-key lsp-mode-map (kbd "C-o") 'lsp-find-definition)
-  (define-key lsp-mode-map (kbd "C-S-SPC") 'consult-buffer)
+      (setq lsp-diagnostics-provider :none)
 
-  (setq lsp-modeline-diagnostics-scope :project)
+      ;; (define-key lsp-mode-map (kbd "C-i") 'lsp-describe-thing-at-point)
+      (define-key lsp-mode-map (kbd "C-o") 'lsp-find-definition)
+      (define-key lsp-mode-map (kbd "C-S-SPC") 'consult-buffer)
+      (define-key lsp-mode-map (kbd "C-SPC") 'lsp-execute-code-action)
 
-  (setq lsp-enable-file-watchers nil)
+      (setq lsp-modeline-diagnostics-scope :project)
+
+      (setq lsp-enable-file-watchers nil)
+      )
+
+    (use-package! lsp-ui
+      :config
+      (add-hook 'lsp-mode-hook #'lsp-ui-mode)
+      (add-hook 'lsp-mode-hook #'lsp-ui-doc-mode)
+
+      (setq lsp-ui-doc-enable nil)
+      (setq lsp-ui-flycheck-enable nil)
+      (setq lsp-ui-peek-enable nil)
+      (setq lsp-ui-sideline-enable nil)
+      (setq lsp-ui-doc-alignment (quote frame))
+      (setq lsp-ui-doc-delay 0.2)
+      (setq lsp-ui-doc-max-height 30)
+      (setq lsp-ui-doc-max-width 100)
+      (setq lsp-ui-doc-use-webkit t)
+      (setq lsp-ui-doc-position 'at-point)
+      (define-key lsp-mode-map (kbd "C-o") 'lsp-ui-peek-find-definitions)
+      (define-key lsp-mode-map (kbd "C-i") 'lsp-ui-doc-show)
+      (define-key lsp-mode-map (kbd "C-r r") 'lsp-ui-peek-find-references)
+      (define-key lsp-mode-map (kbd "C-r i") 'lsp-ui-peek-find-implementation)
+      (define-key lsp-mode-map (kbd "<C-M-return>") 'lsp-ui-imenu)
+      )
+    )
   )
 
-(use-package! company-lsp
-  :config
-  (push 'company-lsp company-backends)
-  )
+;; pip install epc orjson sexpdata six orjson pyright python-lsp-server[all] rope ruff ruff-lsp
+;; yay -S pyright python-lsp-server ruff
+(if (eq lsp-type 2)
+  (progn
+    (use-package! posframe)
+    (use-package! markdown-mode)
+    (use-package! popon)
 
-(use-package! lsp-ui
-  :config
-  (add-hook 'lsp-mode-hook #'lsp-ui-mode)
-  (add-hook 'lsp-mode-hook #'lsp-ui-doc-mode)
+    (use-package! lsp-bridge
+      :init
+      (add-to-list 'load-path "~/.emacs.d/.local/straight/repos/lsp-bridge")
+      (add-to-list 'load-path "~/.emacs.d/.local/straight/repos/lsp-bridge/acm")
+      :config
+      (global-lsp-bridge-mode)
 
-  (setq lsp-ui-doc-enable nil)
-  (setq lsp-ui-flycheck-enable nil)
-  (setq lsp-ui-peek-enable nil)
-  (setq lsp-ui-sideline-enable nil)
-  (setq lsp-ui-doc-alignment (quote frame))
-  (setq lsp-ui-doc-delay 0.2)
-  (setq lsp-ui-doc-max-height 30)
-  (setq lsp-ui-doc-max-width 100)
-  (setq lsp-ui-doc-use-webkit t)
-  (setq lsp-ui-doc-position 'at-point)
-  (define-key lsp-mode-map (kbd "C-o") 'lsp-ui-peek-find-definitions)
-  (define-key lsp-mode-map (kbd "C-i") 'lsp-ui-doc-show)
-  (define-key lsp-mode-map (kbd "C-r r") 'lsp-ui-peek-find-references)
-  (define-key lsp-mode-map (kbd "C-r i") 'lsp-ui-peek-find-implementation)
-  (define-key lsp-mode-map (kbd "<C-M-return>") 'lsp-ui-imenu)
-  )
+      (setq lsp-bridge-python-lsp-server :pylsp)
+      (setq acm-backend-lsp-enable-auto-import t)
+      (setq acm-markdown-render-font-height 80)
 
-(use-package! python-pylint)
-
-(use-package! lsp-pyright
-  :hook (python-mode . (lambda ()
-                         (require 'lsp-pyright)
-                         (lsp)))
-  :config
-  (setq lsp-pyright-auto-import-completions t)
-  (setq lsp-pyright-auto-search-paths t)
-  (setq lsp-pyright-venv-path "~/.virtualenvs/")
+      (define-key lsp-bridge-mode-map (kbd "C-o") 'lsp-bridge-find-def)
+      (define-key lsp-bridge-mode-map (kbd "C-i") 'lsp-bridge-popup-documentation)
+      (define-key lsp-bridge-mode-map (kbd "C-S-SPC") 'consult-buffer)
+      (define-key lsp-bridge-mode-map (kbd "M-h") 'backward-delete-word)
+      (define-key lsp-bridge-mode-map (kbd "C-SPC") 'lsp-bridge-code-action)
+      )
+    )
   )
 
 (defvar python-mode-map)
@@ -549,12 +571,6 @@ With argument, do this that many times."
     (setq venv-location "~/.virtualenvs/")
     (define-key python-mode-map (kbd "C-c a") 'venv-workon)
     )
-  )
-
-(use-package! lsp-java
-  :config
-  (add-hook 'java-mode-hook 'lsp)
-  (define-key java-mode-map (kbd "C-c C-o") 'lsp-java-organize-imports)
   )
 
 (use-package! rust-mode
@@ -609,7 +625,8 @@ With argument, do this that many times."
   (setq flycheck-flake8rc (concat settings_path "configs/flake8rc"))
   (setq flycheck-pylintrc (concat settings_path "configs/.pylintrc"))
 
-  (setq-default flycheck-disabled-checkers '(python-mypy))
+  (setq-default flycheck-disabled-checkers '(python-mypy, lsp, python-pylint, python-pycompile))
+  (setq python-flymake-command '("ruff" "--quiet" "--stdin-filename=stdin" "-"))
   )
 
 (after! company
@@ -623,11 +640,11 @@ With argument, do this that many times."
 
   (define-key lsp-mode-map (kbd "<tab>") 'company-complete)
   (push 'company-elisp company-backends)
-  )
 
-(use-package! company-quickhelp
-  :config
-  (company-quickhelp-mode)
+  (use-package! company-quickhelp
+    :config
+    (company-quickhelp-mode)
+    )
   )
 
 (use-package! centaur-tabs
