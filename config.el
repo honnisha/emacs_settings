@@ -1,15 +1,19 @@
+;; init.el
 ;; (setq settings_path "/home/honnisha/Projects/emacs_settings/")
 ;; (setq dropbox_path "/home/honnisha/Dropbox/")
+;; (setq doom-font (font-spec :family "Hack" :size 11 :weight 'light))
+;; (load! (concat settings_path "init.el"))
+
+;; config.el
 ;; (load! (concat settings_path "config.el"))
 
+;; packages.el
+;; (load-file (concat settings_path "packages.el"))
+
+;; ~/.bashrs
 ;; source "$HOME/Dropbox/aliases"
 ;; VIRTUALENVWRAPPER_PYTHON=$(which python3)
 ;; source ~/.local/bin/virtualenvwrapper.sh
-
-;; sudo cp ~/Projects/emacs_settings/emacs.service /etc/systemd/system/emacs.service
-;; sudo systemctl daemon-reload
-;; sudo systemctl enable emacs
-;; emacsclient -c -F "'(fullscreen . fullboth)"
 
 ;; (setq doom-theme 'doom-wilmersdorf)
 ;; (setq doom-theme 'doom-city-lights)
