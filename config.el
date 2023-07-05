@@ -1,5 +1,9 @@
 ;; (load! (concat settings_path "config.el"))
 
+;; source "$HOME/Dropbox/aliases"
+;; VIRTUALENVWRAPPER_PYTHON=$(which python3)
+;; source ~/.local/bin/virtualenvwrapper.sh
+
 ;; sudo cp ~/Projects/emacs_settings/emacs.service /etc/systemd/system/emacs.service
 ;; sudo systemctl daemon-reload
 ;; sudo systemctl enable emacs
@@ -17,6 +21,8 @@
 (setq display-line-numbers-type nil)
 
 (recentf-mode nil)
+
+(global-linum-mode)
 
 (set-fontset-font "fontset-default" 'cyrillic "Hack")
 (set-fontset-font "fontset-default" 'greek "Hack")
@@ -576,6 +582,7 @@ With argument, do this that many times."
 (use-package! rust-mode
   :config
   (define-key rust-mode-map (kbd "C-c C-o") 'rust-format-buffer)
+  (add-hook 'rust-mode-hook 'linum-mode)
   )
 
 (use-package! rust-cargo)
@@ -700,6 +707,7 @@ With argument, do this that many times."
        (string-prefix-p "*epc" name)
        (string-prefix-p "*vc" name)
        (string-prefix-p "*helm" name)
+       (string-prefix-p "*ruff-lsp*" name)
        (string-prefix-p "*Compile-Log*" name)
        (string-prefix-p "*pyright" name)
        (string-prefix-p "*Help" name)
@@ -719,6 +727,7 @@ With argument, do this that many times."
 
 (use-package! undo-tree
   :config
+  (setq undo-tree-auto-save-history nil)
   (global-undo-tree-mode)
   )
 
