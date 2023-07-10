@@ -11,6 +11,7 @@
 (package! emmet-mode)
 (package! rust-mode)
 (package! flycheck-rust)
+(package! rg)
 (package! centaur-tabs :recipe (:host github :repo "ema2159/centaur-tabs"))
 
 (package! ivy :disable t)
@@ -57,5 +58,3 @@
 (package! python-black)
 (package! emacs-w3m)
 (package! origami)
-
-(package! telega)

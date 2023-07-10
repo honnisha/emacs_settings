@@ -20,6 +20,10 @@
 ;; (setq doom-theme 'doom-vibrant)
 ;; (setq doom-theme 'doom-nord)
 
+;; yay -S docker-compose docker
+;; sudo systemctl start docker
+;; sudo chmod 666 /var/run/docker.sock
+
 (global-set-key (kbd "C-x C-n") (lambda() (interactive)(find-file (concat dropbox_path "text.org"))))
 
 ;; Line numbers are pretty slow all around. The performance boost of disabling
@@ -261,7 +265,8 @@ With argument, do this that many times."
   (global-set-key (kbd "C-S-SPC") 'consult-buffer)
   (global-set-key (kbd "C-x f") 'consult-find)
   ;; (global-set-key (kbd "C-M-s") 'consult-grep)
-  (global-set-key (kbd "C-M-s") 'consult-ripgrep)
+  ;; (global-set-key (kbd "C-M-s") 'consult-ripgrep)
+  (global-set-key (kbd "C-M-s") 'consult-grep)
   (global-set-key (kbd "C-s") 'consult-line)
 
   (after! consult
@@ -907,3 +912,6 @@ With argument, do this that many times."
   )
 
 (load! (concat settings_path "settings/functions.el"))
+
+;; Use ripgrep in Emacs.
+(use-package! rg)
