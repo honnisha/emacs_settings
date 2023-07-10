@@ -10,7 +10,7 @@
 ;; packages.el
 ;; (load-file (concat settings_path "packages.el"))
 
-;; ~/.bashrs
+;; ~/.bashrc
 ;; source "$HOME/Dropbox/aliases"
 ;; VIRTUALENVWRAPPER_PYTHON=$(which python3)
 ;; source ~/.local/bin/virtualenvwrapper.sh
@@ -518,8 +518,6 @@ With argument, do this that many times."
     )
   )
 
-;; pip install epc orjson sexpdata six orjson pyright python-lsp-server[all] rope ruff ruff-lsp
-;; yay -S pyright python-lsp-server ruff
 (if (eq lsp-type 2)
   (progn
     (use-package! posframe)
@@ -559,9 +557,9 @@ With argument, do this that many times."
     )
   )
 
-;; pip install flake8 mypy pylint isort virtualenvwrapper virtualenv==20.0.23 "python-lsp-server[all]" setuptools pipenv
-;; yay -S python-virtualenv python-psycopg2
-;; python3.10 -m ensurepip --default-pip
+;; yay -S python python-pip pyright python-lsp-server ruff python-virtualenv python-psycopg2
+;; pip install epc orjson sexpdata six orjson pyright python-lsp-server[all] rope ruff ruff-lsp flake8 mypy pylint isort virtualenvwrapper virtualenv==20.0.23 "python-lsp-server[all]" setuptools pipenv --break-system-packages
+;; python -m ensurepip --default-pip
 ;;
 ;; Add this to your .bashrc / .bash_profile / .zshrc:
 ;; # load virtualenvwrapper for python (after custom PATHs)
@@ -569,7 +567,7 @@ With argument, do this that many times."
 
 ;; VIRTUALENVWRAPPER_PYTHON="$(command \which python)"3
 
-;; mkvirtualenv --python=python3.10 py3
+;; mkvirtualenv --python=python default
 (after! python
   (use-package! virtualenvwrapper
     :config
@@ -585,6 +583,8 @@ With argument, do this that many times."
     )
   )
 
+;; Install rust
+;; curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 (use-package! rust-mode
   :config
   (define-key rust-mode-map (kbd "C-c C-o") 'rust-format-buffer)
