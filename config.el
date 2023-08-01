@@ -21,7 +21,7 @@
 ;; (setq doom-theme 'doom-nord)
 
 ;; yay -S docker-compose docker
-;; sudo systemctl start docker
+;; sudo systemctl enable docker
 ;; sudo chmod 666 /var/run/docker.sock
 
 (global-set-key (kbd "C-x C-n") (lambda() (interactive)(find-file (concat dropbox_path "text.org"))))
@@ -265,8 +265,8 @@ With argument, do this that many times."
   (global-set-key (kbd "C-S-SPC") 'consult-buffer)
   (global-set-key (kbd "C-x f") 'consult-find)
   ;; (global-set-key (kbd "C-M-s") 'consult-grep)
-  ;; (global-set-key (kbd "C-M-s") 'consult-ripgrep)
-  (global-set-key (kbd "C-M-s") 'consult-grep)
+  (global-set-key (kbd "C-M-s") 'consult-git-grep)
+  ;; (global-set-key (kbd "C-M-s") 'consult-grep)
   (global-set-key (kbd "C-s") 'consult-line)
 
   (after! consult
@@ -562,7 +562,7 @@ With argument, do this that many times."
     )
   )
 
-;; yay -S python python-pip pyright python-lsp-server ruff python-virtualenv python-psycopg2
+;; yay -S python python-pip pyright python-lsp-server ruff python-virtualenv python-psycopg2 python-black
 ;; pip install epc orjson sexpdata six orjson pyright python-lsp-server[all] rope ruff ruff-lsp flake8 mypy pylint isort virtualenvwrapper virtualenv==20.0.23 "python-lsp-server[all]" setuptools pipenv --break-system-packages
 ;; python -m ensurepip --default-pip
 ;;
@@ -590,6 +590,7 @@ With argument, do this that many times."
 
 ;; Install rust
 ;; curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+;; yay -S rust-analyzer
 (use-package! rust-mode
   :config
   (define-key rust-mode-map (kbd "C-c C-o") 'rust-format-buffer)
