@@ -32,8 +32,6 @@
 
 (recentf-mode nil)
 
-(global-linum-mode)
-
 (set-fontset-font "fontset-default" 'cyrillic "Hack")
 (set-fontset-font "fontset-default" 'greek "Hack")
 
@@ -594,7 +592,6 @@ With argument, do this that many times."
 (use-package! rust-mode
   :config
   (define-key rust-mode-map (kbd "C-c C-o") 'rust-format-buffer)
-  (add-hook 'rust-mode-hook 'linum-mode)
   )
 
 (use-package! rust-cargo)
@@ -843,11 +840,6 @@ With argument, do this that many times."
   (add-hook 'js2-mode #'smartparens-mode)
   )
 
-(use-package! hlinum
-  :config
-  (hlinum-activate)
-  )
-
 (use-package! org
   :config
   ;; (setq org-log-done 'time)
@@ -910,6 +902,14 @@ With argument, do this that many times."
                                  "--skip-string-normalization"
                                  ,(concat "--config=" settings_path "configs/black.toml")
                                  ))
+  )
+
+(use-package! nlinum
+  :config
+  (global-nlinum-mode 1)
+  ;; Alternatively, to use it only in programming modes:
+  (add-hook 'python-mode-hook #'nlinum-mode)
+  (add-hook 'rust-mode-hook #'nlinum-mode)
   )
 
 (load! (concat settings_path "settings/functions.el"))
