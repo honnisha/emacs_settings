@@ -20,6 +20,9 @@
 ;; (setq doom-theme 'doom-vibrant)
 ;; (setq doom-theme 'doom-nord)
 
+;; cd ~/Projects/yay-git
+;; makepkg -si
+
 ;; yay -S docker-compose docker
 ;; sudo systemctl enable docker
 ;; sudo chmod 666 /var/run/docker.sock
@@ -904,12 +907,11 @@ With argument, do this that many times."
                                  ))
   )
 
-(use-package! nlinum
+(use-package! linum
   :config
-  (global-nlinum-mode 1)
   ;; Alternatively, to use it only in programming modes:
-  (add-hook 'python-mode-hook #'nlinum-mode)
-  (add-hook 'rust-mode-hook #'nlinum-mode)
+  (add-hook 'python-mode-hook #'linum-mode)
+  (add-hook 'rust-mode-hook #'linum-mode)
   )
 
 (load! (concat settings_path "settings/functions.el"))

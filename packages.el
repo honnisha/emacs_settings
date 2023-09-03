@@ -51,7 +51,6 @@
 (package! reverse-im)
 (package! smartparens)
 (package! highlight-indent-guides)
-(package! hlinum)
 (package! undo-tree)
 (package! yascroll :recipe (:host github :repo "emacsorphanage/yascroll"))
 (package! flyspell-correct)
