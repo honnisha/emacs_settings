@@ -57,3 +57,4 @@
 (package! python-black)
 (package! emacs-w3m)
 (package! origami)
+(package! atomic-chrome)

@@ -25,7 +25,12 @@
 
 ;; yay -S docker-compose docker
 ;; sudo systemctl enable docker
+;; sudo groupadd docker
+;; sudo usermod -aG docker $USER
 ;; sudo chmod 666 /var/run/docker.sock
+
+;; yay -S ntfs-3g os-prober
+;; sudo grub-mkconfig -o /boot/grub/grub.cfg
 
 (global-set-key (kbd "C-x C-n") (lambda() (interactive)(find-file (concat dropbox_path "text.org"))))
 
@@ -199,10 +204,8 @@ With argument, do this that many times."
   (add-hook 'yaml-mode-hook #'whitespace-mode)
   )
 
-;; yay -S telegram-tdlib
-(use-package telega
-  :commands (telega)
-  :defer t
+(use-package all-the-icons
+  :config
   )
 
 ;; yay -S cmake-git
@@ -267,7 +270,6 @@ With argument, do this that many times."
   (global-set-key (kbd "C-x f") 'consult-find)
   ;; (global-set-key (kbd "C-M-s") 'consult-grep)
   (global-set-key (kbd "C-M-s") 'consult-git-grep)
-  ;; (global-set-key (kbd "C-M-s") 'consult-grep)
   (global-set-key (kbd "C-s") 'consult-line)
 
   (after! consult
@@ -609,7 +611,7 @@ With argument, do this that many times."
   :config
   (setq neo-autorefresh nil)
 
-  (setq neo-theme (if (display-graphic-p) 'icons 'arrow))
+  (setq neo-theme (if (display-graphic-p) 'icons))
 
   (defun neotree-project-dir ()
     "Open NeoTree using the git root."
@@ -800,7 +802,9 @@ With argument, do this that many times."
   )
 
 (use-package! dashboard
-  :init ;; tweak dashboard config before loading it
+  :init
+  (setq dashboard-icon-type 'all-the-icons)
+  (setq dashboard-display-icons-p t)
   (setq dashboard-set-heading-icons t)
   (setq dashboard-set-file-icons t)
   (setq dashboard-startup-banner 'logo) ;; use standard emacs logo as banner
@@ -905,6 +909,11 @@ With argument, do this that many times."
                                  "--skip-string-normalization"
                                  ,(concat "--config=" settings_path "configs/black.toml")
                                  ))
+  )
+
+(use-package! atomic-chrome
+  :config
+  (atomic-chrome-start-server)
   )
 
 (use-package! linum
