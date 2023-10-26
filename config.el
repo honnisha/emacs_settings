@@ -40,6 +40,7 @@
 
 (recentf-mode nil)
 
+;; yay -S ttf-hack ttf-hack-nerd
 (set-fontset-font "fontset-default" 'cyrillic "Hack")
 (set-fontset-font "fontset-default" 'greek "Hack")
 
@@ -206,6 +207,13 @@ With argument, do this that many times."
 
 (use-package all-the-icons
   :config
+  ;; Use 'prepend for the NS and Mac ports or Emacs will crash.
+  (set-fontset-font t 'unicode (font-spec :family "all-the-icons") nil 'append)
+  (set-fontset-font t 'unicode (font-spec :family "file-icons") nil 'append)
+  (set-fontset-font t 'unicode (font-spec :family "Material Icons") nil 'append)
+  (set-fontset-font t 'unicode (font-spec :family "github-octicons") nil 'append)
+  (set-fontset-font t 'unicode (font-spec :family "FontAwesome") nil 'append)
+  (set-fontset-font t 'unicode (font-spec :family "Weather Icons") nil 'append)
   )
 
 ;; yay -S cmake-git
@@ -611,7 +619,7 @@ With argument, do this that many times."
   :config
   (setq neo-autorefresh nil)
 
-  (setq neo-theme (if (display-graphic-p) 'icons))
+  (setq neo-theme (if (display-graphic-p) 'nerd 'arrow))
 
   (defun neotree-project-dir ()
     "Open NeoTree using the git root."
