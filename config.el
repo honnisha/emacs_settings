@@ -32,7 +32,7 @@
 ;; yay -S ntfs-3g os-prober
 ;; sudo grub-mkconfig -o /boot/grub/grub.cfg
 
-(global-set-key (kbd "C-x C-n") (lambda() (interactive)(find-file (concat dropbox_path "text.org"))))
+(global-set-key (kbd "C-x C-n") (lambda() (interactive)(find-file (concat dropbox_path "text.org.gpg"))))
 
 ;; Line numbers are pretty slow all around. The performance boost of disabling
 ;; them outweighs the utility of always keeping them on.
