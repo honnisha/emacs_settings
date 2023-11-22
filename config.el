@@ -205,17 +205,6 @@ With argument, do this that many times."
   (add-hook 'yaml-mode-hook #'whitespace-mode)
   )
 
-(use-package all-the-icons
-  :config
-  ;; Use 'prepend for the NS and Mac ports or Emacs will crash.
-  (set-fontset-font t 'unicode (font-spec :family "all-the-icons") nil 'append)
-  (set-fontset-font t 'unicode (font-spec :family "file-icons") nil 'append)
-  (set-fontset-font t 'unicode (font-spec :family "Material Icons") nil 'append)
-  (set-fontset-font t 'unicode (font-spec :family "github-octicons") nil 'append)
-  (set-fontset-font t 'unicode (font-spec :family "FontAwesome") nil 'append)
-  (set-fontset-font t 'unicode (font-spec :family "Weather Icons") nil 'append)
-  )
-
 ;; yay -S cmake-git
 (use-package! vterm
   :config
@@ -935,3 +924,19 @@ With argument, do this that many times."
 
 ;; Use ripgrep in Emacs.
 (use-package! rg)
+
+(use-package all-the-icons
+  :config
+  ;; Use 'prepend for the NS and Mac ports or Emacs will crash.
+  (set-fontset-font t 'unicode (font-spec :family "all-the-icons") nil 'append)
+  (set-fontset-font t 'unicode (font-spec :family "file-icons") nil 'append)
+  (set-fontset-font t 'unicode (font-spec :family "Material Icons") nil 'append)
+  (set-fontset-font t 'unicode (font-spec :family "github-octicons") nil 'append)
+  (set-fontset-font t 'unicode (font-spec :family "FontAwesome") nil 'append)
+  (set-fontset-font t 'unicode (font-spec :family "Weather Icons") nil 'append)
+  )
+
+(use-package! epa-file
+  :config
+  (epa-file-enable)
+  )
