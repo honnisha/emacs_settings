@@ -48,7 +48,7 @@
 
 (setq frame-resize-pixelwise t)
 (set-frame-position (selected-frame) 0 0)
-(set-frame-size (selected-frame) 960 1080 t)
+(set-frame-size (selected-frame) 940 1080 t)
 
 (set-language-environment "UTF-8")
 (set-default-coding-systems 'utf-8)
