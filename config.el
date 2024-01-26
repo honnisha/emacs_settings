@@ -44,8 +44,11 @@
 (set-fontset-font "fontset-default" 'cyrillic "Hack")
 (set-fontset-font "fontset-default" 'greek "Hack")
 
-(add-to-list 'initial-frame-alist '(fullscreen . maximized))
-(toggle-frame-maximized)
+;; (add-to-list 'initial-frame-alist '(undecorated . t))
+
+(setq frame-resize-pixelwise t)
+(set-frame-position (selected-frame) 0 0)
+(set-frame-size (selected-frame) 960 1080 t)
 
 (set-language-environment "UTF-8")
 (set-default-coding-systems 'utf-8)
@@ -908,10 +911,10 @@ With argument, do this that many times."
                                  ))
   )
 
-(use-package! atomic-chrome
-  :config
-  (atomic-chrome-start-server)
-  )
+;;(use-package! atomic-chrome
+;;  :config
+;;  (atomic-chrome-start-server)
+;;  )
 
 (use-package! linum
   :config
