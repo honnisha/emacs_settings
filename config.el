@@ -215,6 +215,7 @@ With argument, do this that many times."
   (global-set-key (kbd "C-x m") '+vterm/here)
   (define-key vterm-mode-map (kbd "C-o") 'vterm-copy-mode)
   (define-key vterm-copy-mode-map (kbd "C-o") 'vterm-copy-mode)
+  (define-key vterm-copy-mode-map (kbd "C-m") 'vterm-copy-mode)
   (define-key vterm-mode-map (kbd "C-y") 'vterm-yank)
   (define-key vterm-mode-map (kbd "C-h") 'vterm-send-backspace)
   (define-key vterm-mode-map (kbd "M-p") 'vterm-send-up)
