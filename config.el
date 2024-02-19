@@ -32,6 +32,11 @@
 ;; yay -S ntfs-3g os-prober
 ;; sudo grub-mkconfig -o /boot/grub/grub.cfg
 
+;; (set-terminal-coding-system 'utf-8-unix)
+;; (setq locale-coding-system 'utf-8)
+(set-language-environment "UTF-8")
+(setenv "LANG" "en_US.UTF-8")
+
 (global-set-key (kbd "C-x C-n") (lambda() (interactive)(find-file (concat dropbox_path "text.org.gpg"))))
 
 ;; Line numbers are pretty slow all around. The performance boost of disabling
@@ -566,7 +571,7 @@ With argument, do this that many times."
     )
   )
 
-;; yay -S python python-pip pyright python-lsp-server ruff python-virtualenv python-psycopg2 python-black
+;; yay -S python python-pip pyright python-lsp-server ruff python-virtualenv python-psycopg2 python-black ruff-lsp
 ;; pip install epc orjson sexpdata six orjson pyright python-lsp-server[all] rope ruff ruff-lsp flake8 mypy pylint isort virtualenvwrapper virtualenv==20.0.23 "python-lsp-server[all]" setuptools pipenv --break-system-packages
 ;; python -m ensurepip --default-pip
 ;;
