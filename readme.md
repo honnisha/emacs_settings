@@ -1,9 +1,7 @@
 Emacs settings
-=======
-Autor: Maria Ivanova (honnisha) ganagsh@gmail.com
 
 Installation
-=======
+-------
 
 init.el
 ```
@@ -24,7 +22,7 @@ packages.el
 ```
 
 Arch packages
-=======
+-------
 
 <h4>Docker</h4>
 
@@ -89,6 +87,7 @@ python -m ensurepip --default-pip
 
 <h4>Isort config</h4>
 https://github.com/timothycrosley/isort</br>
+
 `sudo emacs ~/.isort.cfg`
 
 ```
