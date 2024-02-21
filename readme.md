@@ -97,6 +97,7 @@ multi_line_output=4
 ```
 
 <h4>Rust</h4>
+
 ```bash
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 yay -S rust-analyzer
