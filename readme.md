@@ -27,6 +27,7 @@ Arch packages
 =======
 
 <h4>Docker</h4>
+
 ```bash
 yay -S docker-compose docker
 sudo systemctl enable docker
