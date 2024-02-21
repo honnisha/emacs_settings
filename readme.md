@@ -1,17 +1,88 @@
 Emacs settings
 =======
-My settings for emacs. Config for python, rust editing. Using lsp and virtualenvwrapper.</br>
-</br>
 Autor: Maria Ivanova (honnisha) ganagsh@gmail.com</br>
 
 Installation
 =======
-Set two variables in your settings file: `settings_path` and `dropbox_path` and load `main.el`:
-```lisp
-(setq settings_path "/home/honny/Projects/emacs_settings/")
-(setq dropbox_path "/home/honny/Dropbox/")
 
-(load-file (concat settings_path "main.el"))
+init.el
+```
+(setq settings_path "/home/honnisha/Projects/emacs_settings/")
+(setq dropbox_path "/home/honnisha/Dropbox/")
+(setq doom-font (font-spec :family "Hack" :size 11 :weight 'light))
+(load! (concat settings_path "init.el"))
+```
+
+config.el
+```
+(load! (concat settings_path "config.el"))
+```
+
+packages.el
+```
+(load-file (concat settings_path "packages.el"))
+```
+
+Arch pachages
+=======
+
+Docker
+```bash
+yay -S docker-compose docker
+sudo systemctl enable docker
+sudo groupadd docker
+sudo usermod -aG docker $USER
+sudo chmod 666 /var/run/docker.sock
+```
+
+To compile vterm
+```bash
+yay -S cmake-git
+```
+
+AUR Helper
+```bash
+pacman -S --needed git base-devel
+git clone https://aur.archlinux.org/yay.git
+cd yay
+makepkg -si
+```
+
+NTFS partitions
+```bash
+yay -S ntfs-3g os-prober
+sudo grub-mkconfig -o /boot/grub/grub.cfg
+```
+
+Fonts
+```bash
+yay -S ttf-hack ttf-hack-nerd ttf-all-the-icons
+```
+
+Tree-sitter is a parser generator tool and an incremental parsing library
+```bash
+yay -S tree-sitter
+```
+
+Python
+```bash
+yay -S python python-pip pyright python-lsp-server ruff python-virtualenv python-psycopg2 python-black ruff-lsp python-lsp-server hunspell
+pip install epc orjson sexpdata six orjson pyright python-lsp-server[all] rope ruff ruff-lsp flake8 mypy pylint isort virtualenvwrapper virtualenv==20.0.23 "python-lsp-server[all]" setuptools pipenv python-lsp-server --break-system-packages
+python -m ensurepip --default-pip
+```
+
+Isort config
+https://github.com/timothycrosley/isort
+sudo emacs ~/.isort.cfg
+```
+[settings]
+multi_line_output=4
+```
+
+Install rust
+```bash
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+yay -S rust-analyzer
 ```
 
 Screenshots

@@ -1,15 +1,3 @@
-;; init.el
-;; (setq settings_path "/home/honnisha/Projects/emacs_settings/")
-;; (setq dropbox_path "/home/honnisha/Dropbox/")
-;; (setq doom-font (font-spec :family "Hack" :size 11 :weight 'light))
-;; (load! (concat settings_path "init.el"))
-
-;; config.el
-;; (load! (concat settings_path "config.el"))
-
-;; packages.el
-;; (load-file (concat settings_path "packages.el"))
-
 ;; ~/.bashrc
 ;; source "$HOME/Dropbox/aliases"
 ;; VIRTUALENVWRAPPER_PYTHON=$(which python3)
@@ -19,18 +7,6 @@
 ;; (setq doom-theme 'doom-city-lights)
 ;; (setq doom-theme 'doom-vibrant)
 ;; (setq doom-theme 'doom-nord)
-
-;; cd ~/Projects/yay-git
-;; makepkg -si
-
-;; yay -S docker-compose docker
-;; sudo systemctl enable docker
-;; sudo groupadd docker
-;; sudo usermod -aG docker $USER
-;; sudo chmod 666 /var/run/docker.sock
-
-;; yay -S ntfs-3g os-prober
-;; sudo grub-mkconfig -o /boot/grub/grub.cfg
 
 (set-terminal-coding-system 'utf-8-unix)
 (setq locale-coding-system 'utf-8)
@@ -45,7 +21,6 @@
 
 (recentf-mode nil)
 
-;; yay -S ttf-hack ttf-hack-nerd
 (set-fontset-font "fontset-default" 'cyrillic "Hack")
 (set-fontset-font "fontset-default" 'greek "Hack")
 
@@ -213,7 +188,6 @@ With argument, do this that many times."
   (add-hook 'yaml-mode-hook #'whitespace-mode)
   )
 
-;; yay -S cmake-git
 (use-package! vterm
   :config
   (add-hook 'vterm-mode  'vterm-copy-mode)
@@ -369,7 +343,6 @@ With argument, do this that many times."
                                         (rx "*server") (rx "*which")))
   )
 
-;; yay -S tree-sitter
 (use-package! tree-sitter
   :config
   (tree-sitter-require 'python)
@@ -560,10 +533,6 @@ With argument, do this that many times."
 
 (defvar python-mode-map)
 
-;; https://github.com/timothycrosley/isort
-;; ~/.isort.cfg
-;; [settings]
-;; multi_line_output=4
 (after! python
   (use-package py-isort
     :config
@@ -571,10 +540,6 @@ With argument, do this that many times."
     )
   )
 
-;; yay -S python python-pip pyright python-lsp-server ruff python-virtualenv python-psycopg2 python-black ruff-lsp
-;; pip install epc orjson sexpdata six orjson pyright python-lsp-server[all] rope ruff ruff-lsp flake8 mypy pylint isort virtualenvwrapper virtualenv==20.0.23 "python-lsp-server[all]" setuptools pipenv --break-system-packages
-;; python -m ensurepip --default-pip
-;;
 ;; Add this to your .bashrc / .bash_profile / .zshrc:
 ;; # load virtualenvwrapper for python (after custom PATHs)
 ;; source ~/.local/bin/virtualenvwrapper.sh
@@ -597,9 +562,6 @@ With argument, do this that many times."
     )
   )
 
-;; Install rust
-;; curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-;; yay -S rust-analyzer
 (use-package! rust-mode
   :config
   (define-key rust-mode-map (kbd "C-c C-o") 'rust-format-buffer)
@@ -902,13 +864,10 @@ With argument, do this that many times."
   (undo-tree-visualizer-timestamps t)
   )
 
-;; yay -S hunspell
 (use-package! flyspell-correct
   :bind (:map flyspell-mode-map ("C-;" . flyspell-correct-wrapper))
   )
 
-;; pip install black
-;; python-black-buffer
 (use-package! python-black
   :config
   (setq python-black-extra-args `(
