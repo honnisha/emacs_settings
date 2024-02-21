@@ -32,8 +32,8 @@
 ;; yay -S ntfs-3g os-prober
 ;; sudo grub-mkconfig -o /boot/grub/grub.cfg
 
-;; (set-terminal-coding-system 'utf-8-unix)
-;; (setq locale-coding-system 'utf-8)
+(set-terminal-coding-system 'utf-8-unix)
+(setq locale-coding-system 'utf-8)
 (set-language-environment "UTF-8")
 (setenv "LANG" "en_US.UTF-8")
 
