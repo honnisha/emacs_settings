@@ -23,10 +23,10 @@ packages.el
 (load-file (concat settings_path "packages.el"))
 ```
 
-Arch pachages
+Arch packages
 =======
 
-Docker
+<h4>Docker</h4>
 ```bash
 yay -S docker-compose docker
 sudo systemctl enable docker
@@ -35,6 +35,7 @@ sudo usermod -aG docker $USER
 sudo chmod 666 /var/run/docker.sock
 ```
 
+<h4>Bash</h4>
 `sudo emacs ~/.bashrc`
 ```
 source "$HOME/Dropbox/aliases"
@@ -42,12 +43,12 @@ VIRTUALENVWRAPPER_PYTHON=$(which python3)
 source ~/.local/bin/virtualenvwrapper.sh
 ```
 
-To compile vterm
+<h4>Vterm</h4>
 ```bash
 yay -S cmake-git
 ```
 
-AUR Helper
+<h4>AUR Helper</h4>
 ```bash
 pacman -S --needed git base-devel
 git clone https://aur.archlinux.org/yay.git
@@ -55,30 +56,30 @@ cd yay
 makepkg -si
 ```
 
-NTFS partitions
+<h4>NTFS partitions</h4>
 ```bash
 yay -S ntfs-3g os-prober
 sudo grub-mkconfig -o /boot/grub/grub.cfg
 ```
 
-Fonts
+<h4>Fonts</h4>
 ```bash
 yay -S ttf-hack ttf-hack-nerd ttf-all-the-icons
 ```
 
-Tree-sitter is a parser generator tool and an incremental parsing library
+<h4>Tree-sitter</h4>
 ```bash
 yay -S tree-sitter
 ```
 
-Python
+<h4>Python</h4>
 ```bash
 yay -S python python-pip pyright python-lsp-server ruff python-virtualenv python-psycopg2 python-black ruff-lsp python-lsp-server hunspell
 pip install epc orjson sexpdata six orjson pyright python-lsp-server[all] rope ruff ruff-lsp flake8 mypy pylint isort virtualenvwrapper virtualenv==20.0.23 "python-lsp-server[all]" setuptools pipenv python-lsp-server --break-system-packages
 python -m ensurepip --default-pip
 ```
 
-Isort config</br>
+<h4>Isort config</h4>
 https://github.com/timothycrosley/isort</br>
 `sudo emacs ~/.isort.cfg`
 ```
@@ -86,7 +87,7 @@ https://github.com/timothycrosley/isort</br>
 multi_line_output=4
 ```
 
-Install rust
+<h4>Rust</h4>
 ```bash
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 yay -S rust-analyzer

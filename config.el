@@ -25,6 +25,8 @@
 (set-frame-position (selected-frame) 0 0)
 (set-frame-size (selected-frame) 940 1080 t)
 
+(setq flymake-run-in-place nil)
+
 (set-language-environment "UTF-8")
 (set-default-coding-systems 'utf-8)
 
