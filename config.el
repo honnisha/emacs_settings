@@ -1,8 +1,3 @@
-;; ~/.bashrc
-;; source "$HOME/Dropbox/aliases"
-;; VIRTUALENVWRAPPER_PYTHON=$(which python3)
-;; source ~/.local/bin/virtualenvwrapper.sh
-
 ;; (setq doom-theme 'doom-wilmersdorf)
 ;; (setq doom-theme 'doom-city-lights)
 ;; (setq doom-theme 'doom-vibrant)

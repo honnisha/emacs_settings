@@ -1,6 +1,6 @@
 Emacs settings
 =======
-Autor: Maria Ivanova (honnisha) ganagsh@gmail.com</br>
+Autor: Maria Ivanova (honnisha) ganagsh@gmail.com
 
 Installation
 =======
@@ -33,6 +33,13 @@ sudo systemctl enable docker
 sudo groupadd docker
 sudo usermod -aG docker $USER
 sudo chmod 666 /var/run/docker.sock
+```
+
+`sudo emacs ~/.bashrc`
+```
+source "$HOME/Dropbox/aliases"
+VIRTUALENVWRAPPER_PYTHON=$(which python3)
+source ~/.local/bin/virtualenvwrapper.sh
 ```
 
 To compile vterm
@@ -71,9 +78,9 @@ pip install epc orjson sexpdata six orjson pyright python-lsp-server[all] rope r
 python -m ensurepip --default-pip
 ```
 
-Isort config
-https://github.com/timothycrosley/isort
-sudo emacs ~/.isort.cfg
+Isort config</br>
+https://github.com/timothycrosley/isort</br>
+`sudo emacs ~/.isort.cfg`
 ```
 [settings]
 multi_line_output=4
