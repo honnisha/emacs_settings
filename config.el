@@ -534,6 +534,7 @@ With argument, do this that many times."
   (use-package py-isort
     :config
     (define-key python-mode-map (kbd "C-c C-o") 'py-isort-buffer)
+    (add-to-list 'exec-path "~/.local/bin/")
     )
   )
 
@@ -596,6 +597,9 @@ With argument, do this that many times."
   (global-set-key (kbd "C-t") 'neotree-project-dir)
   (setq neo-window-fixed-size t)
   (setq neo-window-width 30)
+  (setq neo-show-hidden-files nil)
+  (setq neo-hidden-regexp-list
+        '("^\\." "\\.pyc$" "~$" "^#.*#$" "\\.elc$" "\\.o$" "__pycache__"))
   )
 
 (after! flycheck
