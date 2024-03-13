@@ -599,7 +599,7 @@ With argument, do this that many times."
   (setq neo-window-width 30)
   (setq neo-show-hidden-files nil)
   (setq neo-hidden-regexp-list
-        '("^\\." "\\.pyc$" "~$" "^#.*#$" "\\.elc$" "\\.o$" "__pycache__"))
+        '("^\\." "\\.pyc$" "~$" "^#.*#$" "\\.elc$" "\\.o$" "__pycache__" "flycheck_*"))
   )
 
 (after! flycheck
