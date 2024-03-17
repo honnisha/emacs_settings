@@ -1,7 +1,7 @@
 AUR Helper
 -------
 
-[Install](https://github.com/Jguer/yay)
+[Install wiki](https://github.com/Jguer/yay)
 
 ```bash
 pacman -S --needed git base-devel
@@ -16,7 +16,7 @@ Arch packages
 <h4>Other</h4>
 
 ```bash
-yay -S ttf-hack ttf-hack-nerd ttf-all-the-icons tree-sitter dropbox outline-client-appimage emacs-nativecomp
+yay -S ttf-hack ttf-hack-nerd ttf-all-the-icons tree-sitter dropbox outline-client-appimage emacs-nativecomp wezterm
 ```
 
 Configs
@@ -26,6 +26,7 @@ Configs
 ln -s ~/Projects/emacs_settings/doom_configs/packages.el ~/.config/doom/packages.el
 ln -s ~/Projects/emacs_settings/doom_configs/init.el ~/.config/doom/init.el
 ln -s ~/Projects/emacs_settings/doom_configs/config.el ~/.config/doom/config.el
+ln -s ~/Projects/emacs_settings/configs/wezterm.lua ~/.wezterm.lua
 ln -s ~/Projects/emacs_settings/configs/Outline-Client.AppImage.desktop ~/.config/autostart/Outline-Client.AppImage.desktop
 sudo chmod a-w ~/.config/autostart/Outline-Client.AppImage.desktop
 ln -s ~/Projects/emacs_settings/configs/isort.cfg ~/.isort.cfg
@@ -34,7 +35,7 @@ ln -s ~/Projects/emacs_settings/configs/isort.cfg ~/.isort.cfg
 Doom emacs
 -------
 
-[Install](https://github.com/doomemacs/doomemacs?tab=readme-ov-file#install)
+[Install wiki](https://github.com/doomemacs/doomemacs?tab=readme-ov-file#install)
 
 ```bash
 git clone --depth 1 https://github.com/doomemacs/doomemacs ~/.config/emacs

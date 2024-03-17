@@ -909,3 +909,5 @@ With argument, do this that many times."
   :config
   (epa-file-enable)
   )
+
+(use-package! lua-mode)

@@ -58,3 +58,4 @@
 (package! emacs-w3m)
 (package! origami)
 (package! atomic-chrome)
+(package! lua-mode)
