@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Outline-Client.AppImage (disabled)
+Comment=Outline-Client.AppImage startup script (disabled)
+#Exec=/home/iliazeus/AppImages/Outline-Client.AppImage
+Exec=/bin/true
+StartupNotify=false
+Terminal=false
