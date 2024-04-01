@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://github.com/honnisha/emacs_settings">
-    <img alt="Godot Jolt" src="https://github.com/honnisha/emacs_settings/blob/master/logo.png">
+    <img alt="Doom Emacs Config" src="https://github.com/honnisha/emacs_settings/blob/master/logo.png" width="830" height="200">
   </a>
 </p>
 
