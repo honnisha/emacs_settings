@@ -105,7 +105,7 @@
 (global-unset-key "\C-x\C-b")
 (global-set-key (kbd "C-x y") `repeat-complex-command)
 
-(global-set-key (kbd "C-x C-d") (lambda() (interactive)(find-file (concat settings_path "config.el"))))
+(global-set-key (kbd "C-x C-d") (lambda() (interactive)(find-file (concat settings_path "doom_configs/config.el"))))
 
 (defun delete-word (arg)
   "Delete characters forward until encountering the end of a word.
