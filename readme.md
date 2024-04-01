@@ -1,5 +1,10 @@
-AUR Helper
--------
+<p align="center">
+  <a href="https://github.com/honnisha/emacs_settings">
+    <img alt="Godot Jolt" src="https://github.com/honnisha/emacs_settings/blob/master/logo.png">
+  </a>
+</p>
+
+## AUR Helper
 
 [Install wiki](https://github.com/Jguer/yay)
 
@@ -10,8 +15,7 @@ cd yay
 makepkg -si
 ```
 
-Arch packages
--------
+## Arch packages
 
 <h4>Other</h4>
 
@@ -19,10 +23,10 @@ Arch packages
 yay -S ttf-hack ttf-hack-nerd ttf-all-the-icons tree-sitter dropbox outline-client-appimage emacs-nativecomp wezterm
 ```
 
-Configs
--------
+## Configs
 
 ```bash
+rm ~/.config/doom/*
 ln -s ~/Projects/emacs_settings/doom_configs/packages.el ~/.config/doom/packages.el
 ln -s ~/Projects/emacs_settings/doom_configs/init.el ~/.config/doom/init.el
 ln -s ~/Projects/emacs_settings/doom_configs/config.el ~/.config/doom/config.el
@@ -32,8 +36,7 @@ sudo chmod a-w ~/.config/autostart/Outline-Client.AppImage.desktop
 ln -s ~/Projects/emacs_settings/configs/isort.cfg ~/.isort.cfg
 ```
 
-Doom emacs
--------
+## Doom emacs
 
 [Install wiki](https://github.com/doomemacs/doomemacs?tab=readme-ov-file#install)
 
@@ -43,8 +46,7 @@ git clone --depth 1 https://github.com/doomemacs/doomemacs ~/.config/emacs
 ~/.config/emacs/bin/doom sync
 ```
 
-Arch Dependencies
--------
+## Arch Dependencies
 
 <h4>Python</h4>
 
@@ -92,9 +94,3 @@ yay -S cmake-git
 yay -S ntfs-3g os-prober
 sudo grub-mkconfig -o /boot/grub/grub.cfg
 ```
-
-Screenshots
-=======
-<div align="center"><img src="https://github.com/gangashman/emacs_settings/blob/master/screenshots/1.png"/></div>
-
-<div align="center"><img src="https://github.com/gangashman/emacs_settings/blob/master/screenshots/2.png"/></div>
