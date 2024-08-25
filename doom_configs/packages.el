@@ -59,3 +59,4 @@
 (package! origami)
 (package! atomic-chrome)
 (package! lua-mode)
+(package! gdscript-mode)

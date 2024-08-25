@@ -8,7 +8,7 @@
 (set-language-environment "UTF-8")
 (setenv "LANG" "en_US.UTF-8")
 
-(global-set-key (kbd "C-x C-n") (lambda() (interactive)(find-file (concat dropbox_path "text.org.gpg"))))
+(global-set-key (kbd "C-x C-n") (lambda() (interactive)(find-file (concat dropbox_path "text.org"))))
 
 ;; Line numbers are pretty slow all around. The performance boost of disabling
 ;; them outweighs the utility of always keeping them on.
@@ -78,9 +78,6 @@
 (global-set-key (kbd "C-x k") 'kill-this-buffer)
 
 (setq bookmark-default-file (concat dropbox_path "emacs-bookmarks"))
-(global-set-key (kbd "<f2>") 'bookmark-jump)
-(global-unset-key (kbd "<f2>"))
-(global-set-key (kbd "<f2>") 'bookmark-jump)
 (global-set-key (kbd "<f3>") 'bookmark-set)
 (global-set-key (kbd "<f4>") 'bookmark-bmenu-list)
 
@@ -244,10 +241,14 @@ With argument, do this that many times."
   (setq completion-styles '(substring basic))
 
   (global-set-key (kbd "C-S-SPC") 'consult-buffer)
+  (global-set-key (kbd "C-x b") 'consult-project-buffer)
   (global-set-key (kbd "C-x f") 'consult-find)
   ;; (global-set-key (kbd "C-M-s") 'consult-grep)
   (global-set-key (kbd "C-M-s") 'consult-git-grep)
   (global-set-key (kbd "C-s") 'consult-line)
+
+  (global-unset-key (kbd "<f2>"))
+  (global-set-key (kbd "<f2>") 'consult-bookmark)
 
   (after! consult
     (defadvice! org-show-entry-consult-a (fn &rest args)
@@ -790,7 +791,10 @@ With argument, do this that many times."
   (dashboard-setup-startup-hook)
   (dashboard-modify-heading-icons '((recents . "file-text")
                                     (bookmarks . "book")))
+
+  (setq dashboard-startup-banner (concat settings_path "emacs-dragon-small.png"))
   )
+
 (setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
 
 (use-package! expand-region
@@ -835,6 +839,9 @@ With argument, do this that many times."
 
   (define-key org-mode-map (kbd "C-o") 'org-metaright)
   (define-key org-mode-map (kbd "C-S-o") 'org-metaleft)
+
+  (define-key org-mode-map (kbd "<C-up>") 'org-priority-up)
+  (define-key org-mode-map (kbd "<C-down>") 'org-priority-down)
 
   (define-key org-mode-map (kbd "<C-tab>") (lambda () (interactive) (other-window 1)))
   (define-key org-mode-map (kbd "<C-iso-lefttab>") (lambda () (interactive) (other-window -1)))
@@ -911,3 +918,5 @@ With argument, do this that many times."
   )
 
 (use-package! lua-mode)
+
+(use-package! gdscript-mode)
