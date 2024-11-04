@@ -8,6 +8,8 @@
 (set-language-environment "UTF-8")
 (setenv "LANG" "en_US.UTF-8")
 
+(setq warning-minimum-level :error)
+
 (global-set-key (kbd "C-x C-n") (lambda() (interactive)(find-file (concat dropbox_path "text.org"))))
 
 ;; Line numbers are pretty slow all around. The performance boost of disabling
@@ -826,6 +828,8 @@ With argument, do this that many times."
 
   (setq org-support-shift-select t)
 
+  (define-key org-mode-map (kbd "<tab>") 'org-cycle)
+
   (define-key org-mode-map (kbd "C-c l") 'org-scontexttore-link)
   (define-key org-mode-map (kbd "C-h") 'delete-backward-char)
   (define-key org-mode-map (kbd "M-h") 'backward-delete-word)
@@ -884,10 +888,10 @@ With argument, do this that many times."
                                  ))
   )
 
-;;(use-package! atomic-chrome
-;;  :config
-;;  (atomic-chrome-start-server)
-;;  )
+(use-package! atomic-chrome
+  :config
+  (atomic-chrome-start-server)
+  )
 
 (use-package! linum
   :config
