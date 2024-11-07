@@ -94,3 +94,17 @@ yay -S cmake-git
 yay -S ntfs-3g os-prober
 sudo grub-mkconfig -o /boot/grub/grub.cfg
 ```
+
+# Steam Deck
+
+[Инструкции по восстановлению Steam Deck](https://help.steampowered.com/ru/faqs/view/1B71-EDF2-EB6D-2BB3)
+
+[Гайд установки Windows](https://sites.google.com/view/windeck/main?authuser=0)
+
+> error: failed to commit transaction (conflicting files)
+> fakeroot: /etc/ld.so.conf.d/fakeroot.conf exists in filesystem 
+
+```shell
+sudo pacman -S --overwrite \* fakeroot
+sudo pacman -S fakeroot
+```
