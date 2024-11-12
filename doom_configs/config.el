@@ -479,6 +479,7 @@ With argument, do this that many times."
       (setq lsp-modeline-diagnostics-scope :project)
 
       (setq lsp-enable-file-watchers nil)
+      (setq lsp-auto-execute-action nil)
       )
 
     (use-package! lsp-ui
