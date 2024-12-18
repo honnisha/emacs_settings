@@ -429,7 +429,10 @@ With argument, do this that many times."
   (global-set-key (kbd "C-с C-<") 'mc/skip-to-previous-like-this)
   (global-set-key (kbd "<C-C-down-mouse-1>") 'mc/add-cursor-on-click)
   (global-set-key (kbd "C-c <mouse-1>") 'mc/add-cursor-on-click)
+
+  ;; C-u 100
   (global-set-key (kbd "C-c n") 'mc/insert-numbers)
+
   ;; (global-set-key (kbd "C-c l") 'mc/insert-letters)
   ;; (global-set-key (kbd "C-c c") 'mc/edit-lines)
   (global-set-key (kbd "C-c C-n") 'mc/mark-next-like-this-word) ; choose same word next
