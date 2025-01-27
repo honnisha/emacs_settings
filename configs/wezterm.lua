@@ -45,5 +45,10 @@ config.colors = {
   },
 }
 
+config.initial_rows = 24 * 2
+config.initial_cols = 80 * 2
+
+config.window_close_confirmation = 'NeverPrompt' -- 'AlwaysPrompt'
+
 -- and finally, return the configuration to wezterm
 return config
