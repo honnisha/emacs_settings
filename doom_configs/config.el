@@ -537,22 +537,19 @@ With argument, do this that many times."
 
 (defvar python-mode-map)
 
-(after! python
-  (use-package py-isort
-    :config
-    (define-key python-mode-map (kbd "C-c C-o") 'py-isort-buffer)
-    (add-to-list 'exec-path "~/.local/bin/")
-    )
-  )
-
 ;; Add this to your .bashrc / .bash_profile / .zshrc:
 ;; # load virtualenvwrapper for python (after custom PATHs)
 ;; source ~/.local/bin/virtualenvwrapper.sh
 
 ;; VIRTUALENVWRAPPER_PYTHON="$(command \which python)"3
 
-;; mkvirtualenv --python=python default
 (after! python
+  (use-package py-isort
+    :config
+    (define-key python-mode-map (kbd "C-c C-o") 'py-isort-buffer)
+    (add-to-list 'exec-path "~/.local/bin/")
+    )
+
   (use-package! virtualenvwrapper
     :config
     (venv-projectile-auto-workon)
@@ -563,7 +560,17 @@ With argument, do this that many times."
     ;; use the default location (`~/.virtualenvs`), or if the
     ;; the environment variable `WORKON_HOME` points to the right place
     (setq venv-location "~/.virtualenvs/")
-    (define-key python-mode-map (kbd "C-c a") 'venv-workon)
+    (define-key python-mode-map (kbd "C-c a") 'pyvenv-workon)
+
+    ;; venv-mkvirtualenv
+    )
+
+  (use-package pyvenv
+    :config
+    (setenv "WORKON_HOME" "~/.virtualenvs")
+    (setq pyvenv-mode-line-indicator '(pyvenv-virtual-env-name ("[venv:" pyvenv-virtual-env-name "] ")))
+    ;; (define-key python-mode-map (kbd "C-c a") 'pyvenv-workon)
+    (pyvenv-mode t)
     )
   )
 
