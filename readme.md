@@ -52,7 +52,7 @@ git clone --depth 1 https://github.com/doomemacs/doomemacs ~/.config/emacs
 
 ```bash
 yay -S python python-pip pyright python-lsp-server ruff python-virtualenv python-psycopg2 python-black ruff-lsp python-lsp-server hunspell
-pip install epc orjson sexpdata six orjson pyright python-lsp-server[all] rope ruff ruff-lsp flake8 mypy pylint isort virtualenvwrapper virtualenv==20.0.23 "python-lsp-server[all]" setuptools pipenv  python-lsp-server --break-system-packages
+pip install epc orjson sexpdata six orjson pyright rope ruff ruff-lsp flake8 mypy pylint isort virtualenvwrapper virtualenv "python-lsp-server[all]" setuptools pipenv --break-system-packages
 ```
 
 <h4>Rust</h4>

@@ -12,6 +12,9 @@
 
 (global-set-key (kbd "C-x C-n") (lambda() (interactive)(find-file (concat dropbox_path "text.org"))))
 
+;; https://www.reddit.com/r/emacs/comments/1f45znf/company_slow_down/
+(setq projectile-track-known-projects-automatically nil)
+
 ;; Line numbers are pretty slow all around. The performance boost of disabling
 ;; them outweighs the utility of always keeping them on.
 (setq display-line-numbers-type nil)
@@ -77,7 +80,7 @@
 (global-set-key (kbd "C-c <right>") 'winner-redo)
 
 ;; From Pragmatic Emacs a more concise way to kill the buffer.
-(global-set-key (kbd "C-x k") 'kill-this-buffer)
+(global-set-key (kbd "C-x k") 'kill-current-buffer)
 
 (setq bookmark-default-file (concat dropbox_path "emacs-bookmarks"))
 (global-set-key (kbd "<f3>") 'bookmark-set)
@@ -133,6 +136,7 @@ With argument, do this that many times."
 (global-unset-key (kbd "C-j"))
 
 (global-set-key (kbd "C-.") `undo)
+;; (global-set-key (kbd "C-u") 'undo-redo)
 
 (defun next-with-center (lines)
   "Move LINES lines and center."
@@ -252,21 +256,19 @@ With argument, do this that many times."
   (global-unset-key (kbd "<f2>"))
   (global-set-key (kbd "<f2>") 'consult-bookmark)
 
-  (after! consult
-    (defadvice! org-show-entry-consult-a (fn &rest args)
-      :around #'consult-line
-      :around #'consult-org-heading
-      :around #'consult--grep
-      (when-let ((pos (apply fn args)))
-        (org-fold-reveal '(4)))))
+  (defadvice! org-show-entry-consult-a (fn &rest args)
+    :around #'consult-line
+    :around #'consult-org-heading
+    :around #'consult--grep
+    (when-let ((pos (apply fn args)))
+      (org-fold-reveal '(4))))
 
-  (after! consult
-    (defadvice! org-show-entry-consult-a (fn &rest args)
-      :around #'consult-line
-      :around #'consult-org-heading
-      :around #'consult--grep
-      (when-let ((pos (apply fn args)))
-        (progn (org-fold-reveal '(4)) (org-fold-show-entry)))))
+  (defadvice! org-show-entry-consult-a (fn &rest args)
+    :around #'consult-line
+    :around #'consult-org-heading
+    :around #'consult--grep
+    (when-let ((pos (apply fn args)))
+      (progn (org-fold-reveal '(4)) (org-fold-show-entry))))
 
   (consult-customize
    ;; Disable preview for `consult-theme' completely.
@@ -443,7 +445,6 @@ With argument, do this that many times."
 ;; 2 - lsp-bridge
 (setq lsp-type 1)
 
-;; sudo pip install 'python-language-server[all]'
 (if (eq lsp-type 1)
   (progn
     (use-package! lsp-mode
@@ -537,40 +538,11 @@ With argument, do this that many times."
 
 (defvar python-mode-map)
 
-;; Add this to your .bashrc / .bash_profile / .zshrc:
-;; # load virtualenvwrapper for python (after custom PATHs)
-;; source ~/.local/bin/virtualenvwrapper.sh
-
-;; VIRTUALENVWRAPPER_PYTHON="$(command \which python)"3
-
 (after! python
   (use-package py-isort
     :config
     (define-key python-mode-map (kbd "C-c C-o") 'py-isort-buffer)
     (add-to-list 'exec-path "~/.local/bin/")
-    )
-
-  (use-package! virtualenvwrapper
-    :config
-    (venv-projectile-auto-workon)
-
-    (venv-initialize-interactive-shells) ;; if you want interactive shell support
-    (venv-initialize-eshell) ;; if you want eshell support
-    ;; note that setting `venv-location` is not necessary if you
-    ;; use the default location (`~/.virtualenvs`), or if the
-    ;; the environment variable `WORKON_HOME` points to the right place
-    (setq venv-location "~/.virtualenvs/")
-    (define-key python-mode-map (kbd "C-c a") 'pyvenv-workon)
-
-    ;; venv-mkvirtualenv
-    )
-
-  (use-package pyvenv
-    :config
-    (setenv "WORKON_HOME" "~/.virtualenvs")
-    (setq pyvenv-mode-line-indicator '(pyvenv-virtual-env-name ("[venv:" pyvenv-virtual-env-name "] ")))
-    ;; (define-key python-mode-map (kbd "C-c a") 'pyvenv-workon)
-    (pyvenv-mode t)
     )
   )
 
@@ -635,7 +607,7 @@ With argument, do this that many times."
 
 (after! company
   :config
-  (setq company-idle-delay 0)
+  (setq company-idle-delay 1)
   (setq company-minimum-prefix-length 2)
   (setq company-quickhelp-delay 0)
   (setq company-show-numbers 1)
@@ -725,6 +697,9 @@ With argument, do this that many times."
 (use-package! undo-tree
   :config
   (setq undo-tree-auto-save-history nil)
+  (setq undo-tree-show-minibuffer-help nil)
+  (setq undo-tree-show-help-in-visualize-buffer nil)
+  (setq undo-tree-minibuffer-help-dynamic nil)
   (global-undo-tree-mode)
   )
 
@@ -904,12 +879,12 @@ With argument, do this that many times."
   (atomic-chrome-start-server)
   )
 
-(use-package! linum
-  :config
-  ;; Alternatively, to use it only in programming modes:
-  (add-hook 'python-mode-hook #'linum-mode)
-  (add-hook 'rust-mode-hook #'linum-mode)
-  )
+;; (use-package! linum
+;;   :config
+;;   ;; Alternatively, to use it only in programming modes:
+;;   (add-hook 'python-mode-hook #'linum-mode)
+;;   (add-hook 'rust-mode-hook #'linum-mode)
+;;   )
 
 (load! (concat settings_path "settings/functions.el"))
 
